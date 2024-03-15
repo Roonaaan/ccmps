@@ -1,0 +1,215 @@
+.contactUsWrapper {
+    height: 500px;
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    justify-content: center;
+}
+
+.contactForm {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    width: 40%;
+}
+
+.contactInputs {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.contactInput {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 60%;
+}
+
+.contactTextArea {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 80%;
+}
+
+.contactInput label,
+.contactTextArea label {
+    font-weight: 600;
+}
+
+.contactInput input,
+.contactTextArea textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid black;
+    border-radius: 3px;
+    font-size: 16px;
+    resize: none;
+    font-family: "Poppins", sans-serif;
+}
+
+.contactSubmit button {
+    background-color: #33658A;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.contactInfoContainer {
+    width: 50%;
+    padding: 20px;
+}
+
+.contactInfoContainer {
+    width: 500px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.contactInfoForm {
+    width: 100%;
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 0 20px;
+}
+
+.contactInfoHeader {
+    margin-bottom: 20px;
+}
+
+.contactInfoDetails {
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+    text-align: justify;
+}
+
+.contactInfoContact {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.contactInfoItem {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    width: 500px;
+}
+
+.contactInfoItem p1 {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.contactInfoItem p {
+    font-size: 14px;
+}
+
+/* Media Queries */
+
+@media only screen and (max-width: 1200px) {
+    .contactForm {
+        width: 50%;
+        justify-content: center;
+    }
+    .contactInfoContainer {
+        width: 40%;
+        justify-content: center;
+    }
+
+    .contactInput {
+        width: 60%;
+    }
+    .contactTextArea {
+        width: 90%;
+    }
+
+    .contactInfoItem{
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .contactInfoItem {
+        width: auto;
+    }
+}
+
+@media only screen and (max-width: 1024px) {
+    .contactForm {
+        width: 50%;
+        justify-content: center;
+    }
+    .contactInfoContainer {
+        width: 40%;
+        justify-content: flex-start;
+    }
+
+    .contactInput {
+        width: 60%;
+    }
+    .contactTextArea {
+        width: 90%;
+    }
+
+    .contactInfoItem {
+        width: auto;
+    }
+
+    .contactInfoItem{
+        display: flex;
+        flex-direction: column;
+    }
+
+    .contactInfoDetails{
+        font-size: 13px;
+    }
+
+    .contactInfoItem p,
+    .contactInfoItem p1{
+        font-size: 12.3px;
+    }
+}
+
+@media only screen and (max-width: 900px) {
+    .contactInfoDetails{
+        font-size: 14px;
+    }
+
+    .contactInfoItem p,
+    .contactInfoItem p1{
+        font-size: 13.3px;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .contactUsWrapper{
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .contactForm {
+        width: 100%;
+        justify-content: center;
+    }
+    .contactInfoContainer {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+
+    .contactInfoDetails{
+        font-size: 14px;
+    }
+
+    .contactInfoItem p,
+    .contactInfoItem p1{
+        font-size: 13.3px;
+    }
+}

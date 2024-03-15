@@ -1,0 +1,232 @@
+/* Recommend Job Role CSS */
+.recommendJobContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.recommendJobContainerInner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.recommendJobContainer h1 {
+    color: #2F4858;
+    font-weight: 700;
+    font-size: 50px;
+}
+
+.recommendJobContainerSubtitle,
+.recommendJobContainerSubtitle p {
+    color: grey;
+    margin-top: 5px;
+}
+
+.recommendJobContainerInner span {
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.recommendJobContainerSelection {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 15px;
+    margin-top: 58px;
+}
+
+.recommendJobContainerPanel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 350px;
+    height: 350px;
+    border: 2px solid #27374D;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    color: white;
+    font-size: 40px;
+    font-weight: 500;
+}
+
+.job-description {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(47, 72, 88, 0.8); /* Color, Opacity Here */
+    color: white;
+    padding: 20px;
+    box-sizing: border-box;
+    transform: translateY(-100%);
+    transition: transform 0.3s ease-in-out;
+}
+
+.recommendJobContainerPanel p {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    color: inherit;
+    font-size: 24px;
+    transition: 0.3s ease-in-out;
+}
+
+.recommendJobContainerPanel p.job-title {
+    color: black;
+    font-size: 24px;
+    font-weight: 500;
+    
+}
+
+.recommendJobContainerPanel:hover .job-description {
+    transform: translateY(0);
+}
+
+.recommendJobContainerButton {
+    display: flex;
+    margin-top: 30px;
+}
+
+.recommendJobContainerProceed {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 300px;
+    height: 59px;
+    color: white;
+    background: #33658A;
+    border-radius: 5px;
+    border: 0;
+    outline: 0;
+    font-size: 19px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/*Selected.jsx*/
+
+.selectedJobContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.selectedJobContainerInner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+}
+
+.selectedJobContainer h1 {
+    color: #2F4858;
+    font-weight: 700;
+    font-size: 50px;
+}
+
+.selectedJobContainerSubtitle,
+.selectedJobContainerSubtitle p {
+    color: grey;
+    margin-top: 5px;
+}
+
+.selectedJobContainerSelection {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    flex-direction: row;
+    gap: 20px;
+    margin-top: 45px;
+}
+
+.selectedJobContainerPanel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 230px;
+    height: 230px;
+    border: 2px solid #27374D;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    color: white;
+    font-size: 40px;
+    font-weight: 500;
+}
+
+.job-description-selected {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(47, 72, 88, 0.8); /* Color, Opacity Here */
+    color: white;
+    padding: 20px;
+    box-sizing: border-box;
+    transform: translateY(-100%);
+    transition: transform 0.3s ease-in-out;
+}
+
+.selectedJobContainerPanel p {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    color: inherit;
+    font-size: 24px;
+    transition: 0.3s ease-in-out;
+}
+
+.selectedJobContainerPanel p.job-title {
+    color: black;
+    font-size: 24px;
+    font-weight: 500;
+    text-align: center;
+}
+
+.selectedJobContainerPanel:hover .job-description-selected {
+    transform: translateY(0);
+}
+
+.selectedJobContainerButton {
+    display: flex;
+    margin-top: 30px;
+}
+
+.selectedJobContainerProceed {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 300px;
+    height: 59px;
+    color: white;
+    background: #33658A;
+    border-radius: 5px;
+    border: 0;
+    outline: 0;
+    font-size: 19px;
+    font-weight: 700;
+    cursor: pointer;
+}
