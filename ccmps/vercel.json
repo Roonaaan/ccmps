@@ -1,0 +1,12 @@
+{
+    "rewrites": [
+      { "source": "/About", "destination": "/" },
+      { "source": "/Contact-Us", "destination": "/" },
+      { "source": "/Login/Forgot-Password/Change-Password", "destination": "/" },
+      { "source": "/Welcome", "destination": "/" },
+      { "source": "/My-Profile", "destination": "/" },
+      { "source": "/Recommend", "destination": "/" },
+      { "source": "/Select-Department", "destination": "/" },
+      { "source": "/Roadmap", "destination": "/" }
+    ]
+  }
