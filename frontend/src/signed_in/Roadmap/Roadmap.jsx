@@ -14,52 +14,45 @@ const Roadmap = () => {
   const navigate = useNavigate();
 
   0
-  const [doneOpacities, setDoneOpacities] = useState([100, 100, 100]); 
-  const [nextOpacity, setNextOpacity] = useState(50); 
+  const [doneOpacities, setDoneOpacities] = useState([100, 100, 100]);
+  const [nextOpacity, setNextOpacity] = useState(50);
 
-  
+
   const handleDoneClick = (index) => {
     const newOpacities = [...doneOpacities];
-    newOpacities[index] = 50; 
+    newOpacities[index] = 50;
     setDoneOpacities(newOpacities);
-    setNextOpacity(100); 
+    setNextOpacity(100);
   };
 
-  
+
   const handleNextClick = () => {
-    
+
   };
 
-  
+
+  // User Page Connection
   useEffect(() => {
-    const fetchUserName = async () => {
+    const fetchUserProfile = async () => {
       try {
-        const userEmail = sessionStorage.getItem("user"); 
+        const userEmail = sessionStorage.getItem('user');
         if (userEmail) {
-          const response = await fetch(
-            `http://localhost/CareerCompass/backend/signed-in/home.php?email=${userEmail}`
-          );
+          const response = await fetch(`http://localhost:8800/api/auth/user-profile?email=${userEmail}`);
           const data = await response.json();
 
           if (data.success) {
-            setUserName(data.userName);
-            setUserImage(data.userImage);
-
-            if (data.userImage) {
-              setUserImage(`data:image/jpeg;base64,${data.userImage}`); 
-            } else {
-              setUserImage(defaultImg);
-            }
+            setUserName(data.userData.firstName);
+            setUserImage(data.userData.image ? `data:image/jpeg;base64,${data.userData.image}` : userImage);
           } else {
-            console.log("Failed to fetch user name");
+            console.log('Failed to fetch user profile');
           }
         }
       } catch (error) {
-        console.error("An error occurred", error);
+        console.error('An error occurred', error);
       }
     };
 
-    fetchUserName();
+    fetchUserProfile();
   }, []);
 
   const handleProfileClick = () => {
@@ -158,13 +151,13 @@ const Roadmap = () => {
               dolore magna aliqua.{" "}
             </div>
             <div className="button-section">
-            <button
-        className="done-button"
-        onClick={() => handleDoneClick(0)} // Pass index of this button
-            style={{ opacity: `${doneOpacities[0]}%` }}
-      >
-        Done
-      </button>
+              <button
+                className="done-button"
+                onClick={() => handleDoneClick(0)} // Pass index of this button
+                style={{ opacity: `${doneOpacities[0]}%` }}
+              >
+                Done
+              </button>
             </div>
           </div>
           <div className="taskDiv">
@@ -176,13 +169,13 @@ const Roadmap = () => {
               dolore magna aliqua.{" "}
             </div>
             <div className="button-section">
-            <button
-        className="done-button1"
-        onClick={() => handleDoneClick(1)} // Pass index of this button
-            style={{ opacity: `${doneOpacities[1]}%` }}
-      >
-        Done
-      </button>
+              <button
+                className="done-button1"
+                onClick={() => handleDoneClick(1)} // Pass index of this button
+                style={{ opacity: `${doneOpacities[1]}%` }}
+              >
+                Done
+              </button>
             </div>
           </div>
           <div className="taskDiv">
@@ -194,27 +187,27 @@ const Roadmap = () => {
               dolore magna aliqua.{" "}
             </div>
             <div className="button-section">
-            <button
-        className="done-button2"
-        onClick={() => handleDoneClick(2)} // Pass index of this button
-            style={{ opacity: `${doneOpacities[2]}%` }}
-      >
-        Done
-      </button>
+              <button
+                className="done-button2"
+                onClick={() => handleDoneClick(2)} // Pass index of this button
+                style={{ opacity: `${doneOpacities[2]}%` }}
+              >
+                Done
+              </button>
             </div>
           </div>
         </section>
 
         <div className="button-section-footer">
-        <button className="prev-button-footer"> PREV PHASE </button>
-        <button
-        className="next-button-footer"
-        onClick={handleNextClick}
-        style={{ opacity: `${nextOpacity}%` }}
-      >
-        NEXT PHASE
-      </button>
-          
+          <button className="prev-button-footer"> PREV PHASE </button>
+          <button
+            className="next-button-footer"
+            onClick={handleNextClick}
+            style={{ opacity: `${nextOpacity}%` }}
+          >
+            NEXT PHASE
+          </button>
+
         </div>
       </div>
     </div>

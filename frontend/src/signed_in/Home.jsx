@@ -13,35 +13,29 @@ const Home = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
 
-  // React to PHP Connection
+  // User Page Connection
   useEffect(() => {
-    const fetchUserName = async () => {
-      try {
-        const userEmail = sessionStorage.getItem('user'); // Retrieve user email from sessionStorage
-        if (userEmail) {
-          const response = await fetch(`http://localhost/CareerCompass/backend/signed-in/home.php?email=${userEmail}`);
-          const data = await response.json();
+    const fetchUserProfile = async () => {
+        try {
+            const userEmail = sessionStorage.getItem('user');
+            if (userEmail) {
+                const response = await fetch(`http://localhost:8800/api/auth/user-profile?email=${userEmail}`);
+                const data = await response.json();
 
-          if (data.success) {
-            setUserName(data.userName);
-            setUserImage(data.userImage);
-
-            if (data.userImage) {
-              setUserImage(`data:image/jpeg;base64,${data.userImage}`); // Assuming JPEG format, adjust content type if needed
-            } else {
-              setUserImage(defaultImg);
+                if (data.success) {
+                    setUserName(data.userData.firstName);
+                    setUserImage(data.userData.image ? `data:image/jpeg;base64,${data.userData.image}` : userImage);
+                } else {
+                    console.log('Failed to fetch user profile');
+                }
             }
-          } else {
-            console.log('Failed to fetch user name');
-          }
+        } catch (error) {
+            console.error('An error occurred', error);
         }
-      } catch (error) {
-        console.error('An error occurred', error);
-      }
     };
 
-    fetchUserName();
-  }, []);
+    fetchUserProfile();
+}, []);
 
   const handleProfileClick = () => {
     navigate('/My-Profile');
