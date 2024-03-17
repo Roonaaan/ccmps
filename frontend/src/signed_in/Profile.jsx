@@ -77,6 +77,12 @@ const Profile = () => {
     navigate('/Welcome')
   }
 
+  // Profile Date Format
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
   const DropdownModal = ({ logoutHandler }) => {
     return (
       <div className="dropdown-modal">
@@ -127,13 +133,13 @@ const Profile = () => {
             </div>
             <div className="profileEmpNameContainer">
               <div className="profileEmpNameDetails">
-                <h1> {userProfile.firstName} </h1> {/* FIRST AND LAST NAME */}
+                <h1> {userProfile.firstName} {userProfile.lastName} </h1> {/* FIRST AND LAST NAME */}
               </div>
               <div className="profileEmpNameDetails">
                 <p> {userProfile.jobPosition} </p> {/* JOB_POSITION */}
               </div>
               <div className="profileEmpNameDetails">
-                <p1> {userProfile.employeeId} </p1> {/* EMPLOYEE_ID */}
+                <p1> Employee # {userProfile.employeeId} </p1> {/* EMPLOYEE_ID */}
               </div>
             </div>
             <div className="underline" />
@@ -157,7 +163,7 @@ const Profile = () => {
                 </div>
                 <div className="profileEmpPersonalInfo">
                   <p> Birthday: </p> {/* BIRTHDAY */}
-                  <p1> {userProfile.bithday} </p1>
+                  <p1> {userProfile.birthday ? formatDate(userProfile.birthday) : ''} </p1>
                 </div>
                 <div className="profileEmpPersonalInfo">
                   <p> Gender: </p> {/* GENDER */}
@@ -219,36 +225,45 @@ const Profile = () => {
                     </div>
                     <div>
                       <p> Start Date: </p> {/* START_DATE */}
-                      <p1> {job.startDate} </p1>
+                      <p1> {job.startDate ? formatDate(job.startDate) : ''} </p1>
                     </div>
                     <div>
                       <p> End Date: </p> {/* END_DATE */}
-                      <p1> {job.endDate} </p1>
+                      <p1> {job.endDate ? formatDate(job.endDate) : ''} </p1>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
-            {/* Educational Background */}
             <div className="profileEmpBackgroundEmploymentHistoryContainer">
               <label htmlFor="eduHistory"> Educational Background </label>
               <div className="profileEmpBackgroundEmploymentHistory">
-                {userProfile.educationalHistory && userProfile.educationalHistory.map((eduItem, index) => (
-                  <div className="profileEmpHistory" key={index}>
-                    <div>
-                      <p> Grade/Level: </p>
-                      <p1> {eduItem.gradeLevel} </p1>
-                    </div>
-                    <div>
-                      <p> School: </p>
-                      <p1> {eduItem.school} </p1>
-                    </div>
-                    <div>
-                      <p> Year Graduated: </p>
-                      <p1> {eduItem.yearGraduated} </p1>
-                    </div>
-                  </div>
-                ))}
+                {userProfile.educationalHistory &&
+                  userProfile.educationalHistory
+                    // Filter out duplicate educational background records based on the school name
+                    .filter(
+                      (eduItem, index, self) =>
+                        index ===
+                        self.findIndex(
+                          (t) => t.school === eduItem.school && t.yearGraduated === eduItem.yearGraduated
+                        )
+                    )
+                    .map((eduItem, index) => (
+                      <div className="profileEmpHistory" key={index}>
+                        <div>
+                          <p> Grade/Level: </p>
+                          <p1> {eduItem.gradeLevel} </p1>
+                        </div>
+                        <div>
+                          <p> School: </p>
+                          <p1> {eduItem.school} </p1>
+                        </div>
+                        <div>
+                          <p> Year Graduated: </p>
+                          <p1> {eduItem.yearGraduated} </p1>
+                        </div>
+                      </div>
+                    ))}
               </div>
             </div>
           </div>
