@@ -5,24 +5,22 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
 
 // CSS
-import './styles/Forgotpassword.css' 
+import './styles/Forgotpassword.css'
 
 // Logo
 import Logo from '../../assets/login/logo-dark.png'
 
 const Forgotpassmessage = ({ onClose, email }) => {
-  
 
-
+  // Resend Email Connection
   const resendEmail = async () => {
     try {
-      const response = await fetch ('http://localhost/CareerCompass/backend/login-page/resend-email.php', {
+      const response = await fetch('http://localhost:8800/api/auth/resend-email', {
         method: 'POST',
         headers: {
-          'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email: `${email}` }),
+        body: JSON.stringify({ email }),
       });
 
       const data = await response.json();
@@ -33,7 +31,7 @@ const Forgotpassmessage = ({ onClose, email }) => {
         console.error('Failed to resend email');
       }
     } catch (error) {
-      console.error('An error occured', error);
+      console.error('An error occurred', error);
     }
   };
 
@@ -56,7 +54,7 @@ const Forgotpassmessage = ({ onClose, email }) => {
               <button
                 className='forgotSubmit'
                 onClick={resendEmail}
-                > Resend Email
+              > Resend Email
               </button>
             </div>
             <div className="forgotPassMsg"> Did not receive it yet, click the button to resend it </div>

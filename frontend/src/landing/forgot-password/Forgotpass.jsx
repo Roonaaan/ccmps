@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Forgotpassmessage from "./Forgotpassmessage";
+import axios from 'axios';
 
 // CSS
 import './styles/Forgotpassword.css'
@@ -17,7 +18,8 @@ export const Forgotpass = ({ onClose }) => {
     // Modals
     const [showModal, setShowModal] = useState(false);
 
-    const handleValidation = () => {
+    // Reset Password Connection
+    const handleValidation = async () => {
         setEmailError('');
 
         if (!email) {
@@ -25,9 +27,20 @@ export const Forgotpass = ({ onClose }) => {
         } else if (!/\S+@\S+\.\S+/.test(email)) { // Basic email validation
             setEmailError('Please enter a valid email address');
         } else {
-            emailSent();
+            try {
+                const response = await axios.post('http://localhost:8800/api/auth/reset-password', { email });
+                const data = response.data;
+
+                if (data.success) {
+                    messageSent();
+                } else {
+                    console.error('Failed to send reset email:', data.message);
+                }
+            } catch (error) {
+                console.error('An error occurred:', error);
+            }
         }
-    }
+    };
 
     // Open Modal
     const messageSent = () => {
@@ -45,30 +58,6 @@ export const Forgotpass = ({ onClose }) => {
         setEmailError('');
     }
 
-    // Function to send reset email
-    const emailSent = async () => {
-        try {
-            const response = await fetch ('http://localhost/CareerCompass/backend/login-page/forgot-password.php', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email }),
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                messageSent(`${encodeURIComponent(email)}`);
-            } else {
-
-            }
-        } catch (error) {
-            console.error('An error occured', error);
-        }
-    };
-    
     return (
         <>
             <div className="forgot-password-modal">

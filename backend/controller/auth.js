@@ -1,6 +1,7 @@
 import { db } from "../database.js";
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
+import crypto from 'crypto';
 
 // Login
 export const login = (req, res) => {
@@ -24,11 +25,105 @@ export const login = (req, res) => {
     });
 };
 
-// ResetPassword Request
+// Generate Token
+const generateResetToken = () => {
+    // Generate a random token using crypto module
+    const token = crypto.randomBytes(20).toString('hex');
+    return token;
+};
 
-// ResetPassword Email
+// Reset Password Request (Send Email)
+export const sendResetEmail = async (req, res) => {
+    const { email } = req.body;
+    const resetToken = generateResetToken(); // Generate a reset token
+    const resetTokenExpiry = new Date(Date.now() + 10 * 60 * 1000); // Set reset token expiry to 10 minutes from now
 
-// ResetPassword Reset
+    try {
+        // Store reset token and expiry in the database
+        const insertQuery = `
+            INSERT INTO tblforgotpass (EMAIL, RESET_TOKEN, RESET_TOKEN_EXPIRY)
+            VALUES (?, ?, ?)
+        `;
+        db.query(insertQuery, [email, resetToken, resetTokenExpiry]);
+
+        // Send reset password email with the reset token
+        const transporter = nodemailer.createTransport({
+            // Configure your email provider here
+            service: 'Gmail', // Assuming you are using Gmail, change it if you're using a different provider
+            auth: {
+                user: 'careercompassbscs@gmail.com', // Your email address
+                pass: 'qved wnte vpyt xiwy' // Your email password or app password if you have 2FA enabled
+            }
+        });
+
+        const mailOptions = {
+            from: 'careercompasbscs@gmail.com', // Sender address
+            to: email, // Receiver address
+            subject: 'Password Reset', // Subject line
+            text: `To reset your password, click on the following link: http://localhost:5173/Login/Forgot-Password/Change-Password?token=${resetToken}` // Email body with the reset token link
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('Error sending reset password email:', error);
+                res.status(500).json({ success: false, message: 'An error occurred while sending reset password email' });
+            } else {
+                console.log('Reset password email sent:', info.response);
+                res.status(200).json({ success: true, message: 'Reset password email sent successfully' });
+            }
+        });
+    } catch (error) {
+        console.error('An unexpected error occurred:', error);
+        res.status(500).json({ success: false, message: 'An error occurred while processing the request' });
+    }
+};
+// Reset Password Resend Email
+export const resendResetEmail = async (req, res) => {
+    const { email } = req.body;
+    const resetToken = generateResetToken(); // Generate a new reset token
+    const resetTokenExpiry = new Date(Date.now() + 10 * 60 * 1000); // Set reset token expiry to 10 minutes from now
+
+    try {
+        // Update reset token and expiry in the database
+        const updateQuery = `
+            UPDATE tblforgotpass
+            SET RESET_TOKEN = ?, RESET_TOKEN_EXPIRY = ?
+            WHERE EMAIL = ?
+        `;
+        db.query(updateQuery, [resetToken, resetTokenExpiry, email]);
+
+        // Send reset password email with the new reset token
+        const transporter = nodemailer.createTransport({
+            // Configure your email provider here
+            service: 'Gmail', // Assuming you are using Gmail, change it if you're using a different provider
+            auth: {
+                user: 'careercompassbscs@gmail.com', // Your email address
+                pass: 'qved wnte vpyt xiwy' // Your email password or app password if you have 2FA enabled
+            }
+        });
+
+        const mailOptions = {
+            from: 'careercompasbscs@gmail.com', // Sender address
+            to: email, // Receiver address
+            subject: 'Password Reset', // Subject line
+            text: `To reset your password, click on the following link: http://localhost:5173/Login/Forgot-Password/Change-Password?token=${resetToken}` // Email body with the reset token link
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('Error sending reset password email:', error);
+                res.status(500).json({ success: false, message: 'An error occurred while sending reset password email' });
+            } else {
+                console.log('Reset password email sent:', info.response);
+                res.status(200).json({ success: true, message: 'Reset password email resent successfully' });
+            }
+        });
+    } catch (error) {
+        console.error("An unexpected error occurred:", error);
+        res.status(500).json({ success: false, message: "An error occurred while resending reset password email" });
+    }
+};
+// Reset Password
 
 // Contact Us
 export const sendEmail = async (req, res) => {
