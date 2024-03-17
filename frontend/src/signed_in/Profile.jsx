@@ -11,7 +11,7 @@ import { faEnvelope, faPhone } from '@fortawesome/free-solid-svg-icons'
 
 const Profile = () => {
 
-  const [userProfile, setUserProfile] = useState({})
+  const [userProfile, setUserProfile] = useState({ employmentHistory: [], educationalHistory: [] });
   const [userImage, setUserImage] = useState('');
   const [userName, setUserName] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
@@ -23,51 +23,44 @@ const Profile = () => {
     const fetchUserDetails = async () => {
       try {
         const userEmail = sessionStorage.getItem('user');
-
         if (userEmail) {
           const response = await axios.get(`http://localhost:8800/api/auth/user-details?email=${userEmail}`);
-          const userData = response.data;
-
-          if (userData.success) {
-            setUserProfile(userData); // Store entire user profile data
-            setUserName(`${userData.firstName} ${userData.lastName}`);
-            setUserImage(userData.userImage || defaultImg);
-          } else {
-            console.log('Failed to fetch user profile');
-          }
+          const userData = response.data.userProfile;
+          // Update based on new userProfile structure
+          setUserProfile(userData);
         }
       } catch (error) {
-        console.error('Error fetching user profile:', error);
+        console.error("Error fetching user profile:", error);
+        // Consider displaying an error message to the user
       }
     };
 
     fetchUserDetails();
   }, []);
 
-
   // User Page Connection
   useEffect(() => {
     const fetchUserProfile = async () => {
-        try {
-            const userEmail = sessionStorage.getItem('user');
-            if (userEmail) {
-                const response = await fetch(`http://localhost:8800/api/auth/user-profile?email=${userEmail}`);
-                const data = await response.json();
+      try {
+        const userEmail = sessionStorage.getItem('user');
+        if (userEmail) {
+          const response = await fetch(`http://localhost:8800/api/auth/user-profile?email=${userEmail}`);
+          const data = await response.json();
 
-                if (data.success) {
-                    setUserName(data.userData.firstName);
-                    setUserImage(data.userData.image ? `data:image/jpeg;base64,${data.userData.image}` : userImage);
-                } else {
-                    console.log('Failed to fetch user profile');
-                }
-            }
-        } catch (error) {
-            console.error('An error occurred', error);
+          if (data.success) {
+            setUserName(data.userData.firstName);
+            setUserImage(data.userData.image ? `data:image/jpeg;base64,${data.userData.image}` : userImage);
+          } else {
+            console.log('Failed to fetch user profile');
+          }
         }
+      } catch (error) {
+        console.error('An error occurred', error);
+      }
     };
 
     fetchUserProfile();
-}, []);
+  }, []);
 
   const handleProfileClick = () => {
     navigate('/My-Profile');
@@ -134,22 +127,22 @@ const Profile = () => {
             </div>
             <div className="profileEmpNameContainer">
               <div className="profileEmpNameDetails">
-                <h1> user full name here </h1> {/* FIRST AND LAST NAME */}
+                <h1> {userProfile.firstName} </h1> {/* FIRST AND LAST NAME */}
               </div>
               <div className="profileEmpNameDetails">
-                <p> job postition here </p> {/* JOB_POSITIN */}
+                <p> {userProfile.jobPosition} </p> {/* JOB_POSITION */}
               </div>
               <div className="profileEmpNameDetails">
-                <p1> employee number  </p1> {/* EMPLOYEE_ID */}
+                <p1> {userProfile.employeeId} </p1> {/* EMPLOYEE_ID */}
               </div>
             </div>
             <div className="underline" />
             <div className="profileEmpDetailContainer">
               <div className="profileEmpDetail">
-                <p><FontAwesomeIcon icon={faEnvelope} /> email here </p> {/* EMAIL */}
+                <p><FontAwesomeIcon icon={faEnvelope} /> {userProfile.email} </p> {/* EMAIL */}
               </div>
               <div className="profileEmpDetail">
-                <p><FontAwesomeIcon icon={faPhone} /> phone here </p> {/* PHONE_NUMBER */}
+                <p><FontAwesomeIcon icon={faPhone} /> {userProfile.phoneNumber} </p> {/* PHONE_NUMBER */}
               </div>
             </div>
           </div>
@@ -160,23 +153,23 @@ const Profile = () => {
               <div className="profileEmpBackgroundPersonalInfo">
                 <div className="profileEmpPersonalInfo">
                   <p> Age: </p> {/* AGE */}
-                  <p1> age here </p1>
+                  <p1> {userProfile.age} </p1>
                 </div>
                 <div className="profileEmpPersonalInfo">
                   <p> Birthday: </p> {/* BIRTHDAY */}
-                  <p1> Birthday here </p1>
+                  <p1> {userProfile.bithday} </p1>
                 </div>
                 <div className="profileEmpPersonalInfo">
                   <p> Gender: </p> {/* GENDER */}
-                  <p1> gender here </p1>
+                  <p1> {userProfile.gender} </p1>
                 </div>
                 <div className="profileEmpPersonalInfo">
                   <p> Nationality: </p> {/* NATIONALITY */}
-                  <p1> nationality here </p1>
+                  <p1> {userProfile.nationality} </p1>
                 </div>
                 <div className="profileEmpPersonalInfo">
                   <p> Civil Status: </p> {/* CIVIL_STATUS */}
-                  <p1> civil status here </p1>
+                  <p1> {userProfile.civilStatus} </p1>
                 </div>
               </div>
             </div>
@@ -186,23 +179,23 @@ const Profile = () => {
               <div className="profileEmpBackgroundAddress">
                 <div className="profileEmpAddress">
                   <p> Home Address: </p> {/* HOME_ADDRESS */}
-                  <p1> home address here </p1>
+                  <p1> {userProfile.homeAddress} </p1>
                 </div>
                 <div className="profileEmpAddress">
                   <p> District: </p> {/* DISTRICT */}
-                  <p1> district here </p1>
+                  <p1> {userProfile.district} </p1>
                 </div>
                 <div className="profileEmpAddress">
                   <p> City: </p> {/* CITY */}
-                  <p1> city here </p1>
+                  <p1> {userProfile.city} </p1>
                 </div>
                 <div className="profileEmpAddress">
                   <p> Province: </p> {/* PROVINCE */}
-                  <p1> province here </p1>
+                  <p1> {userProfile.province} </p1>
                 </div>
                 <div className="profileEmpAddress">
                   <p> Postal Code: </p> {/* POSTAL_CODE */}
-                  <p1> postal code here </p1>
+                  <p1> {userProfile.postalCode} </p1>
                 </div>
               </div>
             </div>
@@ -210,44 +203,52 @@ const Profile = () => {
             <div className="profileEmpBackgroundEmploymentHistoryContainer">
               <label htmlFor="empHistory"> Employment History </label>
               <div className="profileEmpBackgroundEmploymentHistory">
-                <div className="profileEmpHistory">
-                  <p> Company: </p> {/* COMPANY */}
-                  <p1> company here </p1>
-                </div>
-                <div className="profileEmpHistory">
-                  <p> Job Title: </p> {/* JOB_TITLE */}
-                  <p1> job title here </p1>
-                </div>
-                <div className="profileEmpHistory">
-                  <p> Address: </p> {/* COMPANY_ADDRESS */}
-                  <p1> company address here </p1>
-                </div>
-                <div className="profileEmpHistory">
-                  <p> Start Date: </p> {/* START_DATE */}
-                  <p1> start date here </p1>
-                </div>
-                <div className="profileEmpHistory">
-                  <p> End Date: </p> {/* END_DATE */}
-                  <p1> end date here </p1>
-                </div>
+                {userProfile.employmentHistory && userProfile.employmentHistory.map((job, index) => (
+                  <div className="profileEmpHistory" key={index}>
+                    <div>
+                      <p> Company: </p> {/* COMPANY */}
+                      <p1> {job.company} </p1>
+                    </div>
+                    <div>
+                      <p> Job Title: </p> {/* JOB_TITLE */}
+                      <p1> {job.jobTitle} </p1>
+                    </div>
+                    <div>
+                      <p> Address: </p> {/* COMPANY_ADDRESS */}
+                      <p1> {job.companyAddress} </p1>
+                    </div>
+                    <div>
+                      <p> Start Date: </p> {/* START_DATE */}
+                      <p1> {job.startDate} </p1>
+                    </div>
+                    <div>
+                      <p> End Date: </p> {/* END_DATE */}
+                      <p1> {job.endDate} </p1>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-            {/* Educational Background y */}
+            {/* Educational Background */}
             <div className="profileEmpBackgroundEmploymentHistoryContainer">
-              <label htmlFor="empHistory"> Educational Background </label>
+              <label htmlFor="eduHistory"> Educational Background </label>
               <div className="profileEmpBackgroundEmploymentHistory">
-                <div className="profileEmpHistory">
-                  <p> Grade/Level </p> {/* GRADE_LEVEL */}
-                  <p1> grade level here </p1>
-                </div>
-                <div className="profileEmpHistory">
-                  <p> School: </p> {/* SCHOOL */}
-                  <p1> school here </p1>
-                </div>
-                <div className="profileEmpHistory">
-                  <p> Year Graduated: </p> {/* YEAR_GRADUATE */}
-                  <p1> year here </p1>
-                </div>
+                {userProfile.educationalHistory && userProfile.educationalHistory.map((eduItem, index) => (
+                  <div className="profileEmpHistory" key={index}>
+                    <div>
+                      <p> Grade/Level: </p>
+                      <p1> {eduItem.gradeLevel} </p1>
+                    </div>
+                    <div>
+                      <p> School: </p>
+                      <p1> {eduItem.school} </p1>
+                    </div>
+                    <div>
+                      <p> Year Graduated: </p>
+                      <p1> {eduItem.yearGraduated} </p1>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
