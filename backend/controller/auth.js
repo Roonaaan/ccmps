@@ -313,6 +313,6 @@ export const getUserDetails = async (req, res) => {
         res.status(500).json({ success: false, message: "An error occurred" });
     }
 };
-// Recommend Algorithm
+// Roadmap
 
 // Select Jobs

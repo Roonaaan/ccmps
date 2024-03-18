@@ -209,32 +209,47 @@ const Profile = () => {
             <div className="profileEmpBackgroundEmploymentHistoryContainer">
               <label htmlFor="empHistory"> Employment History </label>
               <div className="profileEmpBackgroundEmploymentHistory">
-                {userProfile.employmentHistory && userProfile.employmentHistory.map((job, index) => (
-                  <div className="profileEmpHistory" key={index}>
-                    <div>
-                      <p> Company: </p> {/* COMPANY */}
-                      <p1> {job.company} </p1>
-                    </div>
-                    <div>
-                      <p> Job Title: </p> {/* JOB_TITLE */}
-                      <p1> {job.jobTitle} </p1>
-                    </div>
-                    <div>
-                      <p> Address: </p> {/* COMPANY_ADDRESS */}
-                      <p1> {job.companyAddress} </p1>
-                    </div>
-                    <div>
-                      <p> Start Date: </p> {/* START_DATE */}
-                      <p1> {job.startDate ? formatDate(job.startDate) : ''} </p1>
-                    </div>
-                    <div>
-                      <p> End Date: </p> {/* END_DATE */}
-                      <p1> {job.endDate ? formatDate(job.endDate) : ''} </p1>
-                    </div>
-                  </div>
-                ))}
+                {userProfile.employmentHistory &&
+                  userProfile.employmentHistory
+                    .filter(
+                      (job, index, self) =>
+                        index ===
+                        self.findIndex(
+                          (j) =>
+                            j.company === job.company &&
+                            j.jobTitle === job.jobTitle &&
+                            j.companyAddress === job.companyAddress &&
+                            j.startDate === job.startDate &&
+                            j.endDate === job.endDate
+                        )
+                    )
+                    .map((job, index) => (
+                      <div className="profileEmpHistory" key={index}>
+                        <div>
+                          <p> Company: </p> {/* COMPANY */}
+                          <p1> {job.company} </p1>
+                        </div>
+                        <div>
+                          <p> Job Title: </p> {/* JOB_TITLE */}
+                          <p1> {job.jobTitle} </p1>
+                        </div>
+                        <div>
+                          <p> Address: </p> {/* COMPANY_ADDRESS */}
+                          <p1> {job.companyAddress} </p1>
+                        </div>
+                        <div>
+                          <p> Start Date: </p> {/* START_DATE */}
+                          <p1> {job.startDate ? formatDate(job.startDate) : ''} </p1>
+                        </div>
+                        <div>
+                          <p> End Date: </p> {/* END_DATE */}
+                          <p1> {job.endDate ? formatDate(job.endDate) : ''} </p1>
+                        </div>
+                      </div>
+                    ))}
               </div>
             </div>
+            {/* Educational Background */}
             <div className="profileEmpBackgroundEmploymentHistoryContainer">
               <label htmlFor="eduHistory"> Educational Background </label>
               <div className="profileEmpBackgroundEmploymentHistory">

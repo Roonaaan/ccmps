@@ -86,6 +86,9 @@ const Recommend = () => {
                         <div className="navLogoContainer">
                             <img src={logo} alt="logo" className="navLogo" />
                         </div>
+                        <div className="selectedJobContainerHeader">
+                            <h1> THIS IS STILL UNDER DEVELOPMENT </h1>
+                        </div>
                         <div className="navProfile">
                             <img
                                 src={userImage || defaultImg}
@@ -103,25 +106,45 @@ const Recommend = () => {
                             <h1> Selected Job Role </h1>
                         </div>
                         <div className="selectedJobContainerSubtitle">
-                            <p> Select a role you want to achieve. </p>
+                            <p> Select a role you want to achive. </p>
                         </div>
                         <div className="selectedJobContainerSelection">
-                            {departments.map((department, index) => (
-                                <div
-                                    key={index}
-                                    className="selectedJobContainerPanel"
-                                    onClick={() => toggleDescription(department.name)}
-                                >
-                                    <p className='job-title'>{department.name}</p>
-                                    {showDescriptions[department.name] && (
-                                        <div className="job-description-selected">
-                                            {department.jobs.map((job, jobIndex) => (
-                                                <p key={jobIndex}>{job.title}</p>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
+                            <div
+                                className="selectedJobContainerPanel"
+                                onClick={() => toggleDescription('job1')}>
+                                <p className='job-title'> Department 1 </p>
+                                {showDescriptions.job1 && <p className="job-description-selected">Description 1</p>}
+                            </div>
+                            <div
+                                className="selectedJobContainerPanel"
+                                onClick={() => toggleDescription('job2')}>
+                                <p className='job-title'> Department 2 </p>
+                                {showDescriptions.job2 && <p className="job-description-selected">Description 2</p>}
+                            </div>
+                            <div
+                                className="selectedJobContainerPanel"
+                                onClick={() => toggleDescription('job3')}>
+                                <p className='job-title'> Department 3 </p>
+                                {showDescriptions.job3 && <p className="job-description-selected">Description 3</p>}
+                            </div>
+                            <div
+                                className="selectedJobContainerPanel"
+                                onClick={() => toggleDescription('job1')}>
+                                <p className='job-title'> Department 4 </p>
+                                {showDescriptions.job1 && <p className="job-description-selected">Description 4</p>}
+                            </div>
+                            <div
+                                className="selectedJobContainerPanel"
+                                onClick={() => toggleDescription('job2')}>
+                                <p className='job-title'> Department 5 </p>
+                                {showDescriptions.job2 && <p className="job-description-selected">Description 5</p>}
+                            </div>
+                            <div
+                                className="selectedJobContainerPanel"
+                                onClick={() => toggleDescription('job3')}>
+                                <p className='job-title'> Department 6 </p>
+                                {showDescriptions.job3 && <p className="job-description-selected">Description 6</p>}
+                            </div>
                         </div>
                     </div>
                 </div>
