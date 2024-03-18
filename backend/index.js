@@ -13,7 +13,7 @@ app.use((req, res, next) => {
   app.use(express.json());
   app.use(
     cors({
-      origin: "https://ccmps.vercel.app/",
+      origin: "https://ccmps.vercel.app",
     })
   );
   app.use(cookieParser());
