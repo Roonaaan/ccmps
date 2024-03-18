@@ -61,12 +61,11 @@ export const Login = ({ onClose }) => {
         setErrorMsg('');
     };
 
+    const backendURL = process.env.REACT_APP_BACKEND_URL;
 
     const loginSubmit = async () => {
         try {
-            const url = `https://ccmps-server.vercel.app/api/auth/login`; // Add this line
-            console.log("Constructed URL:", url);
-            const response = await axios.post(url, { email, password }, { withCredentials: true });
+            const response = await axios.post(`${backendURL}/api/auth/login`, { email, password }, { withCredentials: true });
             if (response.data) {
                 sessionStorage.setItem('user', email);
                 {/* sessionStorage.setItem('token', response.data.token); */ }
