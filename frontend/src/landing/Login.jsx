@@ -62,11 +62,9 @@ export const Login = ({ onClose }) => {
     };
 
 
-    const backendURL = process.env.REACT_APP_BACKEND_URL;
-
     const loginSubmit = async () => {
         try {
-            const url = `${backendURL}/api/auth/login`; // Add this line
+            const url = `https://ccmps-server.vercel.app/api/auth/login`; // Add this line
             console.log("Constructed URL:", url);
             const response = await axios.post(url, { email, password }, { withCredentials: true });
             if (response.data) {
