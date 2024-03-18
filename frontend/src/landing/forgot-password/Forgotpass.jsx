@@ -28,7 +28,7 @@ export const Forgotpass = ({ onClose }) => {
             setEmailError('Please enter a valid email address');
         } else {
             try {
-                const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/reset-password`, { email });
+                const response = await axios.post('http://localhost:8800/api/auth/reset-password', { email });
                 const data = response.data;
 
                 if (data.success) {

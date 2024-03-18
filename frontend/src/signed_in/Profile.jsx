@@ -24,7 +24,7 @@ const Profile = () => {
       try {
         const userEmail = sessionStorage.getItem('user');
         if (userEmail) {
-          const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/auth/user-details?email=${userEmail}`);
+          const response = await axios.get(`http://localhost:8800/api/auth/user-details?email=${userEmail}`);
           const userData = response.data.userProfile;
           // Update based on new userProfile structure
           setUserProfile(userData);
