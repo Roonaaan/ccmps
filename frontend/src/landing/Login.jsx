@@ -61,7 +61,7 @@ export const Login = ({ onClose }) => {
         setErrorMsg('');
     };
 
-    const backendURL = process.env.REACT_APP_BACKEND_URL;
+    const backendURL = ('https://ccmps-server.vercel.app/');
 
     const loginSubmit = async () => {
         try {
