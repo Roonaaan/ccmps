@@ -55,6 +55,10 @@
     font-weight: 500;
 }
 
+.recommendJobContainerPanel.selected {
+    border-color: #86BBD8;
+}
+
 .job-description {
     position: absolute;
     top: 0;

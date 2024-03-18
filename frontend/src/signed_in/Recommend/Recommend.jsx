@@ -16,6 +16,7 @@ const Recommend = () => {
         job3: false,
     });
     const [recommendedJobs, setRecommendedJobs] = useState([]);
+    const [selectedJob, setSelectedJob] = useState(null);
     const navigate = useNavigate();
 
     // User Page Connection
@@ -110,6 +111,18 @@ const Recommend = () => {
         navigate('/Select-Department');
     }
 
+    const handleJobClick = (jobIndex) => {
+        setSelectedJob(jobIndex);
+    }
+
+    const handleProceed = () => {
+        if (selectedJob !== null) {
+            navigate('/Roadmap');
+        } else {
+            alert('Please select a job before proceeding');
+        }
+    }
+
     return (
         <>
             <div className="recommendContainer">
@@ -141,15 +154,19 @@ const Recommend = () => {
                             {recommendedJobs.map((job, index) => (
                                 <div
                                     key={index}
-                                    className="recommendJobContainerPanel"
-                                    onClick={() => toggleDescription(`job${index + 1}`)}>
+                                    className={`recommendJobContainerPanel ${selectedJob === index ? 'selected' : ''}`}
+                                    onClick={() => {
+                                        handleJobClick(index);
+                                        toggleDescription(`job${index + 1}`);
+                                    }}
+                                >
                                     <p className='job-title'>{job.title}</p>
                                     {showDescriptions[`job${index + 1}`] && <p className="job-description">{job.description}</p>}
                                 </div>
                             ))}
                         </div>
                         <div className="recommendJobContainerButton">
-                            <button className='recommendJobContainerProceed'> PROCEED </button>
+                            <button className='recommendJobContainerProceed' onClick={handleProceed}> PROCEED </button>
                         </div>
                         <span onClick={handleSelectClick}> Want to choose your own job position, click here </span>
                     </div>

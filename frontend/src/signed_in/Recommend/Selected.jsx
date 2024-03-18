@@ -6,30 +6,13 @@ import './styles/recommend.css';
 import logo from "../../assets/homepage/final-topright-logo.png";
 import defaultImg from "../../assets/signed-in/defaultImg.jpg";
 
-const SelectDept = () => {
+const Recommend = () => {
     const [userImage, setUserImage] = useState('');
     const [userName, setUserName] = useState('');
     const [showDropdown, setShowDropdown] = useState(false);
-    const [departments, setDepartments] = useState([]);
-    const [showDescriptions, setShowDescriptions] = useState({
-        job1: false,
-        job2: false,
-        job3: false,
-        job4: false,
-        job5: false,
-        job6: false,
-    });
+    const [showDescriptions, setShowDescriptions] = useState({});
+    const [departments, setDepartments] = useState([])
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const response = await fetch('http://localhost/CareerCompass/backend/algorithm/selected.php'); // Replace with your PHP endpoint URL
-            const data = await response.json(); // Parse JSON response
-            setDepartments(data);
-        };
-        fetchData();
-    }, []);
-
 
     // User Page Connection
     useEffect(() => {
@@ -54,6 +37,7 @@ const SelectDept = () => {
 
         fetchUserProfile();
     }, []);
+
     const handleProfileClick = () => {
         navigate('/My-Profile');
     }
@@ -62,11 +46,6 @@ const SelectDept = () => {
     const handleLogout = () => {
         sessionStorage.removeItem('user');
         navigate('/');
-    }
-
-    // Return to Home Page
-    const handleHomeClick = () => {
-        navigate('/Welcome')
     }
 
     const DropdownModal = ({ logoutHandler }) => {
@@ -92,10 +71,10 @@ const SelectDept = () => {
         setShowDropdown(!showDropdown);
     }
 
-    const toggleDescription = (jobKey) => {
+    const toggleDescription = (departmentName) => {
         setShowDescriptions({
             ...showDescriptions,
-            [jobKey]: !showDescriptions[jobKey],
+            [departmentName]: !showDescriptions[departmentName],
         });
     };
 
@@ -105,7 +84,7 @@ const SelectDept = () => {
                 <header className="navBar">
                     <div className="navBarInner">
                         <div className="navLogoContainer">
-                            <img src={logo} alt="logo" className="navLogo" onClick={handleHomeClick} />
+                            <img src={logo} alt="logo" className="navLogo" />
                         </div>
                         <div className="navProfile">
                             <img
@@ -124,13 +103,23 @@ const SelectDept = () => {
                             <h1> Selected Job Role </h1>
                         </div>
                         <div className="selectedJobContainerSubtitle">
-                            <p> Select a role you want to achive. </p>
+                            <p> Select a role you want to achieve. </p>
                         </div>
                         <div className="selectedJobContainerSelection">
-                            {departments.map((department) => (
-                                <div key={department.id} className="selectedJobContainerPanel" onClick={() => toggleDescription('job1')}>
-                                    <p className='job-title'> {department.department} </p>
-                                    <p className="job-description-selected">{department.description}</p>
+                            {departments.map((department, index) => (
+                                <div
+                                    key={index}
+                                    className="selectedJobContainerPanel"
+                                    onClick={() => toggleDescription(department.name)}
+                                >
+                                    <p className='job-title'>{department.name}</p>
+                                    {showDescriptions[department.name] && (
+                                        <div className="job-description-selected">
+                                            {department.jobs.map((job, jobIndex) => (
+                                                <p key={jobIndex}>{job.title}</p>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
@@ -142,4 +131,4 @@ const SelectDept = () => {
     );
 };
 
-export default SelectDept;
+export default Recommend;
