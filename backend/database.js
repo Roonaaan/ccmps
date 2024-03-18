@@ -1,8 +1,8 @@
 import mysql from "mysql";
 
 export const db = mysql.createConnection({
-  host: "monorail.proxy.rlwy.net",
+  host: "localhost",
   user: "root",
-  password: "ecixWHBhZzjmDNBdYyaFIbxOwpbBYvSM",
-  database: "railway",
+  password: "",
+  database: "ccdb",
 });
