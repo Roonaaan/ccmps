@@ -62,6 +62,8 @@ export const Login = ({ onClose }) => {
     };
 
 
+    const backendURL = process.env.REACT_APP_BACKEND_URL;
+
     const loginSubmit = async () => {
         try {
             const url = `${backendURL}/api/auth/login`; // Add this line
