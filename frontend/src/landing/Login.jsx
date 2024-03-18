@@ -65,7 +65,7 @@ export const Login = ({ onClose }) => {
 
     const loginSubmit = async () => {
         try {
-            const response = await axios.post(`${backendURL}/api/auth/login`, { email, password }, { withCredentials: true });
+            const response = await axios.post(`${backendURL}api/auth/login`, { email, password }, { withCredentials: true });
             if (response.data) {
                 sessionStorage.setItem('user', email);
                 {/* sessionStorage.setItem('token', response.data.token); */ }
