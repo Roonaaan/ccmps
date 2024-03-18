@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import ForgotPassModal from './forgot-password/Forgotpass'
+import config from '../../config.json';
 
 // CSS
 import './styles/Login.css';
@@ -61,10 +62,11 @@ export const Login = ({ onClose }) => {
         setErrorMsg('');
     };
 
+    
     const loginSubmit = async () => {
         try {
             await new Promise(resolve => setTimeout(resolve, 1000));
-            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/login`, { email, password }, { withCredentials: true });
+            const response = await axios.post(`${config.BACKEND_URL}/api/auth/login`, { email, password }, { withCredentials: true });
             if (response.data) {
                 sessionStorage.setItem('user', email);
                 {/* sessionStorage.setItem('token', response.data.token); */}
