@@ -2,6 +2,7 @@ import { db } from "../database.js";
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import crypto from 'crypto';
+import dotenv from 'dotenv';
 
 // Login
 export const login = (req, res) => {
