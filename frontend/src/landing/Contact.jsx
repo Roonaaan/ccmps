@@ -36,7 +36,7 @@ const Contact = () => {
     const sendEmail = async () => {
         try {
             await new Promise(resolve => setTimeout(resolve, 1000));
-            const response = await axios.post('http://localhost:8800/api/auth/send-email', { name, email, message });
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/send-email`, { name, email, message });
 
             if (response.status === 200) {
                 setSuccessMessage(<span style={{ color: 'green' }}> Message Sent. Thanks for the Feedback </span>);

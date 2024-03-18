@@ -15,7 +15,7 @@ const Forgotpassmessage = ({ onClose, email }) => {
   // Resend Email Connection
   const resendEmail = async () => {
     try {
-      const response = await fetch('http://localhost:8800/api/auth/resend-email', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/resend-email`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
