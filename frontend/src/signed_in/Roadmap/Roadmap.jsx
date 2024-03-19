@@ -11,6 +11,7 @@ const Roadmap = () => {
   const [userImage, setUserImage] = useState("");
   const [userName, setUserName] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
+  const [phase, setPhase] = useState(1); // Track current phase
   const navigate = useNavigate();
 
   0
@@ -27,7 +28,17 @@ const Roadmap = () => {
 
 
   const handleNextClick = () => {
+    // Move to the next phase
+    if (phase < 4) {
+      setPhase(phase + 1);
+    }
+  };
 
+  const handlePrevClick = () => {
+    // Move to the previous phase
+    if (phase > 1) {
+      setPhase(phase - 1);
+    }
   };
 
 
@@ -113,26 +124,17 @@ const Roadmap = () => {
 
       <section className="progressFrame">
         <div className="leftSide">
-          <ul className="progressBarList  ">
-            <li className="progressBarItem currentItem ">
-              <span className="phaseCount ">1</span>
-              <span className="phaseProgressLabel">Phase 1</span>
-            </li>
-
-            <li className="progressBarItem  ">
-              <span className="phaseCount">2</span>
-              <span className="phaseProgressLabel">Phase 2</span>
-            </li>
-
-            <li className="progressBarItem  ">
-              <span className="phaseCount">3</span>
-              <span className="phaseProgressLabel">Phase 3</span>
-            </li>
-
-            <li className="progressBarItem">
-              <span className="phaseCount">4</span>
-              <span className="phaseProgressLabel">Phase 4</span>
-            </li>
+          <ul className="progressBarList">
+            {[1, 2, 3, 4].map((num) => (
+              <li
+                key={num}
+                className={`progressBarItem ${num === phase ? "currentItem" : ""
+                  }`}
+              >
+                <span className="phaseCount">{num}</span>
+                <span className="phaseProgressLabel">Phase {num}</span>
+              </li>
+            ))}
           </ul>
           <div className="progressDescription"></div>
         </div>
@@ -141,75 +143,29 @@ const Roadmap = () => {
       {/* Middle Section */}
       <div className="middleSection">
         <section className="rightSide">
-          <div className="rightsideTitle"> INTRODUCTION </div>
-          <div className="taskDiv">
-            <div className="taskTitle"> Task Title </div>
-            <div className="taskDescription">
-              {" "}
-              Task Description: Lorem ipsum dolor sit amet, consectetur
-              adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore magna aliqua.{" "}
-            </div>
-            <div className="button-section">
-              <button
-                className="done-button"
-                onClick={() => handleDoneClick(0)} // Pass index of this button
-                style={{ opacity: `${doneOpacities[0]}%` }}
-              >
-                Done
-              </button>
-            </div>
+          <div className="rightsideTitle">
+            {phase === 1 && "INTRODUCTION"} {/* Display title based on phase */}
           </div>
-          <div className="taskDiv">
-            <div className="taskTitle"> Task Title </div>
-            <div className="taskDescription">
-              {" "}
-              Task Description: Lorem ipsum dolor sit amet, consectetur
-              adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore magna aliqua.{" "}
-            </div>
-            <div className="button-section">
-              <button
-                className="done-button1"
-                onClick={() => handleDoneClick(1)} // Pass index of this button
-                style={{ opacity: `${doneOpacities[1]}%` }}
-              >
-                Done
-              </button>
-            </div>
-          </div>
-          <div className="taskDiv">
-            <div className="taskTitle"> Task Title </div>
-            <div className="taskDescription">
-              {" "}
-              Task Description: Lorem ipsum dolor sit amet, consectetur
-              adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore magna aliqua.{" "}
-            </div>
-            <div className="button-section">
-              <button
-                className="done-button2"
-                onClick={() => handleDoneClick(2)} // Pass index of this button
-                style={{ opacity: `${doneOpacities[2]}%` }}
-              >
-                Done
-              </button>
-            </div>
-          </div>
+          {/* Your existing JSX for tasks */}
         </section>
-
-        <div className="button-section-footer">
-          <button className="prev-button-footer"> PREV PHASE </button>
-          <button
-            className="next-button-footer"
-            onClick={handleNextClick}
-            style={{ opacity: `${nextOpacity}%` }}
-          >
-            NEXT PHASE
-          </button>
-
-        </div>
       </div>
+      <div className="button-section-footer">
+        <button
+          className="prev-button-footer"
+          onClick={handlePrevClick}
+          disabled={phase === 1}
+        >
+          PREV PHASE
+        </button>
+        <button
+          className="next-button-footer"
+          onClick={handleNextClick}
+          style={{ opacity: `${nextOpacity}%` }}
+        >
+          NEXT PHASE
+        </button>
+      </div>
+      {showDropdown && <DropdownModal logoutHandler={handleLogout} />}
     </div>
   );
 };

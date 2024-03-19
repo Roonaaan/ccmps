@@ -117,7 +117,7 @@ const Recommend = () => {
 
     const handleProceed = () => {
         if (selectedJob !== null) {
-            navigate('/Roadmap');
+            navigate('/Roadmap', { state: { selectedJob, recommendedJobs } }); // Pass selected job and recommended jobs to Roadmap
         } else {
             alert('Please select a job before proceeding');
         }
