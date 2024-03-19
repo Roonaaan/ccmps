@@ -61,8 +61,6 @@ export const Login = ({ onClose }) => {
         setErrorMsg('');
     };
 
-    const backendURL = ('https://ccmps-server.vercel.app');
-
     const loginSubmit = async () => {
         try {
             await new Promise(resolve => setTimeout(resolve, 1000));
