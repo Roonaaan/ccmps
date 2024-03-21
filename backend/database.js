@@ -1,20 +1,19 @@
-import mysql from 'mysql';
+import pg from 'pg';
 
-export const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'ccdb'
+const { Pool } = pg;
+
+const pool = new Pool({
+  connectionString: process.env.POSTGRES_URL,
 });
 
-try {
-  db.connect((err) => {
-    if (err) {
-      console.error('Error connecting to MySQL:', err);
-    } else {
-      console.log('Connected to MySQL database');
-    }
-  });
-} catch (error) {
-  console.error('Unexpected error establishing connection:', error);
-}
+(async () => {
+  try {
+    await pool.query('SELECT NOW()'); // Simple query to test connection
+    console.log('Connected to PostgreSQL database successfully!');
+  } catch (error) {
+    console.error('Failed to connect to PostgreSQL database:', error);
+  } finally {
+    // Close the pool when the script finishes or errors occur
+    await pool.end();
+  }
+})();
