@@ -14,7 +14,7 @@ const Home = () => {
   const Logo = logo;
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
-  
+
   const handleLoginClick = () => {
     setShowModal(true);
   };
@@ -49,17 +49,19 @@ const Home = () => {
 
       {/* Hero */}
       <div className="heroWrapper">
-        <div className="heroInner inner-frame">
-          <p className="header-text">CREATE YOUR OWN ROADMAP</p>
-          <p className="discover-text">
-            Discover your own career path! Input your skills, experience, and
-            our system crafts a personalize roadmap just for you.
-          </p>
-          <div className="heroButtonBar">
-            <btn className="create-Button" onClick={handleLoginClick}>
-              CREATE ROADMAP
-            </btn>
-          </div>
+        <div className="container">
+        <div className="inner-frame">
+           <p className="header-text">CREATE YOUR OWN ROADMAP</p>
+            <p className="discover-text">
+              Discover your own career path! Input your skills, experience, and
+              our system crafts a personalize roadmap just for you.
+            </p>
+            <div className="heroButtonBar">
+              <btn className="create-Button" onClick={handleLoginClick}>
+                CREATE ROADMAP
+              </btn>
+            </div>      
+           </div>  
         </div>
       </div>
       {/* End of Hero */}
@@ -82,12 +84,12 @@ const Home = () => {
                 <div className="featureDiv">
                   <Fragment>
                     <div className="feature">
-                      <p>{feature}</p>
+                      <p className="feature-name">{feature}</p>
                     </div>
                     <div className="featureDescription">
                       <p className="feature-text">{description}</p>
                     </div>
-                    <div>
+                    <div className="feature-image-placeholder">
                       <img className="featureImg" src={image} alt="img" />
                     </div>
                   </Fragment>
@@ -99,35 +101,43 @@ const Home = () => {
         </div>
       </div>
       {/* End of Features */}
+
       {/* Footer */}
       <div className="footerNavbarWrapper">
         <div className="footerNavbarColumn">
           <div className="footerNavbarInner">
             <div className="footerLogoWrapper">
               <div className="footerNavleft">
-                <a href="#top"><img 
-                  src={footerlogo}
-                  alt="Logo"
-                  className="footerLogo"
-                /></a>
+                <a href="#top">
+                  <img src={footerlogo} alt="Logo" className="footerLogo" />
+                </a>
               </div>
               <div className="footerConnect">
                 <h1 className="connectWithUsText"> Connect with us </h1>
                 <div style={{ display: "flex", justifyContent: "center" }}>
-                  <span style={{ margin: "0 10px" }}>
+                  <span
+                    style={{
+                      margin: "0 10px",
+                      width: "40px",
+                      height: "40px",
+                      aspectRatio: "1/1",
+                    }}
+                  >
                     <a
                       href="#facebook"
                       className="fab fa-facebook-square fa-4x"
-                      style={{ color: "white" }}
+                      style={{ color: "white", width: "40px", height: "40px" }}
                     >
                       {""}
                     </a>
                   </span>
-                  <span style={{ margin: "0 10px" }}>
+                  <span
+                    style={{ margin: "0 10px", width: "40px", height: "40px" }}
+                  >
                     <a
                       href="#google"
                       className="fab fa-google fa-4x"
-                      style={{ color: "white" }}
+                      style={{ color: "white", width: "40px", height: "40px" }}
                     >
                       {""}
                     </a>
@@ -136,7 +146,7 @@ const Home = () => {
               </div>
             </div>
             <div className="footerAbout">
-              <h1 className="footerAboutHeader"> Our Team </h1>
+              <p className="footerAboutHeader"> Our Team </p>
               <a
                 href="/About"
                 className="footerAboutLink"

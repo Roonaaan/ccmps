@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 // ROADMAP CSS
 import "./styles/style.css";
@@ -19,14 +19,12 @@ const Roadmap = () => {
   const [doneOpacities, setDoneOpacities] = useState([100, 100, 100]);
   const [nextOpacity, setNextOpacity] = useState(50);
 
-
   const handleDoneClick = (index) => {
     const newOpacities = [...doneOpacities];
     newOpacities[index] = 50;
     setDoneOpacities(newOpacities);
     setNextOpacity(100);
   };
-
 
   const handleNextClick = () => {
     // Move to the next phase
@@ -42,25 +40,30 @@ const Roadmap = () => {
     }
   };
 
-
   // User Page Connection
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const userEmail = sessionStorage.getItem('user');
+        const userEmail = sessionStorage.getItem("user");
         if (userEmail) {
-          const response = await fetch(`http://localhost:8800/api/auth/user-profile?email=${userEmail}`);
+          const response = await fetch(
+            `http://localhost:8800/api/auth/user-profile?email=${userEmail}`
+          );
           const data = await response.json();
 
           if (data.success) {
             setUserName(data.userData.firstName);
-            setUserImage(data.userData.image ? `data:image/jpeg;base64,${data.userData.image}` : userImage);
+            setUserImage(
+              data.userData.image
+                ? `data:image/jpeg;base64,${data.userData.image}`
+                : userImage
+            );
           } else {
-            console.log('Failed to fetch user profile');
+            console.log("Failed to fetch user profile");
           }
         }
       } catch (error) {
-        console.error('An error occurred', error);
+        console.error("An error occurred", error);
       }
     };
 
@@ -104,6 +107,19 @@ const Roadmap = () => {
     setShowDropdown(!showDropdown);
   };
 
+  function VideoPlayer() {
+    return (
+      <div className="video-player-wrapper">
+        <ReactPlayer
+          url="https://www.youtube.com/watch?v=dQw4w9WgXcQ" // Example URL, replace with your own video URL
+          controls={true} // Enable/disable controls
+          width="100%"
+          height="100%"
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="roadmapWrapper">
       {/* Navigation Bar */}
@@ -123,14 +139,14 @@ const Roadmap = () => {
         </div>
       </header>
 
+      {/* Progress Bar */}
       <section className="progressFrame">
         <div className="leftSide">
           <ul className="progressBarList">
             {[1, 2, 3, 4].map((num) => (
               <li
-                key={num}
-                className={`progressBarItem ${num === phase ? "currentItem" : ""
-                  }`}
+                key={index}
+                className={`progressBarItem ${index + 1 === phase ? "currentItem" : ""}`}
               >
                 <span className="phaseCount">{num}</span>
                 <span className="phaseProgressLabel">Phase {num}</span>
@@ -140,12 +156,11 @@ const Roadmap = () => {
           <div className="progressDescription"></div>
         </div>
       </section>
-
       {/* Middle Section */}
       <div className="middleSection">
         <section className="rightSide">
           <div className="rightsideTitle">
-            {phase === 1 && "INTRODUCTION"} {/* Display title based on phase */}
+            {phase === 1 && "INTRODUCTION"}
           </div>
           {/* Your existing JSX for tasks */}
         </section>
@@ -167,8 +182,7 @@ const Roadmap = () => {
         >
           NEXT PHASE
         </button>
-      </div>
-      {showDropdown && <DropdownModal logoutHandler={handleLogout} />}
+      </div>      {showDropdown && <DropdownModal logoutHandler={handleLogout} />}
     </div>
   );
 };

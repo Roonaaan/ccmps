@@ -1,36 +1,74 @@
 .contactUsWrapper {
-    height: 500px;
+    height: 100vh;
     display: flex;
     flex-direction: row;
-    gap: 30px;
+   
     justify-content: center;
 }
 
 .contactForm {
     display: flex;
     flex-direction: column;
-    padding: 20px;
-    width: 40%;
+    padding-top: 40px;
+    padding-left: 40px;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    width: 60%;
+    justify-content: flex-start;
+
+}
+
+.contact-form-text {
+    font-size: 40px;
+    margin: 30px 0px;
+    padding: 10px 0px;
+}
+
+label {
+    font-size: 18px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 80%;
+    height: 80%;
+    flex-d
+}
+
+p {
+    font-size: 18px;
+    
+}
+
+.contactInfoItem {
+ font-size: 18px;
+ margin-bottom: 20px;
+ 
 }
 
 .contactInputs {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    align-items: center;
+    height: 90%;
+    width: 90%;
+    box-shadow: 0px 2px 5px rgb(0, 0, 0, 0.2);
 }
 
 .contactInput {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    width: 60%;
+    width: 100%;
 }
 
 .contactTextArea {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    width: 80%;
+    width: 100%;
 }
 
 .contactInput label,
@@ -49,7 +87,13 @@
     font-family: "Poppins", sans-serif;
 }
 
-.contactSubmit button {
+.contactSubmit {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+}
+
+button {
     background-color: #33658A;
     color: white;
     padding: 10px 20px;
@@ -58,29 +102,33 @@
     cursor: pointer;
 }
 
-.contactInfoContainer {
-    width: 50%;
-    padding: 20px;
-}
+
 
 .contactInfoContainer {
-    width: 500px;
-    padding: 20px;
+    width: 40%;
+    padding: 40px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: flex-start ;
+    height: 100vh;
 }
 
 .contactInfoForm {
     width: 100%;
+    height: 90%;
     background-color: #fff;
     border-radius: 5px;
-    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0px 2px 5px rgb(0, 0, 0, 0.2);
+    padding-left:40px;
+    padding-right:40px;
+    margin-right: 40px;
+
 }
 
-.contactInfoHeader {
-    margin-bottom: 20px;
-}
+
 
 .contactInfoDetails {
     font-size: 16px;
@@ -91,8 +139,10 @@
 
 .contactInfoContact {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 20px;
+    flex-wrap: wrap;
+    
 }
 
 .contactInfoItem {
@@ -102,13 +152,18 @@
     width: 500px;
 }
 
+.purpose-text {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
 .contactInfoItem p1 {
     font-weight: bold;
-    font-size: 14px;
+    font-size: 18px;
 }
 
 .contactInfoItem p {
-    font-size: 14px;
+    font-size: 18px;
 }
 
 /* Media Queries */
