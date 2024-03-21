@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 // ROADMAP CSS
 import "./styles/style.css";
@@ -13,8 +13,9 @@ const Roadmap = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [phase, setPhase] = useState(1); // Track current phase
   const navigate = useNavigate();
+  const location = useLocation();
+  const { selectedJob, recommendedJobs } = location.state;
 
-  0
   const [doneOpacities, setDoneOpacities] = useState([100, 100, 100]);
   const [nextOpacity, setNextOpacity] = useState(50);
 
@@ -122,17 +123,17 @@ const Roadmap = () => {
         </div>
       </header>
 
+      {/* Progress Bar */}
       <section className="progressFrame">
         <div className="leftSide">
           <ul className="progressBarList">
-            {[1, 2, 3, 4].map((num) => (
+            {recommendedJobs.map((_, index) => (
               <li
-                key={num}
-                className={`progressBarItem ${num === phase ? "currentItem" : ""
-                  }`}
+                key={index}
+                className={`progressBarItem ${index + 1 === phase ? "currentItem" : ""}`}
               >
-                <span className="phaseCount">{num}</span>
-                <span className="phaseProgressLabel">Phase {num}</span>
+                <span className="phaseCount">{index + 1}</span>
+                <span className="phaseProgressLabel">Phase {index + 1}</span>
               </li>
             ))}
           </ul>
@@ -144,28 +145,30 @@ const Roadmap = () => {
       <div className="middleSection">
         <section className="rightSide">
           <div className="rightsideTitle">
-            {phase === 1 && "INTRODUCTION"} {/* Display title based on phase */}
+            {phase === 1 && "INTRODUCTION"}
           </div>
           {/* Your existing JSX for tasks */}
         </section>
       </div>
+      {/* Footer Buttons */}
       <div className="button-section-footer">
         <button
           className="prev-button-footer"
           onClick={handlePrevClick}
           disabled={phase === 1}
+          style={{ opacity: phase === 1 ? 0.5 : 1 }}
         >
           PREV PHASE
         </button>
         <button
           className="next-button-footer"
           onClick={handleNextClick}
-          style={{ opacity: `${nextOpacity}%` }}
+          disabled={phase === recommendedJobs.length}
+          style={{ opacity: phase === recommendedJobs.length ? 0.5 : 1 }}
         >
           NEXT PHASE
         </button>
-      </div>
-      {showDropdown && <DropdownModal logoutHandler={handleLogout} />}
+      </div>      {showDropdown && <DropdownModal logoutHandler={handleLogout} />}
     </div>
   );
 };
