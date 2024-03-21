@@ -12,32 +12,35 @@ const pool = new pg.Pool({ // Use 'pg.Pool' instead of 'Pool'
 
 // Login
 export const login = async (req, res) => {
-    let client; // Declare client outside try block to ensure availability in finally block
+    let client;
 
     try {
-        client = await pool.connect(); // Get a client from the pool
-        const result = await client.query("SELECT * FROM tblaccount WHERE account_email = $1", [req.body.email]); // Use parameterized query
+        client = await pool.connect();
+        const result = await client.query("SELECT * FROM tblaccount WHERE account_email = $1", [req.body.email]);
 
         if (result.rows.length === 0) {
             return res.status(401).json("User not found!");
         }
 
-        const checkPassword = bcrypt.compareSync(req.body.password, result.rows[0].ACCOUNT_PASSWORD);
+        // Ensure ACCOUNT_PASSWORD is retrieved and handle potential missing value
+        const { account_password, ...userData } = result.rows[0];
+        if (!account_password) {
+            return res.status(400).json({ error: "Password not set for this user" });
+        }
+
+        const checkPassword = bcrypt.compareSync(req.body.password, account_password);
 
         if (!checkPassword) {
             return res.status(401).json("Incorrect email or password!");
         }
 
-        const userData = result.rows[0];
-        delete userData.ACCOUNT_PASSWORD; // Exclude password from response
-
         res.status(200).json(userData);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Something went wrong" });
+        console.error(error); // Log the actual error message
+        res.status(500).json({ error: error.message }); // Send the actual error message (if appropriate)
     } finally {
         if (client) {
-            client.release(); // Release the client back to the pool
+            await client.release();
         }
     }
 };
