@@ -143,9 +143,31 @@ export const resendResetEmail = async (req, res) => {
             if (result.rowCount > 0) {
                 console.log('Reset token updated successfully');
 
-                // Send reset password email with the new reset token
-                // (logic remains unchanged)
-                // ...
+                // Send reset password email (logic remains unchanged)
+                const transporter = nodemailer.createTransport({
+                    service: 'Gmail', // Assuming you are using Gmail, change it if you're using a different provider
+                    auth: {
+                        user: 'careercompassbscs@gmail.com', // Your email address
+                        pass: 'qved wnte vpyt xiwy' // Your email password or app password if you have 2FA enabled
+                    }
+                });
+
+                const mailOptions = {
+                    from: 'careercompasbscs@gmail.com', // Sender address
+                    to: email, // Receiver address
+                    subject: 'Password Reset', // Subject line
+                    text: `To reset your password, click on the following link: https://ccmps.vercel.app/Login/Forgot-Password/Change-Password?token=${resetToken}` // Email body with the reset token link
+                };
+
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        console.error('Error sending reset password email:', error);
+                        res.status(500).json({ success: false, message: 'An error occurred while sending reset password email' });
+                    } else {
+                        console.log('Reset password email sent:', info.response);
+                        res.status(200).json({ success: true, message: 'Reset password email sent successfully' });
+                    }
+                });
 
                 res.status(200).json({ success: true, message: 'Reset password email resent successfully' });
             } else {
@@ -169,83 +191,90 @@ export const resendResetEmail = async (req, res) => {
 export const sendEmail = async (req, res) => {
     // Extract email data from request body
     const { name, email, message } = req.body;
-
+  
     // Create nodemailer transporter using your SMTP details
     const transporter = nodemailer.createTransport({
-        service: 'Gmail',
-        auth: {
-            user: 'careercompassbscs@gmail.com', // Replace with your email address
-            pass: 'qved wnte vpyt xiwy' // Replace with your email password or app password
-        }
+      service: 'Gmail',
+      auth: {
+        user: 'careercompassbscs@gmail.com', // Replace with your email address
+        pass: 'qved wnte vpyt xiwy' // Replace with your email password or app password
+      }
     });
-
+  
     try {
-        // Send email using nodemailer
-        const info = await transporter.sendMail({
-            from: email, // Use the dynamically provided "from" email address
-            to: 'careercompassbscs@gmail.com', // Change this to your email address
-            subject: 'Contact Us Form Submission',
-            text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`
-        });
-
-        // Log success message
-        console.log('Email sent: ' + info.response);
-
-        // Store user input in the database
-        const query = 'INSERT INTO tblcontactus (NAME, EMAIL, MESSAGE) VALUES (?, ?, ?)';
-        db.query(query, [name, email, message], (err, result) => {
-            if (err) {
-                console.error('Error storing data in database:', err);
-                return res.status(500).json({ message: 'An error occurred while storing data in the database' });
-            }
-            console.log('Data stored in database:', result);
-        });
-
-        // Send response to client
-        res.status(200).json({ message: 'Email sent and data stored successfully' });
+      // Send email using nodemailer
+      const info = await transporter.sendMail({
+        from: email, // Use the dynamically provided "from" email address
+        to: 'careercompassbscs@gmail.com', // Change this to your email address
+        subject: 'Contact Us Form Submission',
+        text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`
+      });
+  
+      // Log success message
+      console.log('Email sent: ' + info.response);
+  
+      // Store user input in the database (using prepared statement)
+      const insertQuery = `
+        INSERT INTO tblcontactus (name, email, message)
+        VALUES ($1, $2, $3)
+      `;
+      db.query(insertQuery, [name, email, message], (err, result) => {
+        if (err) {
+          console.error('Error storing data in database:', err);
+          return res.status(500).json({ message: 'An error occurred while storing data in the database' });
+        }
+        console.log('Data stored in database:', result);
+      });
+  
+      // Send response to client
+      res.status(200).json({ message: 'Email sent and data stored successfully' });
     } catch (error) {
-        // Log error message
-        console.error('Error sending email:', error);
-
-        // Send error response to client
-        res.status(500).json({ message: 'An error occurred while sending the email' });
+      // Log error message
+      console.error('Error sending email:', error);
+  
+      // Send error response to client
+      res.status(500).json({ message: 'An error occurred while sending the email' });
     }
-};
+  };
 // User Page
 export const getUserProfile = async (req, res) => {
     const userEmail = req.query.email; // Retrieve user email from query parameters
-
+  
     try {
-        // Query the database to get user profile data including the image
-        const query = "SELECT FIRSTNAME, IMAGE FROM tblprofile WHERE EMAIL = ?";
-        db.query(query, [userEmail], (err, result) => {
-            if (err) {
-                console.error('Error retrieving user profile:', err);
-                return res.status(500).json({ success: false, message: 'An error occurred while retrieving user profile' });
-            }
-
-            if (result.length === 0) {
-                return res.status(404).json({ success: false, message: 'User profile not found' });
-            }
-
-            // Extract user data
-            const { FIRSTNAME, IMAGE } = result[0];
-
-            // Encode image data to base64 (added here)
-            const encodedImage = IMAGE ? Buffer.from(IMAGE).toString('base64') : null;
-
-            const userData = {
-                firstName: FIRSTNAME,
-                image: encodedImage // Assign the encoded image to the 'image' property
-            };
-
-            res.status(200).json({ success: true, userData });
-        });
+      const client = await pool.connect();
+  
+      try {
+        // Prepared statement to prevent SQL injection
+        const query = "SELECT firstname, image FROM tblprofile WHERE email = $1";
+        const result = await client.query(query, [userEmail]);
+  
+        if (result.rowCount === 0) {
+          return res.status(404).json({ success: false, message: 'User profile not found' });
+        }
+  
+        // Extract user data
+        const { firstname, image } = result.rows[0];
+  
+        // Encode image data to base64 (optional)
+        const encodedImage = image ? Buffer.from(image).toString('base64') : null;
+  
+        const userData = {
+          firstName: firstname,
+          image: encodedImage // Assign the encoded image to the 'image' property (optional)
+        };
+  
+        res.status(200).json({ success: true, userData });
+      } catch (error) {
+        console.error('Error retrieving user profile:', error);
+        res.status(500).json({ success: false, message: 'An error occurred while retrieving user profile' });
+      } finally {
+        await client.release();
+      }
     } catch (error) {
-        console.error('An error occurred:', error);
-        res.status(500).json({ success: false, message: 'An error occurred' });
+      console.error('An unexpected error occurred:', error);
+      res.status(500).json({ success: false, message: 'An error occurred' });
     }
-};
+  };
 
 // User Profile Page
 export const getUserDetails = async (req, res) => {

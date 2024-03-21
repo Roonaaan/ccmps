@@ -25,7 +25,7 @@ const Recommend = () => {
             try {
                 const userEmail = sessionStorage.getItem('user');
                 if (userEmail) {
-                    const response = await fetch(`http://localhost:8800/api/auth/user-profile?email=${userEmail}`);
+                    const response = await fetch(`https://ccmps-server-node.vercel.app/api/auth/user-profile?email=${userEmail}`);
                     const data = await response.json();
 
                     if (data.success) {
