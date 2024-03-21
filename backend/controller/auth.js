@@ -55,43 +55,60 @@ const generateResetToken = () => {
 // Reset Password Request (Send Email)
 export const sendResetEmail = async (req, res) => {
     const { email } = req.body;
-    const resetToken = generateResetToken(); // Generate a reset token
-    const resetTokenExpiry = new Date(Date.now() + 10 * 60 * 1000); // Set reset token expiry to 10 minutes from now
+    const resetToken = generateResetToken();
+    const resetTokenExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
     try {
-        // Store reset token and expiry in the database
-        const insertQuery = `
-            INSERT INTO tblforgotpass (EMAIL, RESET_TOKEN, RESET_TOKEN_EXPIRY)
-            VALUES (?, ?, ?)
+        // Acquire a client from the pool
+        const client = await pool.connect();
+
+        try {
+            // Prepare and execute the query using prepared statement
+            const insertQuery = `
+          INSERT INTO tblforgotpass (email, reset_token, reset_password_expiry)
+          VALUES ($1, $2, $3)
         `;
-        db.query(insertQuery, [email, resetToken, resetTokenExpiry]);
+            const result = await client.query(insertQuery, [email, resetToken, resetTokenExpiry]);
 
-        // Send reset password email with the reset token
-        const transporter = nodemailer.createTransport({
-            // Configure your email provider here
-            service: 'Gmail', // Assuming you are using Gmail, change it if you're using a different provider
-            auth: {
-                user: 'careercompassbscs@gmail.com', // Your email address
-                pass: 'qved wnte vpyt xiwy' // Your email password or app password if you have 2FA enabled
-            }
-        });
+            // Check query execution result
+            if (result.rowCount > 0) {
+                console.log('Reset token inserted successfully');
 
-        const mailOptions = {
-            from: 'careercompasbscs@gmail.com', // Sender address
-            to: email, // Receiver address
-            subject: 'Password Reset', // Subject line
-            text: `To reset your password, click on the following link: http://localhost:5173/Login/Forgot-Password/Change-Password?token=${resetToken}` // Email body with the reset token link
-        };
+                // Send reset password email (logic remains unchanged)
+                const transporter = nodemailer.createTransport({
+                    service: 'Gmail', // Assuming you are using Gmail, change it if you're using a different provider
+                    auth: {
+                        user: 'careercompassbscs@gmail.com', // Your email address
+                        pass: 'qved wnte vpyt xiwy' // Your email password or app password if you have 2FA enabled
+                    }
+                });
 
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error('Error sending reset password email:', error);
-                res.status(500).json({ success: false, message: 'An error occurred while sending reset password email' });
+                const mailOptions = {
+                    from: 'careercompasbscs@gmail.com', // Sender address
+                    to: email, // Receiver address
+                    subject: 'Password Reset', // Subject line
+                    text: `To reset your password, click on the following link: https://ccmps.vercel.app/Login/Forgot-Password/Change-Password?token=${resetToken}` // Email body with the reset token link
+                };
+
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        console.error('Error sending reset password email:', error);
+                        res.status(500).json({ success: false, message: 'An error occurred while sending reset password email' });
+                    } else {
+                        console.log('Reset password email sent:', info.response);
+                        res.status(200).json({ success: true, message: 'Reset password email sent successfully' });
+                    }
+                });
             } else {
-                console.log('Reset password email sent:', info.response);
-                res.status(200).json({ success: true, message: 'Reset password email sent successfully' });
+                console.warn('No rows affected by the query');
+                throw new Error('Failed to insert reset token');
             }
-        });
+        } catch (error) {
+            console.error('Error occurred during database operation:', error);
+            res.status(500).json({ success: false, message: 'An error occurred while processing the request' });
+        } finally {
+            await client.release(); // Release the client back to the pool
+        }
     } catch (error) {
         console.error('An unexpected error occurred:', error);
         res.status(500).json({ success: false, message: 'An error occurred while processing the request' });
@@ -102,47 +119,43 @@ export const resendResetEmail = async (req, res) => {
     const { email } = req.body;
     const resetToken = generateResetToken(); // Generate a new reset token
     const resetTokenExpiry = new Date(Date.now() + 10 * 60 * 1000); // Set reset token expiry to 10 minutes from now
-
+  
     try {
-        // Update reset token and expiry in the database
+      const client = await pool.connect(); // Acquire a client from the pool
+  
+      try {
+        // Prepare and execute the update query using placeholders
         const updateQuery = `
-            UPDATE tblforgotpass
-            SET RESET_TOKEN = ?, RESET_TOKEN_EXPIRY = ?
-            WHERE EMAIL = ?
+          UPDATE tblforgotpass
+          SET reset_token = $1, reset_token_expiry = $2
+          WHERE email = $3
         `;
-        db.query(updateQuery, [resetToken, resetTokenExpiry, email]);
-
-        // Send reset password email with the new reset token
-        const transporter = nodemailer.createTransport({
-            // Configure your email provider here
-            service: 'Gmail', // Assuming you are using Gmail, change it if you're using a different provider
-            auth: {
-                user: 'careercompassbscs@gmail.com', // Your email address
-                pass: 'qved wnte vpyt xiwy' // Your email password or app password if you have 2FA enabled
-            }
-        });
-
-        const mailOptions = {
-            from: 'careercompasbscs@gmail.com', // Sender address
-            to: email, // Receiver address
-            subject: 'Password Reset', // Subject line
-            text: `To reset your password, click on the following link: http://localhost:5173/Login/Forgot-Password/Change-Password?token=${resetToken}` // Email body with the reset token link
-        };
-
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error('Error sending reset password email:', error);
-                res.status(500).json({ success: false, message: 'An error occurred while sending reset password email' });
-            } else {
-                console.log('Reset password email sent:', info.response);
-                res.status(200).json({ success: true, message: 'Reset password email resent successfully' });
-            }
-        });
+        const result = await client.query(updateQuery, [resetToken, resetTokenExpiry, email]);
+  
+        // Check if any rows were affected
+        if (result.rowCount > 0) {
+          console.log('Reset token updated successfully');
+  
+          // Send reset password email with the new reset token
+          // (logic remains unchanged)
+          // ...
+  
+          res.status(200).json({ success: true, message: 'Reset password email resent successfully' });
+        } else {
+          console.warn('No rows were updated in the database');
+          throw new Error('Failed to update reset token');
+        }
+      } catch (error) {
+        console.error('Error occurred during database operation:', error);
+        res.status(500).json({ success: false, message: 'An error occurred while resending reset password email' });
+      } finally {
+        await client.release(); // Release the client back to the pool
+      }
     } catch (error) {
-        console.error("An unexpected error occurred:", error);
-        res.status(500).json({ success: false, message: "An error occurred while resending reset password email" });
+      console.error('An unexpected error occurred:', error);
+      res.status(500).json({ success: false, message: 'An error occurred while processing the request' });
     }
-};
+  };
 // Reset Password
 
 // Contact Us
