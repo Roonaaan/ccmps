@@ -65,7 +65,7 @@ export const sendResetEmail = async (req, res) => {
         try {
             // Prepare and execute the query using a prepared statement
             const insertQuery = `
-          INSERT INTO tblforgotpass (email, reset_token, reset_password_expiry)
+          INSERT INTO tblforgotpass (email, reset_token, reset_token_expiry)
           VALUES ($1, $2, $3)
         `;
             const result = await client.query(insertQuery, [email, resetToken, resetTokenExpiry]);
