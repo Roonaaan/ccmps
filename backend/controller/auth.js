@@ -63,7 +63,7 @@ export const sendResetEmail = async (req, res) => {
         const client = await pool.connect();
 
         try {
-            // Prepare and execute the query using prepared statement
+            // Prepare and execute the query using a prepared statement
             const insertQuery = `
           INSERT INTO tblforgotpass (email, reset_token, reset_password_expiry)
           VALUES ($1, $2, $3)
@@ -104,8 +104,57 @@ export const sendResetEmail = async (req, res) => {
                 throw new Error('Failed to insert reset token');
             }
         } catch (error) {
+            // Handle database-specific errors
+            if (error.code) { // Check for Postgres error codes (optional)
+                console.error('Database error:', error.code, error.message);
+                // Handle specific error codes here (e.g., unique constraint violations)
+                res.status(500).json({ success: false, message: 'An error occurred while processing the request (Database error)' });
+            } else {
+                console.error('Error occurred during database operation:', error);
+                res.status(500).json({ success: false, message: 'An error occurred while processing the request (Database operation error)' });
+            }
+        } finally {
+            await client.release(); // Release the client back to the pool
+        }
+    } catch (error) {
+        console.error('An unexpected error occurred:', error);
+        res.status(500).json({ success: false, message: 'An unexpected error occurred' });
+    }
+};
+// Reset Password Resend Email
+export const resendResetEmail = async (req, res) => {
+    const { email } = req.body;
+    const resetToken = generateResetToken(); // Generate a new reset token
+    const resetTokenExpiry = new Date(Date.now() + 10 * 60 * 1000); // Set reset token expiry to 10 minutes from now
+
+    try {
+        const client = await pool.connect(); // Acquire a client from the pool
+
+        try {
+            // Prepare and execute the update query using placeholders
+            const updateQuery = `
+          UPDATE tblforgotpass
+          SET reset_token = $1, reset_token_expiry = $2
+          WHERE email = $3
+        `;
+            const result = await client.query(updateQuery, [resetToken, resetTokenExpiry, email]);
+
+            // Check if any rows were affected
+            if (result.rowCount > 0) {
+                console.log('Reset token updated successfully');
+
+                // Send reset password email with the new reset token
+                // (logic remains unchanged)
+                // ...
+
+                res.status(200).json({ success: true, message: 'Reset password email resent successfully' });
+            } else {
+                console.warn('No rows were updated in the database');
+                throw new Error('Failed to update reset token');
+            }
+        } catch (error) {
             console.error('Error occurred during database operation:', error);
-            res.status(500).json({ success: false, message: 'An error occurred while processing the request' });
+            res.status(500).json({ success: false, message: 'An error occurred while resending reset password email' });
         } finally {
             await client.release(); // Release the client back to the pool
         }
@@ -114,48 +163,6 @@ export const sendResetEmail = async (req, res) => {
         res.status(500).json({ success: false, message: 'An error occurred while processing the request' });
     }
 };
-// Reset Password Resend Email
-export const resendResetEmail = async (req, res) => {
-    const { email } = req.body;
-    const resetToken = generateResetToken(); // Generate a new reset token
-    const resetTokenExpiry = new Date(Date.now() + 10 * 60 * 1000); // Set reset token expiry to 10 minutes from now
-  
-    try {
-      const client = await pool.connect(); // Acquire a client from the pool
-  
-      try {
-        // Prepare and execute the update query using placeholders
-        const updateQuery = `
-          UPDATE tblforgotpass
-          SET reset_token = $1, reset_token_expiry = $2
-          WHERE email = $3
-        `;
-        const result = await client.query(updateQuery, [resetToken, resetTokenExpiry, email]);
-  
-        // Check if any rows were affected
-        if (result.rowCount > 0) {
-          console.log('Reset token updated successfully');
-  
-          // Send reset password email with the new reset token
-          // (logic remains unchanged)
-          // ...
-  
-          res.status(200).json({ success: true, message: 'Reset password email resent successfully' });
-        } else {
-          console.warn('No rows were updated in the database');
-          throw new Error('Failed to update reset token');
-        }
-      } catch (error) {
-        console.error('Error occurred during database operation:', error);
-        res.status(500).json({ success: false, message: 'An error occurred while resending reset password email' });
-      } finally {
-        await client.release(); // Release the client back to the pool
-      }
-    } catch (error) {
-      console.error('An unexpected error occurred:', error);
-      res.status(500).json({ success: false, message: 'An error occurred while processing the request' });
-    }
-  };
 // Reset Password
 
 // Contact Us
