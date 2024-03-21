@@ -16,7 +16,7 @@ export const login = async (req, res) => {
 
     try {
         client = await pool.connect(); // Get a client from the pool
-        const result = await client.query("SELECT * FROM tblaccount WHERE ACCOUNT_EMAIL = $1", [req.body.email]); // Use parameterized query
+        const result = await client.query("SELECT * FROM tblaccount WHERE account_email = $1", [req.body.email]); // Use parameterized query
 
         if (result.rows.length === 0) {
             return res.status(401).json("User not found!");
