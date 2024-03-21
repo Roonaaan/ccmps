@@ -36,12 +36,6 @@ const About = () => {
             />
           </div>
 
-          <div className="login-container">
-            <btn className="login-text">Log in</btn>
-            <btn className="Signup-text">Sign up</btn>
-          </div>
-
-         
 
           {/* Login and About Header
                     <div className="navRight">
@@ -131,15 +125,6 @@ const About = () => {
                       </div>
                     </div>
 
-                    <div className="profile-information bar">
-                      <div className="display-picture-parent">
-                        <img className="display-picture" src={ profile4 } alt="Ronan Display Image" />
-                      </div>
-                      <div className="name-role">
-                        <p className="name"> Villaluz, Christian Jade </p>
-                        <p className="role"> Front-end Programmer </p>
-                      </div>
-                    </div>
 
                     <div className="profile-information bar">
                       <div className="display-picture-parent">
