@@ -46,7 +46,7 @@ cosine_sim_roles = cosine_similarity(tfidf_matrix_roles, tfidf_matrix_roles)
 
 # Function to recommend top N similar jobs based on job title, level, description, skills, and degree/course
 def recommend_jobs_with_priority(user_position, user_level, user_work_history, user_skills, user_degree_course, top_n=3):
-    # Split user skills and degree course into individual words
+    # Split user skills and degree course
     user_skill_keywords = get_keywords(user_skills)
     user_degree_keywords = get_keywords(user_degree_course)
 
@@ -68,8 +68,8 @@ def recommend_jobs_with_priority(user_position, user_level, user_work_history, u
     # Sort matched jobs by cosine similarity with user profile
     user_profile_vector = tfidf_vectorizer_roles.transform([user_skills])
     similarities = cosine_similarity(tfidf_matrix_roles[matched_jobs], user_profile_vector)
-    matched_jobs_sorted = [matched_jobs[i] for i in np.argsort(similarities[:,0])[::-1]]
-    
+    matched_jobs_sorted = [matched_jobs[i] for i in np.argsort(similarities[:, 0])[::-1]]
+
     # Filter matched jobs based on user level
     matched_jobs_filtered = []
     for job_index in matched_jobs_sorted:
@@ -82,9 +82,9 @@ def recommend_jobs_with_priority(user_position, user_level, user_work_history, u
 
     # Extract job titles and descriptions for the top matched jobs
     recommended_jobs = [
-    {"title": df_roles.iloc[job]['POSITION'], "description": df_roles.iloc[job]['DESCRIPTION']} 
-    for job in top_matched_jobs
-]
+        {"title": df_roles.iloc[job]['POSITION'], "description": df_roles.iloc[job]['DESCRIPTION']}
+        for job in top_matched_jobs
+    ]
 
     return recommended_jobs
 

@@ -111,9 +111,19 @@ const Recommend = () => {
         navigate('/Select-Department');
     }
 
-    const handleJobClick = (jobIndex) => {
-        setSelectedJob(jobIndex);
+    const handleJobClick = (job) => {
+        setSelectedJob(job);
+        // Store the entire selected job object in session storage
+        sessionStorage.setItem('selectedJob', JSON.stringify(job));
     }
+
+    // Retrieve the stored job object on component mount
+    useEffect(() => {
+        const storedJob = JSON.parse(sessionStorage.getItem('selectedJob'));
+        if (storedJob) {
+            setSelectedJob(storedJob);
+        }
+    }, []);
 
     const handleProceed = () => {
         if (selectedJob !== null) {
@@ -156,7 +166,7 @@ const Recommend = () => {
                                     key={index}
                                     className={`recommendJobContainerPanel ${selectedJob === index ? 'selected' : ''}`}
                                     onClick={() => {
-                                        handleJobClick(index);
+                                        handleJobClick(job); // Pass the entire job object
                                         toggleDescription(`job${index + 1}`);
                                     }}
                                 >

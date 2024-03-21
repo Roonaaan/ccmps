@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 // ROADMAP CSS
 import "./styles/style.css";
@@ -10,12 +10,12 @@ import defaultImg from "../../assets/signed-in/defaultImg.jpg";
 const Roadmap = () => {
   const [userImage, setUserImage] = useState("");
   const [userName, setUserName] = useState("");
+  const [recommendedJobs, setRecommendJobs] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const [phase, setPhase] = useState(1); // Track current phase
   const navigate = useNavigate();
-  const location = useLocation();
-  const { selectedJob, recommendedJobs } = location.state;
 
+  0
   const [doneOpacities, setDoneOpacities] = useState([100, 100, 100]);
   const [nextOpacity, setNextOpacity] = useState(50);
 
@@ -123,17 +123,17 @@ const Roadmap = () => {
         </div>
       </header>
 
-      {/* Progress Bar */}
       <section className="progressFrame">
         <div className="leftSide">
           <ul className="progressBarList">
-            {recommendedJobs.map((_, index) => (
+            {[1, 2, 3, 4].map((num) => (
               <li
-                key={index}
-                className={`progressBarItem ${index + 1 === phase ? "currentItem" : ""}`}
+                key={num}
+                className={`progressBarItem ${num === phase ? "currentItem" : ""
+                  }`}
               >
-                <span className="phaseCount">{index + 1}</span>
-                <span className="phaseProgressLabel">Phase {index + 1}</span>
+                <span className="phaseCount">{num}</span>
+                <span className="phaseProgressLabel">Phase {num}</span>
               </li>
             ))}
           </ul>
@@ -145,12 +145,11 @@ const Roadmap = () => {
       <div className="middleSection">
         <section className="rightSide">
           <div className="rightsideTitle">
-            {phase === 1 && "INTRODUCTION"}
+            {phase === 1 && "INTRODUCTION"} {/* Display title based on phase */}
           </div>
           {/* Your existing JSX for tasks */}
         </section>
       </div>
-      {/* Footer Buttons */}
       <div className="button-section-footer">
         <button
           className="prev-button-footer"
@@ -168,7 +167,8 @@ const Roadmap = () => {
         >
           NEXT PHASE
         </button>
-      </div>      {showDropdown && <DropdownModal logoutHandler={handleLogout} />}
+      </div>
+      {showDropdown && <DropdownModal logoutHandler={handleLogout} />}
     </div>
   );
 };
