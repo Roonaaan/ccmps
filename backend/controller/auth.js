@@ -1,28 +1,45 @@
-import { db } from "../database.js";
+import pg from 'pg';
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import crypto from 'crypto';
 
+const pool = new pg.Pool({ // Use 'pg.Pool' instead of 'Pool'
+    connectionString: "postgres://default:NpLQ8gFc1dsD@ep-aged-meadow-a1op3qk0-pooler.ap-southeast-1.aws.neon.tech:5432/verceldb?sslmode=require", // Get connection string from environment variable
+    ssl: {
+        rejectUnauthorized: false, // Use this option only if necessary
+    }
+});
+
 // Login
-export const login = (req, res) => {
-    const q = "SELECT * FROM tblaccount WHERE ACCOUNT_EMAIL = ?";
+export const login = async (req, res) => {
+    let client; // Declare client outside try block to ensure availability in finally block
 
-    db.query(q, [req.body.email], (err, data) => {
-        if (err) return res.status(500).json(err);
-        if (data.length === 0) return res.status(401).json("User not found!");
+    try {
+        client = await pool.connect(); // Get a client from the pool
+        const result = await client.query("SELECT * FROM tblaccount WHERE ACCOUNT_EMAIL = $1", [req.body.email]); // Use parameterized query
 
-        const checkPassword = bcrypt.compareSync(
-            req.body.password,
-            data[0].ACCOUNT_PASSWORD
-        );
+        if (result.rows.length === 0) {
+            return res.status(401).json("User not found!");
+        }
 
-        if (!checkPassword)
+        const checkPassword = bcrypt.compareSync(req.body.password, result.rows[0].ACCOUNT_PASSWORD);
+
+        if (!checkPassword) {
             return res.status(401).json("Incorrect email or password!");
+        }
 
-        const { ACCOUNT_PASSWORD, ...userData } = data[0];
+        const userData = result.rows[0];
+        delete userData.ACCOUNT_PASSWORD; // Exclude password from response
 
         res.status(200).json(userData);
-    });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Something went wrong" });
+    } finally {
+        if (client) {
+            client.release(); // Release the client back to the pool
+        }
+    }
 };
 
 // Generate Token
