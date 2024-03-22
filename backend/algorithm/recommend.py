@@ -9,7 +9,7 @@ from sqlalchemy import create_engine
 
 # Create Flask App
 app = Flask(__name__)
-CORS(app, origins=['https://ccmps.vercel.app'])
+CORS(app)
 
 # Define connection string using loaded environment variables
 connection_string = f"postgresql://default:NpLQ8gFc1dsD@ep-aged-meadow-a1op3qk0-pooler.ap-southeast-1.aws.neon.tech/verceldb?sslmode=require"

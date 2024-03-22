@@ -15,7 +15,7 @@ const Forgotpassmessage = ({ onClose, email }) => {
   // Resend Email Connection
   const resendEmail = async () => {
     try {
-      const response = await fetch('https://ccmps-server-node.vercel.app/api/auth/resend-email', {
+      const response = await fetch('https://localhost:8800/api/auth/resend-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

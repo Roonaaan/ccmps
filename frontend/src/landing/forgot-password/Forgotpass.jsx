@@ -28,7 +28,7 @@ export const Forgotpass = ({ onClose }) => {
             setEmailError('Please enter a valid email address');
         } else {
             try {
-                const response = await axios.post('https://ccmps-server-node.vercel.app/api/auth/reset-password', { email });
+                const response = await axios.post('https://localhost:8800/api/auth/reset-password', { email });
                 const data = response.data;
 
                 if (data.success) {

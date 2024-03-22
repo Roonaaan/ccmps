@@ -24,7 +24,7 @@ const Profile = () => {
       try {
         const userEmail = sessionStorage.getItem('user');
         if (userEmail) {
-          const response = await axios.get(`https://ccmps-server-node.vercel.app/api/auth/user-details?email=${userEmail}`);
+          const response = await axios.get(`https://localhost:8800/api/auth/user-details?email=${userEmail}`);
           const userData = response.data.userProfile;
           // Update based on new userProfile structure
           setUserProfile(userData);
@@ -44,7 +44,7 @@ const Profile = () => {
       try {
         const userEmail = sessionStorage.getItem('user');
         if (userEmail) {
-          const response = await fetch(`https://ccmps-server-node.vercel.app/api/auth/user-profile?email=${userEmail}`);
+          const response = await fetch(`https://localhost:8800/api/auth/user-profile?email=${userEmail}`);
           const data = await response.json();
 
           if (data.success) {

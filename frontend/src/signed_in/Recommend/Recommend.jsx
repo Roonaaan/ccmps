@@ -25,7 +25,7 @@ const Recommend = () => {
             try {
                 const userEmail = sessionStorage.getItem('user');
                 if (userEmail) {
-                    const response = await fetch(`https://ccmps-server-node.vercel.app/api/auth/user-profile?email=${userEmail}`);
+                    const response = await fetch(`https://localhost:8800/api/auth/user-profile?email=${userEmail}`);
                     const data = await response.json();
 
                     if (data.success) {
@@ -48,7 +48,7 @@ const Recommend = () => {
         const fetchRecommendations = async () => {
             try {
                 const userEmail = sessionStorage.getItem('user');
-                const response = await fetch(`https://ccmps-python.onrender.com/recommend?email=${userEmail}`);
+                const response = await fetch(`https://localhost:5000/recommend?email=${userEmail}`);
                 const data = await response.json();
                 console.log('Fetched recommendations:', data); // Log the fetched data
                 setRecommendedJobs(data);
