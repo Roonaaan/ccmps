@@ -281,106 +281,97 @@ export const getUserDetails = async (req, res) => {
     const userEmail = req.query.email;
 
     try {
-        const client = await pool.connect(); // Get a connection from the pool
+        const client = await pool.connect();
 
         try {
             const profileQuery = `
-          SELECT
-            p.EMPLOYEE_ID,
-            p.FIRSTNAME,
-            p.LASTNAME,
-            p.AGE,
-            p.EMAIL,
-            p.PHONE_NUMBER,
-            p.HOME_ADDRESS,
-            p.DISTRICT,
-            p.CITY,
-            p.PROVINCE,
-            p.POSTAL_CODE,
-            p.GENDER,
-            p.BIRTHDAY,
-            p.NATIONALITY,
-            p.CIVIL_STATUS,
-            p.JOB_POSITION,
-            p.JOB_LEVEL,
-            w.COMPANY,
-            w.JOB_TITLE,
-            w.COMPANY_ADDRESS,
-            w.START_DATE,
-            w.END_DATE,
-            e.SCHOOL AS EDU_SCHOOL,
-            e.YEAR_GRADUATED,
-            e.GRADE_LEVEL
-          FROM tblprofile AS p
-          LEFT JOIN tblworkhistory AS w ON p.EMPLOYEE_ID = w.EMPLOYEE_ID
-          LEFT JOIN tbleducbackground AS e ON p.EMPLOYEE_ID = e.EMPLOYEE_ID
-          WHERE p.EMAIL = $1
-        `;
+                SELECT
+                    p.EMPLOYEE_ID,
+                    p.FIRSTNAME,
+                    p.LASTNAME,
+                    p.AGE,
+                    p.EMAIL,
+                    p.PHONE_NUMBER,
+                    p.HOME_ADDRESS,
+                    p.DISTRICT,
+                    p.CITY,
+                    p.PROVINCE,
+                    p.POSTAL_CODE,
+                    p.GENDER,
+                    p.BIRTHDAY,
+                    p.NATIONALITY,
+                    p.CIVIL_STATUS,
+                    p.JOB_POSITION,
+                    p.JOB_LEVEL,
+                    w.COMPANY,
+                    w.JOB_TITLE,
+                    w.COMPANY_ADDRESS,
+                    w.START_DATE,
+                    w.END_DATE,
+                    e.SCHOOL AS EDU_SCHOOL,
+                    e.YEAR_GRADUATED,
+                    e.GRADE_LEVEL
+                FROM tblprofile AS p
+                LEFT JOIN tblworkhistory AS w ON p.EMPLOYEE_ID = w.EMPLOYEE_ID
+                LEFT JOIN tbleducbackground AS e ON p.EMPLOYEE_ID = e.EMPLOYEE_ID
+                WHERE p.EMAIL = $1
+            `;
 
-            const result = await client.query(profileQuery, [userEmail]); // Execute the query with prepared statement
+            const result = await client.query(profileQuery, [userEmail]);
 
-            if (result.rowCount === 0) {
+            if (result.rows.length === 0) {
                 return res.status(404).json({ success: false, message: "User profile not found" });
             }
 
-            // Initialize arrays for employment and educational history
-            const employmentHistory = [];
-            const educationalHistory = [];
-
-            // Extract user profile data from the result
             const userProfile = {
-                // Extract user profile data from the result
-                firstName: result[0].FIRSTNAME,
-                lastName: result[0].LASTNAME,
-                age: result[0].AGE,
-                employeeId: result[0].EMPLOYEE_ID,
-                email: result[0].EMAIL,
-                phoneNumber: result[0].PHONE_NUMBER,
-                homeAddress: result[0].HOME_ADDRESS,
-                district: result[0].DISTRICT,
-                city: result[0].CITY,
-                province: result[0].PROVINCE,
-                postalCode: result[0].POSTAL_CODE,
-                gender: result[0].GENDER,
-                birthday: result[0].BIRTHDAY,
-                nationality: result[0].NATIONALITY,
-                civilStatus: result[0].CIVIL_STATUS,
-                jobPosition: result[0].JOB_POSITION,
-                jobLevel: result[0].JOB_LEVEL,
-                employmentHistory,
-                educationalHistory,
+                firstName: result.rows[0].firstname,
+                lastName: result.rows[0].lastname,
+                age: result.rows[0].age,
+                employeeId: result.rows[0].employee_id,
+                email: result.rows[0].email,
+                phoneNumber: result.rows[0].phone_number,
+                homeAddress: result.rows[0].home_address,
+                district: result.rows[0].district,
+                city: result.rows[0].city,
+                province: result.rows[0].province,
+                postalCode: result.rows[0].postal_code,
+                gender: result.rows[0].gender,
+                birthday: result.rows[0].birthday,
+                nationality: result.rows[0].nationality,
+                civilStatus: result.rows[0].civil_status,
+                jobPosition: result.rows[0].job_position,
+                jobLevel: result.rows[0].job_level,
+                employmentHistory: [],
+                educationalHistory: [],
             };
 
-            // Extract work history data
-            result.forEach(row => {
-                if (row.COMPANY && row.JOB_TITLE && row.COMPANY_ADDRESS && row.START_DATE && row.END_DATE) {
+            // Extract work history and educational background data
+            result.rows.forEach(row => {
+                if (row.company && row.job_title && row.company_address && row.start_date && row.end_date) {
                     userProfile.employmentHistory.push({
-                        company: row.COMPANY,
-                        jobTitle: row.JOB_TITLE,
-                        companyAddress: row.COMPANY_ADDRESS,
-                        startDate: row.START_DATE,
-                        endDate: row.END_DATE
+                        company: row.company,
+                        jobTitle: row.job_title,
+                        companyAddress: row.company_address,
+                        startDate: row.start_date,
+                        endDate: row.end_date
                     });
                 }
-            });
 
-            // Extract educational background data
-            result.forEach(row => {
-                if (row.EDU_SCHOOL && row.YEAR_GRADUATED && row.GRADE_LEVEL) {
+                if (row.edu_school && row.year_graduated && row.grade_level) {
                     userProfile.educationalHistory.push({
-                        school: row.EDU_SCHOOL,
-                        yearGraduated: row.YEAR_GRADUATED,
-                        gradeLevel: row.GRADE_LEVEL
+                        school: row.edu_school,
+                        yearGraduated: row.year_graduated,
+                        gradeLevel: row.grade_level
                     });
                 }
             });
 
-            res.status(200).json({ success: true, userProfile }); // Send successful response with user details
+            res.status(200).json({ success: true, userProfile });
         } catch (error) {
             console.error("Error fetching user profile:", error);
             res.status(500).json({ success: false, message: "Error fetching user profile" });
         } finally {
-            await client.release(); // Release the connection back to the pool
+            await client.release();
         }
     } catch (error) {
         console.error("An unexpected error occurred:", error);
