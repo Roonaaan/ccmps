@@ -2,7 +2,7 @@
     "version": 2,
     "builds": [
       {
-        "src": "/recommend.py",
+        "src": "/recommend",
         "use": "@vercel/python"
       }
     ],
