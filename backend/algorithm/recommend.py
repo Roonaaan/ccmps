@@ -10,12 +10,11 @@ from sqlalchemy import create_engine
 app = Flask(__name__)
 CORS(app)
 
-# Define your connection string
-connection_string = "mysql+mysqlconnector://root:@localhost/ccdb"
+# Define your connection string for PostgreSQL
+connection_string = "postgres://default:NpLQ8gFc1dsD@ep-aged-meadow-a1op3qk0-pooler.ap-southeast-1.aws.neon.tech:5432/verceldb?sslmode=require"
 
 # Create a SQLAlchemy engine
 db_engine = create_engine(connection_string)
-
 
 # tblroles define
 sql_query_roles = "SELECT POSITION, JOB_LEVEL, DESCRIPTION, SKILLS, DEGREE_COURSE FROM tblroles"

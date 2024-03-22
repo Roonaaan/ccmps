@@ -1,0 +1,12 @@
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "backend/algorithm/recommend.py",
+        "use": "@vercel/python"
+      }
+    ],
+    "env": {
+      "DATABASE_URL": "postgres://default:NpLQ8gFc1dsD@ep-aged-meadow-a1op3qk0-pooler.ap-southeast-1.aws.neon.tech:5432/verceldb?sslmode=require"
+    }
+  }
