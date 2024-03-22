@@ -9,7 +9,7 @@
     "routes" :[
       {
         "src": "/(.*)",
-        "use": "backend/algorithm/recommend.py"
+        "dest": "backend/algorithm/recommend.py"
       }
     ],
     "env": {
