@@ -1,5 +1,4 @@
 import os
-from dotenv import load_dotenv
 import numpy as np
 import pandas as pd
 from flask import Flask, request, jsonify
@@ -12,23 +11,14 @@ from sqlalchemy import create_engine
 app = Flask(__name__)
 CORS(app)
 
-# Load environment variables from a file named .env
-load_dotenv()
-
-# Database connection details from environment variables
-DB_HOST = "default"
-DB_NAME = "ep-aged-meadow-a1op3qk0-pooler.ap-southeast-1.aws.neon.tech"
-DB_USER = "NpLQ8gFc1dsD"
-DB_PASSWORD = "verceldb"
-
 # Define connection string using loaded environment variables
-connection_string = f"postgres://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
+connection_string = f"postgresql://default:NpLQ8gFc1dsD@ep-aged-meadow-a1op3qk0-pooler.ap-southeast-1.aws.neon.tech/verceldb?sslmode=require"
 
 # Create a SQLAlchemy engine
 db_engine = create_engine(connection_string)
 
 # tblroles define
-sql_query_roles = "SELECT POSITION, JOB_LEVEL, DESCRIPTION, SKILLS, DEGREE_COURSE FROM tblroles"
+sql_query_roles = "SELECT position, job_level, description, skills, degree_course FROM tblroles"
 
 # fetch data from database to panda dataframe (suggested roles)
 df_roles = pd.read_sql(sql_query_roles, con=db_engine)
@@ -37,7 +27,7 @@ df_roles = pd.read_sql(sql_query_roles, con=db_engine)
 df_roles = df_roles.fillna('')
 
 # mix text column into one statement
-df_roles['combined_text'] = df_roles['POSITION'] + ' ' + df_roles['JOB_LEVEL'] + ' ' + df_roles['DESCRIPTION'] + ' ' + df_roles['SKILLS'] + ' ' + df_roles['DEGREE_COURSE']
+df_roles['combined_text'] = df_roles['position'] + ' ' + df_roles['job_level'] + ' ' + df_roles['description'] + ' ' + df_roles['skills'] + ' ' + df_roles['degree_course']
 
 # Create a TF-IDF vectorizer to convert text into numerical vectors for roles
 tfidf_vectorizer_roles = TfidfVectorizer(stop_words='english')
@@ -63,7 +53,7 @@ def recommend_jobs_with_priority(user_position, user_level, user_work_history, u
     # Gather keywords from user work history
     work_history_keywords = []
     for index, row in user_work_history.iterrows():
-        work_history_keywords.extend(get_keywords(row['SKILLS']))
+        work_history_keywords.extend(get_keywords(row['skills']))
 
     # Combine keywords from all sources
     all_keywords = user_skill_keywords + user_degree_keywords + work_history_keywords
@@ -71,7 +61,7 @@ def recommend_jobs_with_priority(user_position, user_level, user_work_history, u
     # Filter jobs based on matching keywords
     matched_jobs = []
     for index, row in df_roles.iterrows():
-        job_keywords = get_keywords(row['SKILLS'])
+        job_keywords = get_keywords(row['skills'])
         if any(keyword in job_keywords for keyword in all_keywords):
             matched_jobs.append(index)
 
@@ -83,7 +73,7 @@ def recommend_jobs_with_priority(user_position, user_level, user_work_history, u
     # Filter matched jobs based on user level
     matched_jobs_filtered = []
     for job_index in matched_jobs_sorted:
-        job_level = df_roles.iloc[job_index]['JOB_LEVEL']
+        job_level = df_roles.iloc[job_index]['job_level']
         if job_level == user_level:
             matched_jobs_filtered.append(job_index)
 
@@ -92,7 +82,7 @@ def recommend_jobs_with_priority(user_position, user_level, user_work_history, u
 
     # Extract job titles and descriptions for the top matched jobs
     recommended_jobs = [
-        {"title": df_roles.iloc[job]['POSITION'], "description": df_roles.iloc[job]['DESCRIPTION']}
+        {"title": df_roles.iloc[job]['position'], "description": df_roles.iloc[job]['description']}
         for job in top_matched_jobs
     ]
 
@@ -105,26 +95,26 @@ def recommend_jobs():
         user_email = request.args.get('email')
         
         # Fetch user profile based on email
-        sql_query_profile = f"SELECT EMPLOYEE_ID, JOB_POSITION, JOB_LEVEL, SKILLS FROM tblprofile WHERE EMAIL = '{user_email}'"
+        sql_query_profile = f"SELECT employee_id, job_position, job_level, skills FROM tblprofile WHERE email = '{user_email}'"
         df_profile = pd.read_sql(sql_query_profile, con=db_engine)
 
         # extract user job profile, job level, and employee ID
-        user_employee_id = df_profile.at[0, 'EMPLOYEE_ID']
-        user_position = df_profile.at[0, 'JOB_POSITION']
-        user_level = df_profile.at[0, 'JOB_LEVEL']
-        user_skills = df_profile.at[0, 'SKILLS']
+        user_employee_id = df_profile.at[0, 'employee_id']
+        user_position = df_profile.at[0, 'job_position']
+        user_level = df_profile.at[0, 'job_level']
+        user_skills = df_profile.at[0, 'skills']
 
         # fetch data from database to panda dataframe (user work history)
-        sql_query_work_history = f"SELECT JOB_TITLE, START_DATE, END_DATE, SKILLS FROM tblworkhistory WHERE EMPLOYEE_ID = {user_employee_id}"
+        sql_query_work_history = f"SELECT job_title, start_date, end_date, skills FROM tblworkhistory WHERE employee_id = {user_employee_id}"
         df_work_history = pd.read_sql(sql_query_work_history, con=db_engine)
 
         # fetch data from database to panda dataframe (user education background)
-        sql_query_education_background = f"SELECT DEGREE_COURSE FROM tbleducbackground WHERE EMPLOYEE_ID = {user_employee_id}"
+        sql_query_education_background = f"SELECT degree_course FROM tbleducbackground WHERE employee_id = {user_employee_id}"
         df_education_background = pd.read_sql(sql_query_education_background, con=db_engine)
         
         # Call the function to get recommendations based on priority
         recommended_jobs = recommend_jobs_with_priority(user_position, user_level, df_work_history,
-                                                        user_skills, df_education_background.at[0, 'DEGREE_COURSE'])
+                                                        user_skills, df_education_background.at[0, 'degree_course'])
 
         # Convert recommendations to JSON and return
         return jsonify(recommended_jobs)
