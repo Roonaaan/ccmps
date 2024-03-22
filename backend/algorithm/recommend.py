@@ -16,10 +16,10 @@ CORS(app)
 load_dotenv()
 
 # Database connection details from environment variables
-DB_HOST = os.getenv("DB_HOST")
-DB_NAME = os.getenv("DB_NAME")
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_HOST = "default"
+DB_NAME = "ep-aged-meadow-a1op3qk0-pooler.ap-southeast-1.aws.neon.tech"
+DB_USER = "NpLQ8gFc1dsD"
+DB_PASSWORD = "verceldb"
 
 # Define connection string using loaded environment variables
 connection_string = f"postgres://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
