@@ -2,14 +2,14 @@
     "version": 2,
     "builds": [
       {
-        "src": "backend/algorithm/recommend.py",
+        "src": "/recommend.py",
         "use": "@vercel/python"
       }
     ],
     "routes" :[
       {
         "src": "/(.*)",
-        "dest": "backend/algorithm/recommend.py"
+        "dest": "/recommend"
       }
     ],
     "env": {
