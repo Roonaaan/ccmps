@@ -6,6 +6,12 @@
         "use": "@vercel/python"
       }
     ],
+    "routes" :[
+      {
+        "src": "/(.*)",
+        "use": "backend/algorithm/recommend.py"
+      }
+    ],
     "env": {
       "DATABASE_URL": "postgres://default:NpLQ8gFc1dsD@ep-aged-meadow-a1op3qk0-pooler.ap-southeast-1.aws.neon.tech:5432/verceldb?sslmode=require"
     }
