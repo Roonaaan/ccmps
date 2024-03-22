@@ -1,3 +1,5 @@
+import os
+from dotenv import load_dotenv
 import numpy as np
 import pandas as pd
 from flask import Flask, request, jsonify
@@ -10,8 +12,17 @@ from sqlalchemy import create_engine
 app = Flask(__name__)
 CORS(app)
 
-# Define your connection string for PostgreSQL
-connection_string = "postgres://default:NpLQ8gFc1dsD@ep-aged-meadow-a1op3qk0-pooler.ap-southeast-1.aws.neon.tech:5432/verceldb?sslmode=require"
+# Load environment variables from a file named .env
+load_dotenv()
+
+# Database connection details from environment variables
+DB_HOST = os.getenv("DB_HOST")
+DB_NAME = os.getenv("DB_NAME")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+
+# Define connection string using loaded environment variables
+connection_string = f"postgres://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
 
 # Create a SQLAlchemy engine
 db_engine = create_engine(connection_string)
