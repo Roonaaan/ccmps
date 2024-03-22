@@ -279,12 +279,12 @@ export const getUserProfile = async (req, res) => {
 // User Profile Page
 export const getUserDetails = async (req, res) => {
     const userEmail = req.query.email;
-
+  
     try {
-        const client = await pool.connect(); // Get a connection from the pool
-
-        try {
-            const profileQuery = `
+      const client = await pool.connect(); // Get a connection from the pool
+  
+      try {
+        const profileQuery = `
           SELECT
             p.employee_id,
             p.firstname,
@@ -316,77 +316,71 @@ export const getUserDetails = async (req, res) => {
           LEFT JOIN tbleducbackground AS e ON p.employee_id = e.employee_id
           WHERE p.EMAIL = $1
         `;
-
-            const result = await client.query(profileQuery, [userEmail]); // Execute the query with prepared statement
-
-            if (result.rowCount === 0) {
-                return res.status(404).json({ success: false, message: "User profile not found" });
-            }
-
-            // Initialize arrays for employment and educational history
-            const employmentHistory = [];
-            const educationalHistory = [];
-
-            // Extract user profile data from the result
-            const userProfile = {
-                // Extract user profile data from the result
-                firstName: result[0].firstname,
-                lastName: result[0].lastname,
-                age: result[0].age,
-                employeeId: result[0].employee_id,
-                email: result[0].email,
-                phoneNumber: result[0].phone_number,
-                homeAddress: result[0].home_address,
-                district: result[0].district,
-                city: result[0].city,
-                province: result[0].province,
-                postalCode: result[0].postal_code,
-                gender: result[0].gender,
-                birthday: result[0].birthday,
-                nationality: result[0].nationality,
-                civilStatus: result[0].civil_status,
-                jobPosition: result[0].job_position,
-                jobLevel: result[0].job_level,
-                employmentHistory,
-                educationalHistory,
-            };
-
-            // Extract work history data
-            result.forEach(row => {
-                if (row.company && row.job_title && row.company_address && row.start_date && row.end_date) {
-                    userProfile.employmentHistory.push({
-                        company: row.company,
-                        jobTitle: row.job_title,
-                        companyAddress: row.company_address,
-                        startDate: row.start_date,
-                        endDate: row.end_date
-                    });
-                }
-            });
-
-            // Extract educational background data
-            result.forEach(row => {
-                if (row.EDU_SCHOOL && row.year_graduated && row.grade_level) {
-                    userProfile.educationalHistory.push({
-                        school: row.EDU_SCHOOL,
-                        yearGraduated: row.year_graduated,
-                        gradeLevel: row.grade_level
-                    });
-                }
-            });
-
-            res.status(200).json({ success: true, userProfile }); // Send successful response with user details
-        } catch (error) {
-            console.error("Error fetching user profile:", error);
-            res.status(500).json({ success: false, message: "Error fetching user profile" });
-        } finally {
-            await client.release(); // Release the connection back to the pool
+  
+        const result = await client.query(profileQuery, [userEmail]); // Execute the query
+  
+        if (result.rowCount === 0) {
+          return res.status(404).json({ success: false, message: "User profile not found" });
         }
+  
+        // Initialize user profile object
+        const userProfile = {
+          firstName: result[0].firstname,
+          lastName: result[0].lastname,
+          age: result[0].age,
+          employeeId: result[0].employee_id,
+          email: result[0].email,
+          phoneNumber: result[0].phone_number,
+          homeAddress: result[0].home_address,
+          district: result[0].district,
+          city: result[0].city,
+          province: result[0].province,
+          postalCode: result[0].postal_code,
+          gender: result[0].gender,
+          birthday: result[0].birthday,
+          nationality: result[0].nationality,
+          civilStatus: result[0].civil_status,
+          jobPosition: result[0].job_position,
+          jobLevel: result[0].job_level,
+          employmentHistory: [],
+          educationalHistory: [],
+        };
+  
+        // Loop through results (alternative approach)
+        for (const row of result.rows) {
+          if (row.company && row.job_title && row.company_address && row.start_date && row.end_date) {
+            userProfile.employmentHistory.push({
+              company: row.company,
+              jobTitle: row.job_title,
+              companyAddress: row.company_address,
+              startDate: row.start_date,
+              endDate: row.end_date,
+            });
+          }
+  
+          if (row.EDU_SCHOOL && row.year_graduated && row.grade_level) {
+            userProfile.educationalHistory.push({
+              school: row.EDU_SCHOOL,
+              yearGraduated: row.year_graduated,
+              gradeLevel: row.grade_level,
+            });
+          }
+        }
+  
+        res.status(200).json({ success: true, userProfile }); // Send successful response
+  
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+        res.status(500).json({ success: false, message: "Error fetching user profile" });
+      } finally {
+        await client.release(); // Release the connection back to the pool
+      }
     } catch (error) {
-        console.error("An unexpected error occurred:", error);
-        res.status(500).json({ success: false, message: "An error occurred" });
+      console.error("An unexpected error occurred:", error);
+      res.status(500).json({ success: false, message: "An error occurred" });
     }
-};
+  };
+  
 // Roadmap
 
 // Select Jobs
