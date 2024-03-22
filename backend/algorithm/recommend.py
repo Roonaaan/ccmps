@@ -98,7 +98,7 @@ def recommend_jobs_with_priority(user_position, user_level, user_work_history, u
 
     return recommended_jobs
 
-@app.route('/recommend', methods=['GET'])
+@app.route('/recommend', methods=['POST'])
 def recommend_jobs():
     try:
         # Get user email from the request parameters
