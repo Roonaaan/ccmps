@@ -1,5 +1,5 @@
 import express from "express";
-import { login, sendEmail, getUserProfile, getUserDetails, sendResetEmail, resendResetEmail} from "../controller/auth.js";
+import { login, sendEmail, getUserProfile, getUserDetails, sendResetEmail, resendResetEmail } from "../controller/auth.js";
 
 const router = express.Router();
 

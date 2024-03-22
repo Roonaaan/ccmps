@@ -109,7 +109,20 @@
 /* Middle Section CSS */
 .middleSection {
   display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  transition: transform 0.5s ease; /* Add transition for sliding animation */
 }
+
+.middleSection.transition-prev {
+  transform: translateX(100%); /* Slide to the right when moving to the previous phase */
+}
+
+.middleSection.transition-next {
+  transform: translateX(-100%); /* Slide to the left when moving to the next phase */
+}
+
 .leftSide {
   display: flex;
   justify-content: center;
@@ -384,4 +397,9 @@
   cursor: pointer;
   margin: 5px 10px;
   transition: ease-in 0.3s, color 0.3s;
+}
+
+.prev-button-footer,
+.next-button-footer {
+  display: inline-block;
 }

@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.1.0
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 18, 2024 at 04:35 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Generation Time: Mar 21, 2024 at 07:29 AM
+-- Server version: 10.4.18-MariaDB
+-- PHP Version: 7.4.16
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -33,7 +33,7 @@ CREATE TABLE `tblaccount` (
   `LASTNAME` varchar(255) NOT NULL,
   `ACCOUNT_EMAIL` varchar(255) NOT NULL,
   `ACCOUNT_PASSWORD` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `tblaccount`
@@ -47,6 +47,122 @@ INSERT INTO `tblaccount` (`EMPLOYEE_ID`, `FIRSTNAME`, `LASTNAME`, `ACCOUNT_EMAIL
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tblassesment`
+--
+
+CREATE TABLE `tblassesment` (
+  `ID` int(11) NOT NULL,
+  `DEPT_ID` int(11) NOT NULL,
+  `DEPARTMENT` varchar(255) NOT NULL,
+  `POSITION` varchar(255) NOT NULL,
+  `VIDEO` varchar(255) NOT NULL,
+  `DESCRIPTION` varchar(500) NOT NULL,
+  `QUESTION_NUMBER` varchar(255) NOT NULL,
+  `ANSWER_NUMBER` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `tblassesment`
+--
+
+INSERT INTO `tblassesment` (`ID`, `DEPT_ID`, `DEPARTMENT`, `POSITION`, `VIDEO`, `DESCRIPTION`, `QUESTION_NUMBER`, `ANSWER_NUMBER`) VALUES
+(1, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=qz0aGYrrlhU', 'Introduction to HTML & CSS', 'What is the purpose of HTML in web development?', 'HTML is the standard markup language for creating web pages, defining the structure and content. CSS (Cascading Style Sheets) is used to style the HTML elements, defining their appearance.'),
+(2, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=qz0aGYrrlhU', 'Introduction to HTML & CSS', ' How does CSS complement HTML in styling web pages?\r\n\r\n', 'CSS complements HTML by allowing developers to control the layout, colors, fonts, and other visual aspects of a web page.'),
+(3, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=qz0aGYrrlhU', ' Introduction to HTML & CSS', ' Explain the concept of semantic HTML\r\n\r\n', 'emantic HTML involves using HTML tags that convey the meaning and structure of the content, improving accessibility and search engine optimization.\r\n'),
+(4, 4, ' IT Department\r\n', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=qz0aGYrrlhU', 'Basic Structure and Tags', 'Describe the basic structure of an HTML document as presented in the video', 'The basic structure includes `<!DOCTYPE html>`, `<html>`, `<head>`, and `<body>` tags'),
+(6, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=qz0aGYrrlhU', 'Basic Structure and Tags', 'List and briefly explain the function of at least three common HTML tags used in the video', 'Common HTML tags include `<p>` for paragraphs, `<a>` for links, and `<img>` for images'),
+(8, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=qz0aGYrrlhU', 'Basic Structure and Tags', 'How does the `<link>` tag differ from the `<style>` tag?', '<link>` is used to link external CSS files, while `<style>` is used to embed CSS directly into the HTML document.'),
+(10, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=qz0aGYrrlhU', 'CSS Selectors and Properties', 'What is a CSS selector, and how is it used to style elements?', 'A CSS selector is a pattern used to select elements for styling. Examples include `#id` for IDs and `.class` for classes'),
+(11, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=qz0aGYrrlhU', 'CSS Selectors and Properties', ' Provide an example of using an ID selector and a class selector in CSS.', 'ID selectors are unique to a single element, while class selectors can be applied to multiple elements'),
+(12, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=qz0aGYrrlhU', 'CSS Selectors and Properties', 'Explain the difference between padding and margin in CSS.\r\n', 'Padding adds space inside an element, while margin adds space outside the element'),
+(13, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=qz0aGYrrlhU', 'Styling Text and Fonts', '\r\nHow can you change the font style and size of text using CSS?', 'CSS can change the font style and size using properties like `font-family` and `font-size`'),
+(14, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=qz0aGYrrlhU', 'Styling Text and Fonts', 'Describe the difference between `font-weight` and `font-style` properties', '`font-weight` controls the thickness of the text, while `font-style` controls italicization.'),
+(15, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=qz0aGYrrlhU', 'Styling Text and Fonts', 'Explain how to use Google Fonts in a web page', 'Google Fonts can be integrated into a webpage by adding a `<link>` tag to the font stylesheet in the HTML document'),
+(16, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=qz0aGYrrlhU', 'Box Model and Layout', 'What is the CSS Box Model, and how does it work?', 'The CSS Box Model consists of content, padding, border, and margin'),
+(17, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=qz0aGYrrlhU', 'Box Model and Layout', 'How can you adjust the width and height of elements using CSS?', 'Width and height properties adjust the size of elements'),
+(18, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=qz0aGYrrlhU', 'Box Model and Layout', 'Explain the difference between `display: block;` and `display: inline-block;`', '`display: block;` makes an element a block-level element, taking up the full width, while `display: inline-block;` allows elements to sit inline with text but still have block-like properties'),
+(19, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=qz0aGYrrlhU', 'Positioning and Flexbox', 'Describe the various CSS positioning properties (e.g., `relative`, `absolute`, `fixed`)', 'CSS positioning properties include `relative`, `absolute`, and `fixed`, which control the positioning of elements relative to their parent or the viewport'),
+(20, 4, 'T Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=qz0aGYrrlhU', 'Positioning and Flexbox', 'What is Flexbox, and how does it simplify layout design in CSS?\r\n', 'Flexbox is a layout model that makes it easier to design flexible and responsive layouts'),
+(21, 4, 'T Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=qz0aGYrrlhU', 'Positioning and Flexbox', 'Provide an example of using Flexbox to create a simple layout', 'Flexbox simplifies layout design by providing properties like `justify-content` and `align-items` to control alignment and distribution of elements'),
+(22, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=qz0aGYrrlhU', 'Responsive Design', 'What is responsive design, and why is it important in modern web development?', 'Responsive design ensures that websites adapt to different screen sizes and devices'),
+(23, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=qz0aGYrrlhU', 'Responsive Design', 'Explain how media queries work in CSS for achieving responsiveness', 'Media queries in CSS allow developers to apply different styles based on the characteristics of the device'),
+(24, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=qz0aGYrrlhU', 'Responsive Design', 'Describe one technique demonstrated in the video for making a website responsive', 'Techniques like fluid grids and flexible images can make a website responsive'),
+(25, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=qz0aGYrrlhU', 'Practical Application', 'Imagine you\'re tasked with creating a simple webpage for a local bakery. How would you structure your HTML to include headings, images, and a contact form?', 'In the bakery webpage, I would use HTML to structure headings, paragraphs, images, and a form for ordering'),
+(26, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=qz0aGYrrlhU', 'Practical Application', 'How would you style the elements of your bakery webpage using CSS to make it visually appealing and easy to navigate?', 'CSS would style these elements by defining colors, fonts, spacing, and layout'),
+(27, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=qz0aGYrrlhU', 'Practical Application', 'What techniques would you use to ensure your bakery webpage is responsive and looks good on various devices?', 'To make the webpage responsive, I would use media queries to adjust styles based on screen size and orientation'),
+(28, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=qz0aGYrrlhU', 'Feedback and Reflection', 'What was the most challenging aspect of learning HTML and CSS from the video?', 'Learning CSS positioning was challenging, but practicing with different examples helped solidify my understanding'),
+(29, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=qz0aGYrrlhU', 'Feedback and Reflection', 'What additional topics or concepts would you like to explore further in HTML and CSS?', 'I\'m interested in exploring advanced CSS techniques like animations and transitions further'),
+(30, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=qz0aGYrrlhU', 'Feedback and Reflection', 'Share one thing you learned from the video that you found particularly interesting or usefu', 'One thing I found particularly useful was learning about Flexbox, which simplified the process of creating complex layouts'),
+(34, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\nDatabase Administrator', 'https://www.youtube.com/watch?v=9Pzj7Aj25lw', 'Introduction to SQL', 'Have you ever heard of SQL before watching this tutorial?', 'I\'ve heard about SQL before, but I\'ve never used it extensively'),
+(35, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\nDatabase Administrator', 'https://www.youtube.com/watch?v=9Pzj7Aj25lw', 'Introduction to SQL', 'Can you name a few popular relational database management systems (RDBMS) that use SQL?', 'm motivated to learn SQL because I want to be able to query and manipulate data efficiently, which is essential for many data-related tasks'),
+(36, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\nDatabase Administrator', 'https://www.youtube.com/watch?v=9Pzj7Aj25lw', 'Basic Concepts', 'What does SQL stand for?', 'SQL stands for Structured Query Language'),
+(37, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\nDatabase Administrator', 'https://www.youtube.com/watch?v=9Pzj7Aj25lw', 'Basic Concepts', ' Can you name a few popular relational database management systems (RDBMS) that use SQL?', 'Some popular RDBMS that use SQL include MySQL, PostgreSQL, Microsoft SQL Server, and Oracle'),
+(38, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\nDatabase Administrator\r\n', 'https://www.youtube.com/watch?v=9Pzj7Aj25lw', 'Creating Databases and Tables', 'What is the purpose of creating a database in SQL?', 'Creating a database allows us to organize and store data in a structured manner'),
+(39, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\nDatabase Administrator\r\n', 'https://www.youtube.com/watch?v=9Pzj7Aj25lw', 'Creating Databases and Tables', 'How do you create a new database using SQL?', 'To create a new database using SQL, we use the `CREATE DATABASE` statement followed by the desired database name'),
+(40, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\nDatabase Administrator\r\n', 'https://www.youtube.com/watch?v=9Pzj7Aj25lw', 'Creating and Inserting Data into Tables', 'What are tables in SQL databases?', 'tables in SQL databases are structures that organize data into rows and columns'),
+(41, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\nDatabase Administrator\r\n', 'https://www.youtube.com/watch?v=9Pzj7Aj25lw', 'Creating and Inserting Data into Tables', 'How do you create a new table within a database?', ' We create a new table using the `CREATE TABLE` statement, specifying the table name and column definitions.'),
+(42, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\nDatabase Administrator\r\n', 'https://www.youtube.com/watch?v=9Pzj7Aj25lw', 'Creating and Inserting Data into Tables', 'What are columns and rows in a table, and how do you insert data into them?\r\n', 'Columns represent the different attributes of the data, and rows contain the actual data'),
+(43, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\nDatabase Administrator\r\n', 'https://www.youtube.com/watch?v=9Pzj7Aj25lw', 'Creating and Inserting Data into Tables', 'What are columns and rows in a table, and how do you insert data into them?\r\n', 'Columns represent the different attributes of the data, and rows contain the actual data'),
+(44, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\nDatabase Administrator', 'https://www.youtube.com/watch?v=9Pzj7Aj25lw', 'Selecting Data', 'What is the purpose of the `SELECT` statement in SQL?', 'The `SELECT` statement is used to retrieve data from a database'),
+(45, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\nDatabase Administrator', 'https://www.youtube.com/watch?v=9Pzj7Aj25lw', 'Selecting Data', 'How do you retrieve all data from a table?', 'To retrieve all data from a table, we use `SELECT * FROM table_name`'),
+(46, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\nDatabase Administrator\r\n', 'https://www.youtube.com/watch?v=9Pzj7Aj25lw', 'Selecting Data', 'How do you specify which columns to retrieve from a table?', 'To specify which columns to retrieve, we list them after the `SELECT` keyword'),
+(47, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\nDatabase Administrator\r\n', 'https://www.youtube.com/watch?v=9Pzj7Aj25lw', '*Ordering Data', 'Why might you want to order the results of a query?', 'Ordering the results of a query helps in organizing the data in a meaningful way'),
+(48, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\nDatabase Administrator\r\n', 'https://www.youtube.com/watch?v=9Pzj7Aj25lw', 'Ordering Data', ' How do you sort the results of a query in ascending or descending order?', 'We use the `ORDER BY` clause followed by the column(s) we want to sort the results by.'),
+(49, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\nDatabase Administrator\r\n', 'https://www.youtube.com/watch?v=9Pzj7Aj25lw', 'Limiting Results', ' What is the purpose of limiting the number of results returned by a query?', 'Limiting the number of results returned by a query can improve performance and make the results more manageable'),
+(50, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\nDatabase Administrator', 'https://www.youtube.com/watch?v=9Pzj7Aj25lw', ' Limiting Results', 'What is the purpose of limiting the number of results returned by a query?', 'We use the `LIMIT` keyword followed by the number of rows we want to limit the results to'),
+(51, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\nDatabase Administrator', 'https://www.youtube.com/watch?v=9Pzj7Aj25lw', ' Grouping and Aggregating Data', 'What is the purpose of grouping data in SQL?', 'Grouping data allows us to organize it based on common attributes'),
+(52, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\nDatabase Administrator', 'https://www.youtube.com/watch?v=9Pzj7Aj25lw', 'Grouping and Aggregating Data', 'How do you use the `GROUP BY` clause to group data?', 'The `GROUP BY` clause is used to group data based on specified columns'),
+(53, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\nDatabase Administrator', 'https://www.youtube.com/watch?v=9Pzj7Aj25lw', 'Grouping and Aggregating Data', 'What are aggregate functions, and how do you use them to perform calculations on grouped data?', 'Aggregate functions such as `SUM`, `AVG`, `COUNT`, etc., are used to perform calculations on grouped data'),
+(54, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\nDatabase Administrator', 'https://www.youtube.com/watch?v=9Pzj7Aj25lw', 'Joining Tables', 'Why might you need to join tables in SQL?', 'Joining tables allows us to combine data from multiple tables based on related columns'),
+(55, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\nDatabase Administrator', 'https://www.youtube.com/watch?v=9Pzj7Aj25lw', 'Joining Tables', 'What are the different types of joins available in SQL?', 'Common types of joins include `INNER JOIN`, `LEFT JOIN`, `RIGHT JOIN`, and `FULL JOIN`'),
+(56, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\nDatabase Administrator', 'https://www.youtube.com/watch?v=9Pzj7Aj25lw', 'Joining Tables', 'How do you perform a join between two tables?', 'We perform a join between two tables by specifying the tables to join and the join condition(s) using the `ON` keyword'),
+(57, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\nDatabase Administrator', 'https://www.youtube.com/watch?v=9Pzj7Aj25lw', 'Joining Tables', 'How do you perform a join between two tables?', 'We perform a join between two tables by specifying the tables to join and the join condition(s) using the `ON` keyword'),
+(58, 4, 'IT Department', 'Software Engineer\r\nBackend Developer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=rvswNAtIDIk&list=PLYRh_D5AJCVP4_CpFj_70FxliYIQy4AK9&index=2', 'Tutorial Content Evaluation', 'Did you find the pace of the tutorial appropriate? (Too slow/Just right/Too fast)', ' Just right'),
+(59, 4, 'IT Department', 'Software Engineer\r\nBackend Developer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=rvswNAtIDIk&list=PLYRh_D5AJCVP4_CpFj_70FxliYIQy4AK9&index=2', 'Tutorial Content Evaluation', 'Which topics did you find most useful or interesting in the tutorial? (Multiple choice: Variables, Data Types, Control Structures, Functions, Arrays, Object-Oriented Programming)', ' Variables, Control Structures, Functions'),
+(60, 4, 'IT Department', 'Software Engineer\r\nBackend Developer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=rvswNAtIDIk&list=PLYRh_D5AJCVP4_CpFj_70FxliYIQy4AK9&index=2', 'Tutorial Content Evaluation', 'Were the explanations provided clear and understandable?', 'Yes, the explanations were clear and understandable.\r\n'),
+(61, 4, 'IT Department', 'Software Engineer\r\nBackend Developer\r\nFrontend Developer', 'https://www.youtube.com/watch?v=rvswNAtIDIk&list=PLYRh_D5AJCVP4_CpFj_70FxliYIQy4AK9&index=2', 'Tutorial Content Evaluation', 'Did the instructor effectively demonstrate coding examples and exercises?', '\r\nYes, the instructor effectively demonstrated coding examples and exercises'),
+(62, 4, 'IT Department', 'Software Engineer\r\nBackend Developer\r\nFrontend Developer\r\n', 'https://www.youtube.com/watch?v=rvswNAtIDIk&list=PLYRh_D5AJCVP4_CpFj_70FxliYIQy4AK9&index=2', 'Tutorial Content Evaluation', 'How likely are you to continue watching the remaining tutorials in the series?', 'Very likely'),
+(63, 4, 'IT Department', 'Software Engineer\r\nBackend Developer\r\nFrontend Developer\r\n', 'https://www.youtube.com/watch?v=rvswNAtIDIk&list=PLYRh_D5AJCVP4_CpFj_70FxliYIQy4AK9&index=2', 'Practical Application', 'Have you attempted to implement the concepts covered in the tutorial into your own coding projects?', 'Yes'),
+(64, 4, 'IT Department', 'Software Engineer\r\nBackend Developer\r\nFrontend Developer\r\n', 'https://www.youtube.com/watch?v=rvswNAtIDIk&list=PLYRh_D5AJCVP4_CpFj_70FxliYIQy4AK9&index=2', 'Practical Application', 'If yes, briefly describe your experience. If no, what barriers prevented you from doing so?', ' I attempted to implement the concepts into a small project, and it helped solidify my understanding.'),
+(65, 4, 'IT Department', 'Software Engineer\r\nBackend Developer\r\nFrontend Developer\r\n', 'https://www.youtube.com/watch?v=rvswNAtIDIk&list=PLYRh_D5AJCVP4_CpFj_70FxliYIQy4AK9&index=2', 'Practical Application', 'Would you prefer more hands-on coding exercises throughout the tutorial?', '  Yes'),
+(66, 4, 'IT Department', 'Software Engineer\r\nBackend Developer\r\nFrontend Developer\r\n', 'https://www.youtube.com/watch?v=rvswNAtIDIk&list=PLYRh_D5AJCVP4_CpFj_70FxliYIQy4AK9&index=2', 'Improvements and Suggestions', 'Are there any topics you felt were not adequately covered or explained in the tutorial?', 'I felt that Object-Oriented Programming could have been explained in more detail'),
+(67, 4, 'IT Department', 'Software Engineer\r\nBackend Developer\r\nFrontend Developer\r\n', 'https://www.youtube.com/watch?v=rvswNAtIDIk&list=PLYRh_D5AJCVP4_CpFj_70FxliYIQy4AK9&index=2', 'Improvements and Suggestions', ' What additional features would you like to see in future tutorial videos?', ' More real-life examples and projects would be beneficial'),
+(68, 4, 'IT Department', 'Software Engineer\r\nBackend Developer\r\nFrontend Developer\r\n', 'https://www.youtube.com/watch?v=rvswNAtIDIk&list=PLYRh_D5AJCVP4_CpFj_70FxliYIQy4AK9&index=2', 'Improvements and Suggestions', 'Did you find the examples provided in the tutorial relevant and relatable?', 'Yes, the examples were relevant and relatable.'),
+(69, 4, 'IT Department', 'Software Engineer\r\nBackend Developer\r\nFrontend Developer\r\n', 'https://www.youtube.com/watch?v=rvswNAtIDIk&list=PLYRh_D5AJCVP4_CpFj_70FxliYIQy4AK9&index=2', 'Improvements and Suggestions', 'How would you rate the overall quality of the tutorial content? (On a scale of 1-10)', '8'),
+(70, 4, 'IT Department', '.NET Developer\r\nBackend Developer\r\nFrontend Developer\r\nSoftware Engineer\r\n', 'https://www.youtube.com/watch?v=gfkTfcpWqAY', 'Video Content Evaluation', 'On a scale of 1 to 5, how would you rate the overall clarity and coherence of the tutorial?\r\n      [1 - Very Poor] [2 - Poor] [3 - Average] [4 - Good] [5 - Excellent]\r\n', 'Good'),
+(71, 4, 'IT Department', '.NET Developer\r\nBackend Developer\r\nFrontend Developer\r\nSoftware Engineer\r\n', 'https://www.youtube.com/watch?v=gfkTfcpWqAY', 'Video Content Evaluation', 'Understanding Concepts:\r\n   - Were the concepts explained in a manner that was easy to understand?   \r\n     - Yes\r\n     - No\r\n     - Somewhat', 'YES'),
+(72, 4, 'IT Department', '.NET Developer\r\nBackend Developer\r\nFrontend Developer\r\nSoftware Engineer\r\n', 'https://www.youtube.com/watch?v=gfkTfcpWqAY', 'Engagement Level', ' Did the video keep you engaged throughout its duration? \r\n     - Yes\r\n     - No\r\n     - Somewhat', ' YES\r\n     '),
+(73, 4, 'IT Department', '.NET Developer\r\nBackend Developer\r\nFrontend Developer\r\nSoftware Engineer\r\n', 'https://www.youtube.com/watch?v=gfkTfcpWqAY', 'Depth of Content', ' Did the tutorial cover enough depth on the discussed topics? \r\n     - Yes\r\n     - No\r\n     - Somewhat', ' YES\r\n     '),
+(74, 4, 'IT Department', '.NET Developer\r\nBackend Developer\r\nFrontend Developer\r\nSoftware Engineer\r\n', 'https://www.youtube.com/watch?v=gfkTfcpWqAY', 'Examples and Demos', 'How effective were the examples and demonstrations in solidifying your understanding? \r\n     - Very Effective\r\n     - Somewhat Effective\r\n     - Not Effective', 'Very effective'),
+(75, 4, 'IT Department', '.NET Developer\r\nBackend Developer\r\nFrontend Developer\r\nSoftware Engineer\r\n', 'https://www.youtube.com/watch?v=gfkTfcpWqAY', 'Learning Pace', '- Did the tutorial progress at an appropriate pace for your learning?\r\n     - Too Slow\r\n     - Just Right\r\n     - Too Fast', 'just right'),
+(76, 4, 'IT Department', '.NET Developer\r\nBackend Developer\r\nFrontend Developer\r\nSoftware Engineer\r\n\r\n', 'https://www.youtube.com/watch?v=gfkTfcpWqAY', 'Clarity of Code Explanation', 'Were the code explanations clear and easy to follow? \r\n     - Yes\r\n     - No\r\n     - Somewhat', 'yes'),
+(77, 4, 'IT Department', '.NET Developer\r\nBackend Developer\r\nFrontend Developer\r\nSoftware Engineer\r\n\r\n', 'https://www.youtube.com/watch?v=gfkTfcpWqAY', 'Practical Application', '  - Can you envision yourself applying the concepts learned in real-world scenarios? \r\n     - Yes\r\n     - No\r\n     - Somewhat', 'yes'),
+(78, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\n', 'https://www.youtube.com/watch?v=69NVAUfURTc', 'Introduction to JavaScript', 'On a scale of 1 to 10, how would you rate your understanding of JavaScript before watching this tutorial?', ' 3'),
+(79, 4, 'IT Department', '\r\nJunior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\n', 'https://www.youtube.com/watch?v=69NVAUfURTc', 'Introduction to JavaScript', '\r\nDid you find the introductory explanation in the tutorial helpful in understanding what JavaScript is and its importance in web development? Why or why not?', 'Yes, it gave a clear overview and explained why JavaScript is important for dynamic web content'),
+(80, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\n', 'https://www.youtube.com/watch?v=69NVAUfURTc', 'Variables and Data Types', 'Can you name at least three different data types mentioned in the tutorial?', 'String, Number, Boolean'),
+(81, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\n', 'https://www.youtube.com/watch?v=69NVAUfURTc', 'Variables and Data Types', ' How comfortable do you feel with declaring and assigning variables in JavaScript after watching the tutorial?', 'Fairly comfortable, the examples helped to understand the syntax better'),
+(82, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\n', 'https://www.youtube.com/watch?v=69NVAUfURTc', 'Operators and Expression', 'Were the examples provided in the tutorial clear in demonstrating how operators work in JavaScript?', 'Yes, they were straightforward and easy to follow'),
+(83, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\n', 'https://www.youtube.com/watch?v=69NVAUfURTc', 'Operators and Expression', ' Do you feel confident in using arithmetic, comparison, and logical operators in JavaScript based on the explanations given?', ' Mostly, although I might need some more practice to fully grasp the concept'),
+(84, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\n', 'https://www.youtube.com/watch?v=69NVAUfURTc', 'Conditional Statements (if, else if, else)', 'Were the examples and explanations regarding conditional statements easy to follow?', 'Yes, the examples clarified how to use if, else if, and else statements effectively'),
+(85, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\n', 'https://www.youtube.com/watch?v=69NVAUfURTc', 'Conditional Statements (if, else if, else)', 'How well do you think you understand the syntax and usage of if, else if, and else statements in JavaScript after watching the tutorial?', ' I feel pretty confident, but I might need to revisit them for more complex scenarios'),
+(86, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\n\r\n', 'https://www.youtube.com/watch?v=69NVAUfURTc', 'Loops (for, while)', 'Did the tutorial effectively explain the concept of loops in JavaScript?', 'Yes, it provided clear examples of both for and while loops.'),
+(87, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\n\r\n', 'https://www.youtube.com/watch?v=69NVAUfURTc', 'Loops (for, while)', 'Can you differentiate between for and while loops based on the examples provided?', 'Yes, for loops are more suitable for iterating over arrays, while loops are better for situations with unknown termination conditions'),
+(88, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\n', 'https://www.youtube.com/watch?v=69NVAUfURTc', 'Functions', 'Were the examples provided in the tutorial helpful in understanding how to define and call functions in JavaScript?', 'Absolutely, they made it easy to grasp the concept.'),
+(89, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\n', 'https://www.youtube.com/watch?v=69NVAUfURTc', 'Functions', 'How comfortable do you feel with passing parameters to functions and returning values from functions after watching the tutorial?', ' Quite comfortable, the tutorial explained it in a straightforward manner'),
+(90, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\n', 'https://www.youtube.com/watch?v=69NVAUfURTc', 'Arrays', 'Could you summarize the main points about arrays covered in the tutorial?', ' Arrays are used to store multiple values in a single variable, and they can be accessed and manipulated using various methods like push, pop, and splice'),
+(91, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\n', 'https://www.youtube.com/watch?v=69NVAUfURTc', 'Arrays', 'Do you feel confident in creating and manipulating arrays in JavaScript based on the examples shown?', 'Yes, the examples provided a good understanding of how to work with arrays'),
+(92, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\n\r\n', 'https://www.youtube.com/watch?v=69NVAUfURTc', 'Objects', ' Did the tutorial adequately explain the concept of objects in JavaScript?\r\n', 'Yes, it explained how objects can store key-value pairs and how to access and modify them'),
+(93, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\n\r\n', 'https://www.youtube.com/watch?v=69NVAUfURTc', 'Objects', ' \r\nHow well do you understand creating, accessing, and modifying object properties after watching the tutorial?', 'Fairly well, although I might need some more practice to fully grasp complex object structures'),
+(94, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\n\r\n', 'https://www.youtube.com/watch?v=69NVAUfURTc', 'DOM Manipulation', 'Were the examples provided clear in demonstrating how to manipulate the Document Object Model (DOM) using JavaScript?', ' Yes, they showed how to dynamically change HTML elements using JavaScript.'),
+(95, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\n\r\n', 'https://www.youtube.com/watch?v=69NVAUfURTc', 'DOM Manipulation', 'Can you name at least two methods used for DOM manipulation as shown in the tutorial?', 'document.getElementById() and element.inner HTML'),
+(96, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\n', 'https://www.youtube.com/watch?v=69NVAUfURTc', 'Event Handling', 'Did the tutorial effectively explain how to handle events using JavaScript?', 'Yes, it demonstrated how to respond to user interactions like clicks and input changes'),
+(97, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\n', 'https://www.youtube.com/watch?v=69NVAUfURTc', 'Event Handling', 'How comfortable do you feel with attaching event listeners to HTML elements and responding to user interactions after watching the tutorial?', 'Fairly comfortable, although I might need more practice with complex event handling scenarios'),
+(98, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\n', 'https://www.youtube.com/watch?v=69NVAUfURTc', 'Conclusion', 'On a scale of 1 to 10, how would you rate your overall understanding of JavaScript after watching this tutorial?\r\n     ', '7'),
+(99, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\n', 'https://www.youtube.com/watch?v=69NVAUfURTc', 'Conclusion', 'Would you recommend this tutorial to someone who is new to JavaScript? Why or why not?\r\n     ', 'Yes, I would recommend it. It provides a good foundation for beginners and covers important concepts with clear examples. However, additional practice and exploration may be needed to fully grasp certain topics');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tblcontactus`
 --
 
@@ -55,7 +171,7 @@ CREATE TABLE `tblcontactus` (
   `NAME` varchar(255) NOT NULL,
   `EMAIL` varchar(255) NOT NULL,
   `MESSAGE` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `tblcontactus`
@@ -81,7 +197,7 @@ CREATE TABLE `tbldepartment` (
   `DEPT_ID` int(11) NOT NULL,
   `DEPARTMENT` varchar(255) NOT NULL,
   `DESCRIPTION` varchar(500) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `tbldepartment`
@@ -108,7 +224,7 @@ CREATE TABLE `tbleducbackground` (
   `YEAR_GRADUATED` varchar(255) NOT NULL,
   `GRADE_LEVEL` varchar(255) NOT NULL,
   `DEGREE_COURSE` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `tbleducbackground`
@@ -130,7 +246,7 @@ CREATE TABLE `tblforgotpass` (
   `EMAIL` varchar(255) NOT NULL,
   `RESET_TOKEN` varchar(255) NOT NULL,
   `RESET_TOKEN_EXPIRY` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `tblforgotpass`
@@ -170,7 +286,7 @@ CREATE TABLE `tblprofile` (
   `JOB_POSITION` varchar(255) NOT NULL,
   `JOB_LEVEL` varchar(255) NOT NULL,
   `SKILLS` varchar(500) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `tblprofile`
@@ -196,7 +312,7 @@ CREATE TABLE `tblroles` (
   `DESCRIPTION` varchar(500) NOT NULL,
   `SKILLS` varchar(500) NOT NULL,
   `DEGREE_COURSE` varchar(500) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `tblroles`
@@ -347,6 +463,32 @@ INSERT INTO `tblroles` (`ID`, `DEPT_ID`, `DEPARTMENT`, `POSITION`, `JOB_LEVEL`, 
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tblvideo`
+--
+
+CREATE TABLE `tblvideo` (
+  `ID` int(11) NOT NULL,
+  `DEPT_ID` int(11) NOT NULL,
+  `DEPARTMENT` varchar(255) NOT NULL,
+  `POSITION` varchar(255) NOT NULL,
+  `VIDEO` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `tblvideo`
+--
+
+INSERT INTO `tblvideo` (`ID`, `DEPT_ID`, `DEPARTMENT`, `POSITION`, `VIDEO`) VALUES
+(1, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer', 'https://www.youtube.com/watch?v=qz0aGYrrlhU'),
+(2, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer', 'https://www.youtube.com/watch?v=69NVAUfURTc'),
+(3, 4, 'IT Department', 'Junior Web Developer\r\nWeb Developer\r\nSenior Web Developer\r\nSoftware Engineer\r\nBackend Developer\r\nDatabase Administrator', 'https://www.youtube.com/watch?v=9Pzj7Aj25lw'),
+(4, 4, 'IT Department', 'Software Engineer\r\nBackend Developer\r\nFrontend Developer\r\n\r\n', 'https://www.youtube.com/watch?v=rvswNAtIDIk&list=PLYRh_D5AJCVP4_CpFj_70FxliYIQy4AK9&index=2'),
+(5, 4, 'IT Department', '.NET Developer\r\nBackend Developer\r\nFrontend Developer\r\nSoftware Engineer', 'https://www.youtube.com/watch?v=gfkTfcpWqAY'),
+(6, 4, 'IT Department', '.NET Developer\r\nBackend Developer\r\nFrontend Developer\r\nSoftware Engineer', 'https://www.youtube.com/watch?v=gfkTfcpWqAY');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tblworkhistory`
 --
 
@@ -359,7 +501,7 @@ CREATE TABLE `tblworkhistory` (
   `COMPANY_ADDRESS` varchar(255) NOT NULL,
   `START_DATE` date NOT NULL,
   `END_DATE` date NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `tblworkhistory`
@@ -380,6 +522,12 @@ INSERT INTO `tblworkhistory` (`ID`, `EMPLOYEE_ID`, `COMPANY`, `JOB_TITLE`, `SKIL
 --
 ALTER TABLE `tblaccount`
   ADD PRIMARY KEY (`EMPLOYEE_ID`);
+
+--
+-- Indexes for table `tblassesment`
+--
+ALTER TABLE `tblassesment`
+  ADD PRIMARY KEY (`ID`);
 
 --
 -- Indexes for table `tblcontactus`
@@ -418,6 +566,12 @@ ALTER TABLE `tblroles`
   ADD PRIMARY KEY (`ID`);
 
 --
+-- Indexes for table `tblvideo`
+--
+ALTER TABLE `tblvideo`
+  ADD PRIMARY KEY (`ID`);
+
+--
 -- Indexes for table `tblworkhistory`
 --
 ALTER TABLE `tblworkhistory`
@@ -432,6 +586,12 @@ ALTER TABLE `tblworkhistory`
 --
 ALTER TABLE `tblaccount`
   MODIFY `EMPLOYEE_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `tblassesment`
+--
+ALTER TABLE `tblassesment`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100;
 
 --
 -- AUTO_INCREMENT for table `tblcontactus`
@@ -468,6 +628,12 @@ ALTER TABLE `tblprofile`
 --
 ALTER TABLE `tblroles`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=139;
+
+--
+-- AUTO_INCREMENT for table `tblvideo`
+--
+ALTER TABLE `tblvideo`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `tblworkhistory`

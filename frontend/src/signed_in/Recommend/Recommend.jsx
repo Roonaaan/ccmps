@@ -25,7 +25,7 @@ const Recommend = () => {
             try {
                 const userEmail = sessionStorage.getItem('user');
                 if (userEmail) {
-                    const response = await fetch(`http://localhost:8800/api/auth/user-profile?email=${userEmail}`);
+                    const response = await fetch(`https://ccmps-server-node.vercel.app/api/auth/user-profile?email=${userEmail}`);
                     const data = await response.json();
 
                     if (data.success) {
@@ -48,7 +48,7 @@ const Recommend = () => {
         const fetchRecommendations = async () => {
             try {
                 const userEmail = sessionStorage.getItem('user');
-                const response = await fetch(`http://localhost:5000/recommend?email=${userEmail}`);
+                const response = await fetch(`https://ccmps-python.onrender.com/recommend?email=${userEmail}`);
                 const data = await response.json();
                 console.log('Fetched recommendations:', data); // Log the fetched data
                 setRecommendedJobs(data);
@@ -111,13 +111,23 @@ const Recommend = () => {
         navigate('/Select-Department');
     }
 
-    const handleJobClick = (jobIndex) => {
-        setSelectedJob(jobIndex);
+    const handleJobClick = (job) => {
+        setSelectedJob(job);
+        // Store the entire selected job object in session storage
+        sessionStorage.setItem('selectedJob', JSON.stringify(job));
     }
+
+    // Retrieve the stored job object on component mount
+    useEffect(() => {
+        const storedJob = JSON.parse(sessionStorage.getItem('selectedJob'));
+        if (storedJob) {
+            setSelectedJob(storedJob);
+        }
+    }, []);
 
     const handleProceed = () => {
         if (selectedJob !== null) {
-            navigate('/Roadmap');
+            navigate('/Roadmap', { state: { selectedJob, recommendedJobs } }); // Pass selected job and recommended jobs to Roadmap
         } else {
             alert('Please select a job before proceeding');
         }
@@ -156,7 +166,7 @@ const Recommend = () => {
                                     key={index}
                                     className={`recommendJobContainerPanel ${selectedJob === index ? 'selected' : ''}`}
                                     onClick={() => {
-                                        handleJobClick(index);
+                                        handleJobClick(job); // Pass the entire job object
                                         toggleDescription(`job${index + 1}`);
                                     }}
                                 >
