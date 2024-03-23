@@ -385,3 +385,28 @@
   margin: 5px 10px;
   transition: ease-in 0.3s, color 0.3s;
 }
+
+/* Video Player and Assesment */
+.videoWrapper {
+  display: flex;
+  margin: 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #33658A;
+  width: 560px;
+  height: 319px;
+}
+
+.assessmentWrapper {
+  display: flex;
+  margin: 0 auto;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+  width: 500px;
+}
+
+.assessmentWrapper h2 {
+  margin-top: 20px;
+}
+

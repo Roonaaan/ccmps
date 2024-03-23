@@ -16,28 +16,23 @@ const Recommend = () => {
         job3: false,
     });
     const [recommendedJobs, setRecommendedJobs] = useState([]);
+    const [selectedJob, setSelectedJob] = useState(null);
     const navigate = useNavigate();
 
-    // React to PHP Connection
+    // User Page Connection
     useEffect(() => {
-        const fetchUserName = async () => {
+        const fetchUserProfile = async () => {
             try {
-                const userEmail = sessionStorage.getItem('user'); // Retrieve user email from sessionStorage
+                const userEmail = sessionStorage.getItem('user');
                 if (userEmail) {
-                    const response = await fetch(`http://localhost/CareerCompass/backend/signed-in/home.php?email=${userEmail}`);
+                    const response = await fetch(`http://localhost:8800/api/auth/user-profile?email=${userEmail}`);
                     const data = await response.json();
 
                     if (data.success) {
-                        setUserName(data.userName);
-                        setUserImage(data.userImage);
-
-                        if (data.userImage) {
-                            setUserImage(`data:image/jpeg;base64,${data.userImage}`); // Assuming JPEG format, adjust content type if needed
-                        } else {
-                            setUserImage(defaultImg);
-                        }
+                        setUserName(data.userData.firstName);
+                        setUserImage(data.userData.image ? `data:image/jpeg;base64,${data.userData.image}` : userImage);
                     } else {
-                        console.log('Failed to fetch user name');
+                        console.log('Failed to fetch user profile');
                     }
                 }
             } catch (error) {
@@ -45,7 +40,7 @@ const Recommend = () => {
             }
         };
 
-        fetchUserName();
+        fetchUserProfile();
     }, []);
 
     // React to Python Connection
@@ -116,13 +111,35 @@ const Recommend = () => {
         navigate('/Select-Department');
     }
 
+    const handleJobClick = (job) => {
+        setSelectedJob(job);
+        // Store the entire selected job object in session storage
+        sessionStorage.setItem('selectedJobTitle', selectedJob.title, JSON.stringify(job));
+    }
+
+    // Retrieve the stored job object on component mount
+    useEffect(() => {
+        const storedJob = JSON.parse(sessionStorage.getItem('selectedJob'));
+        if (storedJob) {
+            setSelectedJob(storedJob);
+        }
+    }, []);
+
+    const handleProceed = () => {
+        if (selectedJob !== null) {
+            navigate('/Roadmap', { state: { selectedJob, recommendedJobs } }); // Pass selected job and recommended jobs to Roadmap
+        } else {
+            alert('Please select a job before proceeding');
+        }
+    }
+
     return (
         <>
             <div className="recommendContainer">
                 <header className="navBar">
                     <div className="navBarInner">
                         <div className="navLogoContainer">
-                            <img src={logo} alt="logo" className="navLogo" onClick={handleHomeClick}/>
+                            <img src={logo} alt="logo" className="navLogo" onClick={handleHomeClick} />
                         </div>
                         <div className="navProfile">
                             <img
@@ -147,15 +164,19 @@ const Recommend = () => {
                             {recommendedJobs.map((job, index) => (
                                 <div
                                     key={index}
-                                    className="recommendJobContainerPanel"
-                                    onClick={() => toggleDescription(`job${index + 1}`)}>
+                                    className={`recommendJobContainerPanel ${selectedJob === index ? 'selected' : ''}`}
+                                    onClick={() => {
+                                        handleJobClick(job); // Pass the entire job object
+                                        toggleDescription(`job${index + 1}`);
+                                    }}
+                                >
                                     <p className='job-title'>{job.title}</p>
                                     {showDescriptions[`job${index + 1}`] && <p className="job-description">{job.description}</p>}
                                 </div>
                             ))}
                         </div>
                         <div className="recommendJobContainerButton">
-                            <button className='recommendJobContainerProceed'> PROCEED </button>
+                            <button className='recommendJobContainerProceed' onClick={handleProceed}> PROCEED </button>
                         </div>
                         <span onClick={handleSelectClick}> Want to choose your own job position, click here </span>
                     </div>

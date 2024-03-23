@@ -2,6 +2,7 @@ import pg from 'pg';
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import crypto from 'crypto';
+import stringSimilarity from 'string-similarity';
 
 const pool = new pg.Pool({ // Use 'pg.Pool' instead of 'Pool'
     connectionString: "postgres://default:NpLQ8gFc1dsD@ep-aged-meadow-a1op3qk0-pooler.ap-southeast-1.aws.neon.tech:5432/verceldb?sslmode=require", // Get connection string from environment variable
@@ -156,7 +157,7 @@ export const resendResetEmail = async (req, res) => {
                     from: 'careercompasbscs@gmail.com', // Sender address
                     to: email, // Receiver address
                     subject: 'Password Reset', // Subject line
-                    text: `To reset your password, click on the following link: https://ccmps.vercel.app/Login/Forgot-Password/Change-Password?token=${resetToken}` // Email body with the reset token link
+                    text: `To reset your password, click on the following link: http://localhost:5173/Login/Forgot-Password/Change-Password?token=${resetToken}` // Email body with the reset token link
                 };
 
                 transporter.sendMail(mailOptions, (error, info) => {
@@ -378,6 +379,114 @@ export const getUserDetails = async (req, res) => {
         res.status(500).json({ success: false, message: "An error occurred" });
     }
 };
-// Roadmap
+// Roadmap (Video and Assesment(consistof Question and Answer))
+export const getAssessment = async (req, res) => {
+    try {
+        // Retrieve the job title from the query parameters
+        const selectedJobTitle = req.query.job;
 
+        if (!selectedJobTitle) {
+            return res.status(400).json({ error: 'No job title provided' });
+        }
+
+        // Query the database for the video URL based on the job title
+        const client = await pool.connect();
+        const result = await client.query('SELECT video FROM tblvideo WHERE position = $1', [selectedJobTitle]);
+        client.release();
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Video not found for the selected job' });
+        }
+
+        const videoUrl = result.rows[0].video;
+        res.json({ videoUrl });
+    } catch (error) {
+        console.error('Error fetching video URL:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+export const getQuestions = async (req, res) => {
+    try {
+        // Retrieve the job title from the query parameters
+        const selectedJobTitle = req.query.job;
+
+        if (!selectedJobTitle) {
+            return res.status(400).json({ error: 'No job title provided' });
+        }
+
+        // Query the database for the assessment questions based on the job title
+        const client = await pool.connect();
+        const result = await client.query('SELECT description, question_number FROM tblassessment WHERE position = $1', [selectedJobTitle]);
+        client.release();
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Assessment questions not found for the selected job' });
+        }
+
+        const questions = result.rows;
+        res.json({ questions });
+    } catch (error) {
+        console.error('Error fetching assessment questions:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+export const submitAnswers = async (req, res) => {
+    try {
+        const userAnswers = req.body.answers; // Assuming answers are sent in the request body
+
+        if (!userAnswers || !Array.isArray(userAnswers)) {
+            return res.status(400).json({ error: 'Invalid or missing answers in the request' });
+        }
+
+        // Fetch correct answers from the database based on the job title
+        const selectedJobTitle = req.query.job;
+
+        if (!selectedJobTitle) {
+            return res.status(400).json({ error: 'No job title provided' });
+        }
+
+        const client = await pool.connect();
+        const result = await client.query('SELECT question_number, answer FROM tblassessment WHERE position = $1', [selectedJobTitle]);
+        client.release();
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Assessment questions not found for the selected job' });
+        }
+
+        const correctAnswers = result.rows;
+
+        // Calculate user's score based on their answers
+        let totalQuestions = 0;
+        let correctCount = 0;
+
+        userAnswers.forEach((userAnswer) => {
+            const correctAnswer = correctAnswers.find((answer) => answer.question_number === userAnswer.question_number);
+            if (correctAnswer) {
+                totalQuestions++;
+
+                // Compare user's answer with correct answer
+                const userKeywords = userAnswer.answer.toLowerCase().split(' ');
+                const correctKeywords = correctAnswer.answer.toLowerCase().split(' ');
+
+                // Calculate similarity score
+                const similarity = stringSimilarity.compareTwoStrings(userKeywords.join(' '), correctKeywords.join(' '));
+
+                // Consider the answer correct if similarity score is above a threshold
+                const threshold = 0.7; // Adjust as needed
+                if (similarity >= threshold) {
+                    correctCount++;
+                }
+            }
+        });
+
+        const accuracy = (correctCount / totalQuestions) * 100;
+
+        res.json({ accuracy });
+    } catch (error) {
+        console.error('Error submitting answers:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
 // Select Jobs
