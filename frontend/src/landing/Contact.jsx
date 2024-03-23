@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from 'axios';
 
 // CSS
 import './styles/Contact.css';
@@ -32,30 +31,35 @@ const Contact = () => {
         navigate("/Contact-Us");
     };
 
-    //Contact Us Connection
-    const sendEmail = async () => {
-        try {
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            const response = await axios.post('http://localhost:8800/api/auth/send-email', { name, email, message });
+    //PHP API Connection
 
-            if (response.status === 200) {
-                setSuccessMessage(<span style={{ color: 'green' }}> Message Sent. Thanks for the Feedback </span>);
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+    
+        try {
+            const response = await fetch('https://careercompass-818c6.web.app/backend/contact-us/send-email.php', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json', // Fixed typo here
+                },
+                body: JSON.stringify({ name, email, message }),
+            });
+    
+            const data = await response.json();
+    
+            if (data.success) {
+                setSuccessMessage('Message sent successfully');
                 setName('');
                 setEmail('');
                 setMessage('');
             } else {
-                setErrorMessage('Failed to send message');
+                setErrorMessage(data.message);
             }
         } catch (error) {
-            console.error('An error occurred while sending the message:', error);
+            console.error('An error occurred while sending the message:', error); // Log error to console
             setErrorMessage('An error occurred while sending the message');
         }
-    };
-
-    // Function to handle form submission
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        await sendEmail();
     };
 
     // Message Limit
@@ -135,7 +139,7 @@ const Contact = () => {
                                     value={message}
                                     onChange={(e) => {
                                         setMessage(e.target.value),
-                                            handleChange(e, message)
+                                        handleChange(e, message)
                                     }}
                                     required
                                 />

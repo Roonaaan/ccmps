@@ -10,61 +10,56 @@ import defaultImg from "../../assets/signed-in/defaultImg.jpg";
 const Roadmap = () => {
   const [userImage, setUserImage] = useState("");
   const [userName, setUserName] = useState("");
-  const [recommendedJobs, setRecommendJobs] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
-  const [phase, setPhase] = useState(1); // Track current phase
   const navigate = useNavigate();
 
   0
-  const [doneOpacities, setDoneOpacities] = useState([100, 100, 100]);
-  const [nextOpacity, setNextOpacity] = useState(50);
+  const [doneOpacities, setDoneOpacities] = useState([100, 100, 100]); 
+  const [nextOpacity, setNextOpacity] = useState(50); 
 
-
+  
   const handleDoneClick = (index) => {
     const newOpacities = [...doneOpacities];
-    newOpacities[index] = 50;
+    newOpacities[index] = 50; 
     setDoneOpacities(newOpacities);
-    setNextOpacity(100);
+    setNextOpacity(100); 
   };
 
-
+  
   const handleNextClick = () => {
-    // Move to the next phase
-    if (phase < 4) {
-      setPhase(phase + 1);
-    }
+    
   };
 
-  const handlePrevClick = () => {
-    // Move to the previous phase
-    if (phase > 1) {
-      setPhase(phase - 1);
-    }
-  };
-
-
-  // User Page Connection
+  
   useEffect(() => {
-    const fetchUserProfile = async () => {
+    const fetchUserName = async () => {
       try {
-        const userEmail = sessionStorage.getItem('user');
+        const userEmail = sessionStorage.getItem("user"); 
         if (userEmail) {
-          const response = await fetch(`https://localhost:8800/api/auth/user-profile?email=${userEmail}`);
+          const response = await fetch(
+            `http://localhost/CareerCompass/backend/signed-in/home.php?email=${userEmail}`
+          );
           const data = await response.json();
 
           if (data.success) {
-            setUserName(data.userData.firstName);
-            setUserImage(data.userData.image ? `data:image/jpeg;base64,${data.userData.image}` : userImage);
+            setUserName(data.userName);
+            setUserImage(data.userImage);
+
+            if (data.userImage) {
+              setUserImage(`data:image/jpeg;base64,${data.userImage}`); 
+            } else {
+              setUserImage(defaultImg);
+            }
           } else {
-            console.log('Failed to fetch user profile');
+            console.log("Failed to fetch user name");
           }
         }
       } catch (error) {
-        console.error('An error occurred', error);
+        console.error("An error occurred", error);
       }
     };
 
-    fetchUserProfile();
+    fetchUserName();
   }, []);
 
   const handleProfileClick = () => {
@@ -125,17 +120,26 @@ const Roadmap = () => {
 
       <section className="progressFrame">
         <div className="leftSide">
-          <ul className="progressBarList">
-            {[1, 2, 3, 4].map((num) => (
-              <li
-                key={num}
-                className={`progressBarItem ${num === phase ? "currentItem" : ""
-                  }`}
-              >
-                <span className="phaseCount">{num}</span>
-                <span className="phaseProgressLabel">Phase {num}</span>
-              </li>
-            ))}
+          <ul className="progressBarList  ">
+            <li className="progressBarItem currentItem ">
+              <span className="phaseCount ">1</span>
+              <span className="phaseProgressLabel">Phase 1</span>
+            </li>
+
+            <li className="progressBarItem  ">
+              <span className="phaseCount">2</span>
+              <span className="phaseProgressLabel">Phase 2</span>
+            </li>
+
+            <li className="progressBarItem  ">
+              <span className="phaseCount">3</span>
+              <span className="phaseProgressLabel">Phase 3</span>
+            </li>
+
+            <li className="progressBarItem">
+              <span className="phaseCount">4</span>
+              <span className="phaseProgressLabel">Phase 4</span>
+            </li>
           </ul>
           <div className="progressDescription"></div>
         </div>
@@ -144,31 +148,75 @@ const Roadmap = () => {
       {/* Middle Section */}
       <div className="middleSection">
         <section className="rightSide">
-          <div className="rightsideTitle">
-            {phase === 1 && "INTRODUCTION"} {/* Display title based on phase */}
+          <div className="rightsideTitle"> INTRODUCTION </div>
+          <div className="taskDiv">
+            <div className="taskTitle"> Task Title </div>
+            <div className="taskDescription">
+              {" "}
+              Task Description: Lorem ipsum dolor sit amet, consectetur
+              adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+              dolore magna aliqua.{" "}
+            </div>
+            <div className="button-section">
+            <button
+        className="done-button"
+        onClick={() => handleDoneClick(0)} // Pass index of this button
+            style={{ opacity: `${doneOpacities[0]}%` }}
+      >
+        Done
+      </button>
+            </div>
           </div>
-          {/* Your existing JSX for tasks */}
+          <div className="taskDiv">
+            <div className="taskTitle"> Task Title </div>
+            <div className="taskDescription">
+              {" "}
+              Task Description: Lorem ipsum dolor sit amet, consectetur
+              adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+              dolore magna aliqua.{" "}
+            </div>
+            <div className="button-section">
+            <button
+        className="done-button1"
+        onClick={() => handleDoneClick(1)} // Pass index of this button
+            style={{ opacity: `${doneOpacities[1]}%` }}
+      >
+        Done
+      </button>
+            </div>
+          </div>
+          <div className="taskDiv">
+            <div className="taskTitle"> Task Title </div>
+            <div className="taskDescription">
+              {" "}
+              Task Description: Lorem ipsum dolor sit amet, consectetur
+              adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+              dolore magna aliqua.{" "}
+            </div>
+            <div className="button-section">
+            <button
+        className="done-button2"
+        onClick={() => handleDoneClick(2)} // Pass index of this button
+            style={{ opacity: `${doneOpacities[2]}%` }}
+      >
+        Done
+      </button>
+            </div>
+          </div>
         </section>
-      </div>
-      <div className="button-section-footer">
+
+        <div className="button-section-footer">
+        <button className="prev-button-footer"> PREV PHASE </button>
         <button
-          className="prev-button-footer"
-          onClick={handlePrevClick}
-          disabled={phase === 1}
-          style={{ opacity: phase === 1 ? 0.5 : 1 }}
-        >
-          PREV PHASE
-        </button>
-        <button
-          className="next-button-footer"
-          onClick={handleNextClick}
-          disabled={phase === recommendedJobs.length}
-          style={{ opacity: phase === recommendedJobs.length ? 0.5 : 1 }}
-        >
-          NEXT PHASE
-        </button>
+        className="next-button-footer"
+        onClick={handleNextClick}
+        style={{ opacity: `${nextOpacity}%` }}
+      >
+        NEXT PHASE
+      </button>
+          
+        </div>
       </div>
-      {showDropdown && <DropdownModal logoutHandler={handleLogout} />}
     </div>
   );
 };
