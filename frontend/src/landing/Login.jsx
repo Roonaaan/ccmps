@@ -66,7 +66,8 @@ export const Login = ({ onClose }) => {
             await new Promise(resolve => setTimeout(resolve, 1000));
             const response = await axios.post('http://localhost:8800/api/auth/login', { email, password }, { withCredentials: true });
             if (response.data) {
-                sessionStorage.setItem('token', response.data.token);
+                sessionStorage.setItem('user', email);
+                {/* sessionStorage.setItem('token', response.data.token); */}
                 setSuccessMsg('Welcome');
                 setSuccessMsg(<span style={{ color: 'green' }}> Welcome </span>);
                 setTimeout(() => {
