@@ -11,33 +11,21 @@ import defaultImg from "../../assets/signed-in/defaultImg.jpg";
 const Roadmap = () => {
   const [userImage, setUserImage] = useState("");
   const [userName, setUserName] = useState("");
-<<<<<<< HEAD
-=======
   const [expandedDescriptions, setExpandedDescriptions] = useState([]);
->>>>>>> testing
   const [recommendedJobs, setRecommendJobs] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const [phase, setPhase] = useState(1); // Track current phase
   const navigate = useNavigate();
 
-<<<<<<< HEAD
   0
   const [doneOpacities, setDoneOpacities] = useState([100, 100, 100]);
-  const [nextOpacity, setNextOpacity] = useState(50);
-
-=======
-  // Opacities
-  const [doneOpacities, setDoneOpacities] = useState([100, 100, 100]);
-  const [nextOpacity, setNextOpacity] = useState(50);
 
   // Video Player and QA
   const [videoUrl, setVideoUrl] = useState(""); // New state to store video URL
   const [questions, setQuestions] = useState([]);
 
->>>>>>> testing
   const handleDoneClick = (index) => {
     const newOpacities = [...doneOpacities];
-    newOpacities[index] = 50;
     setDoneOpacities(newOpacities);
     setNextOpacity(100);
   };
@@ -191,20 +179,6 @@ const Roadmap = () => {
     setShowDropdown(!showDropdown);
   };
 
-<<<<<<< HEAD
-  function VideoPlayer() {
-    return (
-      <div className="video-player-wrapper">
-        <ReactPlayer
-          url="https://www.youtube.com/watch?v=dQw4w9WgXcQ" // Example URL, replace with your own video URL
-          controls={true} // Enable/disable controls
-          width="100%"
-          height="100%"
-        />
-      </div>
-    );
-  }
-=======
   // Render the video component
   const renderVideo = () => {
     return (
@@ -261,7 +235,6 @@ const Roadmap = () => {
       }
     });
   };
->>>>>>> testing
 
   return (
     <div className="roadmapWrapper">
@@ -285,11 +258,7 @@ const Roadmap = () => {
       <section className="progressFrame">
         <div className="leftSide">
           <ul className="progressBarList">
-<<<<<<< HEAD
-            {[1, 2, 3, 4].map((num) => (
-=======
             {[1, 2, 3, 4, 5].map((num) => (
->>>>>>> testing
               <li
                 key={num}
                 className={`progressBarItem ${num === phase ? "currentItem" : ""}`}
@@ -315,10 +284,7 @@ const Roadmap = () => {
           {phase % 2 === 0 && questions && renderAssessments()}
         </section>
       </div>
-<<<<<<< HEAD
-=======
       {/* Buttons */}
->>>>>>> testing
       <div className="button-section-footer">
         <button
           className="prev-button-footer"
