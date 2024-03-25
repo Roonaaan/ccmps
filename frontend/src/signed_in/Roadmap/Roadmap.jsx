@@ -7,6 +7,9 @@ import "./styles/style.css";
 
 import logo from "../../assets/homepage/final-topright-logo.png";
 import defaultImg from "../../assets/signed-in/defaultImg.jpg";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
+
 
 const Roadmap = () => {
   const [userImage, setUserImage] = useState("");
@@ -152,6 +155,8 @@ const Roadmap = () => {
     navigate("/");
   };
 
+  
+
   const DropdownModal = ({ logoutHandler }) => {
     return (
       <div className="dropdown-modal">
@@ -191,6 +196,7 @@ const Roadmap = () => {
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
         ></iframe>
+        
       </div>
     );
   };
@@ -203,19 +209,21 @@ const Roadmap = () => {
       <div className="assessmentWrapper">
         {Object.entries(groupedQuestions).map(([description, questions]) => (
           <section key={description}>
-            <h2>
+            <h2 className="h2assessment" onClick={() => handleToggleDescription(description)}>
+
               {description}
               {/* Add toggle button for the dropdown */}
-              <button className="expand-button" onClick={() => handleToggleDescription(description)}>
-                {expandedDescriptions.includes(description) ? 'Collapse' : 'Expand'}
+              <button className="dropdownAssessment" onClick={() => handleToggleDescription(description)}>
+                 {expandedDescriptions.includes(description) ? <FontAwesomeIcon icon={faAngleUp} /> : <FontAwesomeIcon icon={faAngleDown} />}
               </button>
+
             </h2>
             <ul style={{ display: expandedDescriptions.includes(description) ? 'block' : 'none' }}>
               {questions.map((question, index) => (
                 <li key={index}>
                   <p>Q: {question.question_number}</p>
                   {/* Add text input for user's answer */}
-                  <p>A: <input type="text" placeholder="Your Answer" /></p>
+                  <p>A: <input className="inputAnswer" type="text" placeholder="Your Answer" /></p>
                 </li>
               ))}
             </ul>
