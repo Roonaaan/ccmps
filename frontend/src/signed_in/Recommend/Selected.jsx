@@ -6,13 +6,30 @@ import './styles/recommend.css';
 import logo from "../../assets/homepage/final-topright-logo.png";
 import defaultImg from "../../assets/signed-in/defaultImg.jpg";
 
-const Recommend = () => {
+const SelectDept = () => {
     const [userImage, setUserImage] = useState('');
     const [userName, setUserName] = useState('');
     const [showDropdown, setShowDropdown] = useState(false);
-    const [showDescriptions, setShowDescriptions] = useState({});
-    const [departments, setDepartments] = useState([])
+    const [departments, setDepartments] = useState([]);
+    const [showDescriptions, setShowDescriptions] = useState({
+        job1: false,
+        job2: false,
+        job3: false,
+        job4: false,
+        job5: false,
+        job6: false,
+    });
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const response = await fetch('http://localhost/CareerCompass/backend/algorithm/selected.php'); // Replace with your PHP endpoint URL
+            const data = await response.json(); // Parse JSON response
+            setDepartments(data);
+        };
+        fetchData();
+    }, []);
+
 
     // User Page Connection
     useEffect(() => {
@@ -48,6 +65,11 @@ const Recommend = () => {
         navigate('/');
     }
 
+    // Return to Home Page
+    const handleHomeClick = () => {
+        navigate('/Welcome')
+    }
+
     const DropdownModal = ({ logoutHandler }) => {
         return (
             <div className="dropdown-modal">
@@ -71,10 +93,10 @@ const Recommend = () => {
         setShowDropdown(!showDropdown);
     }
 
-    const toggleDescription = (departmentName) => {
+    const toggleDescription = (jobKey) => {
         setShowDescriptions({
             ...showDescriptions,
-            [departmentName]: !showDescriptions[departmentName],
+            [jobKey]: !showDescriptions[jobKey],
         });
     };
 
@@ -84,10 +106,7 @@ const Recommend = () => {
                 <header className="navBar">
                     <div className="navBarInner">
                         <div className="navLogoContainer">
-                            <img src={logo} alt="logo" className="navLogo" />
-                        </div>
-                        <div className="selectedJobContainerHeader">
-                            <h1> THIS IS STILL UNDER DEVELOPMENT </h1>
+                            <img src={logo} alt="logo" className="navLogo" onClick={handleHomeClick} />
                         </div>
                         <div className="navProfile">
                             <img
@@ -109,42 +128,12 @@ const Recommend = () => {
                             <p> Select a role you want to achive. </p>
                         </div>
                         <div className="selectedJobContainerSelection">
-                            <div
-                                className="selectedJobContainerPanel"
-                                onClick={() => toggleDescription('job1')}>
-                                <p className='job-title'> Department 1 </p>
-                                {showDescriptions.job1 && <p className="job-description-selected">Description 1</p>}
-                            </div>
-                            <div
-                                className="selectedJobContainerPanel"
-                                onClick={() => toggleDescription('job2')}>
-                                <p className='job-title'> Department 2 </p>
-                                {showDescriptions.job2 && <p className="job-description-selected">Description 2</p>}
-                            </div>
-                            <div
-                                className="selectedJobContainerPanel"
-                                onClick={() => toggleDescription('job3')}>
-                                <p className='job-title'> Department 3 </p>
-                                {showDescriptions.job3 && <p className="job-description-selected">Description 3</p>}
-                            </div>
-                            <div
-                                className="selectedJobContainerPanel"
-                                onClick={() => toggleDescription('job1')}>
-                                <p className='job-title'> Department 4 </p>
-                                {showDescriptions.job1 && <p className="job-description-selected">Description 4</p>}
-                            </div>
-                            <div
-                                className="selectedJobContainerPanel"
-                                onClick={() => toggleDescription('job2')}>
-                                <p className='job-title'> Department 5 </p>
-                                {showDescriptions.job2 && <p className="job-description-selected">Description 5</p>}
-                            </div>
-                            <div
-                                className="selectedJobContainerPanel"
-                                onClick={() => toggleDescription('job3')}>
-                                <p className='job-title'> Department 6 </p>
-                                {showDescriptions.job3 && <p className="job-description-selected">Description 6</p>}
-                            </div>
+                            {departments.map((department) => (
+                                <div key={department.id} className="selectedJobContainerPanel" onClick={() => toggleDescription('job1')}>
+                                    <p className='job-title'> {department.department} </p>
+                                    <p className="job-description-selected">{department.description}</p>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
@@ -154,4 +143,4 @@ const Recommend = () => {
     );
 };
 
-export default Recommend;
+export default SelectDept;

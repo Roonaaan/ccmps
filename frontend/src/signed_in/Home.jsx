@@ -16,26 +16,26 @@ const Home = () => {
   // User Page Connection
   useEffect(() => {
     const fetchUserProfile = async () => {
-        try {
-            const userEmail = sessionStorage.getItem('user');
-            if (userEmail) {
-                const response = await fetch(`http://localhost:8800/api/auth/user-profile?email=${userEmail}`);
-                const data = await response.json();
+      try {
+        const userEmail = sessionStorage.getItem('user');
+        if (userEmail) {
+          const response = await fetch(`http://localhost:8800/api/auth/user-profile?email=${userEmail}`);
+          const data = await response.json();
 
-                if (data.success) {
-                    setUserName(data.userData.firstName);
-                    setUserImage(data.userData.image ? `data:image/jpeg;base64,${data.userData.image}` : userImage);
-                } else {
-                    console.log('Failed to fetch user profile');
-                }
-            }
-        } catch (error) {
-            console.error('An error occurred', error);
+          if (data.success) {
+            setUserName(data.userData.firstName);
+            setUserImage(data.userData.image ? `data:image/jpeg;base64,${data.userData.image}` : userImage);
+          } else {
+            console.log('Failed to fetch user profile');
+          }
         }
+      } catch (error) {
+        console.error('An error occurred', error);
+      }
     };
 
     fetchUserProfile();
-}, []);
+  }, []);
 
   const handleProfileClick = () => {
     navigate('/My-Profile');
