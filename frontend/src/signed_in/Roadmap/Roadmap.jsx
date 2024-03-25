@@ -17,21 +17,17 @@ const Roadmap = () => {
   const [phase, setPhase] = useState(1); // Track current phase
   const navigate = useNavigate();
 
-  // Opacities
-  const [doneOpacities, setDoneOpacities] = useState([100, 100, 100]);
-  const [nextOpacity, setNextOpacity] = useState(50);
-
   // Video Player and QA
   const [videoUrl, setVideoUrl] = useState(""); // New state to store video URL
   const [questions, setQuestions] = useState([]);
+  const [answers, setAnswers] = useState([]);
+  {/* const [videoEnded, setVideoEnded] = useState(false); */ } // Track if video has ended (just remove the bracket)
 
-  const handleDoneClick = (index) => {
-    const newOpacities = [...doneOpacities];
-    newOpacities[index] = 50;
-    setDoneOpacities(newOpacities);
-    setNextOpacity(100);
-  };
-
+  useEffect(() => {
+    // Ensure phase is always set to 1 when the component mounts or refreshes
+    setPhase(1);
+    sessionStorage.setItem('phase', '1');
+  }, []);
 
   const handleNextClick = () => {
     // Move to the next phase
@@ -39,6 +35,7 @@ const Roadmap = () => {
       const nextPhase = phase + 1;
       setPhase(nextPhase);
       sessionStorage.setItem('phase', nextPhase.toString());
+      {/* setVideoEnded(false); */ } // Button is unclickble unless the video is done
     }
   };
 
@@ -110,7 +107,7 @@ const Roadmap = () => {
     fetchVideoUrl();
   }, [phase]);
 
-  // Q&A Connection
+  // Q&A Connection (Question)
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
@@ -139,6 +136,26 @@ const Roadmap = () => {
 
     fetchQuestions();
   }, [phase]);
+
+  // Function to submit answers
+  const submitAnswers = async () => {
+    try {
+      // Send POST request to submit answers
+      await fetch('http://localhost:8800/api/auth/submit-answers', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ answers })
+      });
+
+      // Optionally, you can handle success or show a success message
+      console.log('Answers submitted successfully');
+    } catch (error) {
+      console.error('Error submitting answers:', error);
+      // Optionally, you can handle errors or show an error message
+    }
+  };
 
   const handleProfileClick = () => {
     navigate("/My-Profile");
@@ -191,37 +208,53 @@ const Roadmap = () => {
         ></iframe>
       </div>
     );
+    {/* onEnded={() => setVideoEnded(true)} */ } //button is unclickble unless the video is done (add it below the "allowFullScreen")
   };
+
 
   // Render assessment questions
   const renderAssessments = () => {
     const groupedQuestions = _.groupBy(questions, 'description');
 
     return (
-      <div className="assessmentWrapper">
-        {Object.entries(groupedQuestions).map(([description, questions]) => (
-          <section key={description}>
-            <h2>
-              {description}
-              {/* Add toggle button for the dropdown */}
-              <button className="expand-button" onClick={() => handleToggleDescription(description)}>
-                {expandedDescriptions.includes(description) ? 'Collapse' : 'Expand'}
-              </button>
-            </h2>
-            <ul style={{ display: expandedDescriptions.includes(description) ? 'block' : 'none' }}>
-              {questions.map((question, index) => (
+    <div className="assessmentWrapper">
+      {Object.entries(groupedQuestions).map(([description, questions]) => (
+        <section key={description}>
+          <h2>
+            {description}
+            {/* Add toggle button for the dropdown */}
+            <button className="expand-button" onClick={() => handleToggleDescription(description)}>
+              {expandedDescriptions.includes(description) ? 'Collapse' : 'Expand'}
+            </button>
+          </h2>
+          <ul style={{ display: expandedDescriptions.includes(description) ? 'block' : 'none' }}>
+            {questions.map((question, index) => {
+              // Check if the user's answer matches the correct answer
+              const isCorrect = answers[index] && answers[index].answer === question.correctAnswer;
+              return (
                 <li key={index}>
                   <p>Q: {question.question_number}</p>
                   {/* Add text input for user's answer */}
-                  <p>A: <input type="text" placeholder="Your Answer" /></p>
+                  <p>
+                    A: <input type="text" placeholder="Your Answer" onChange={(e) => {
+                      const newAnswers = [...answers];
+                      newAnswers[index] = { question_number: question.question_number, answer: e.target.value };
+                      setAnswers(newAnswers);
+                    }} />
+                    {/* Conditionally render "x" icon for incorrect answer */}
+                    {answers[index] && !isCorrect && <span style={{ color: 'red' }}>x</span>}
+                  </p>
                 </li>
-              ))}
-            </ul>
-          </section>
-        ))}
-      </div>
-    );
-  };
+              );
+            })}
+          </ul>
+        </section>
+      ))}
+      {/* Add button to submit answers */}
+      <button onClick={submitAnswers}>Submit Answers</button>
+    </div>
+  );
+};
 
   // Function to handle dropdown expansion/collapse
   const handleToggleDescription = (description) => {
@@ -302,6 +335,27 @@ const Roadmap = () => {
           NEXT PHASE
         </button>
       </div>
+      {/* 
+      **Remove the Comment and replace the Buttons. This enables to click the "Next Phase" button onced the video is done**
+      <div className="button-section-footer">
+        <button
+          className="prev-button-footer"
+          onClick={handlePrevClick}
+          disabled={phase === 1 || phase % 2 === 0} // Disable previous button on assessment phases
+          style={{ opacity: (phase === 1 || phase % 2 === 0) ? 0.5 : 1 }}
+        >
+          PREV PHASE
+        </button>
+        <button
+          className="next-button-footer"
+          onClick={handleNextClick}
+          disabled={(phase === 4 && !videoEnded) || (phase % 2 === 0)} // Disable next button on assessment phases and when video not ended
+          style={{ opacity: ((phase === 4 && !videoEnded) || (phase % 2 === 0)) ? 0.5 : 1 }}
+        >
+        NEXT PHASE
+        </button>
+      </div>
+      */}
       {showDropdown && <DropdownModal logoutHandler={handleLogout} />}
     </div>
   );

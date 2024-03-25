@@ -28,6 +28,6 @@ router.get("/assesments", getAssessment);
 router.get("/questions", getQuestions);
 
 // Route for Q&A Assesment (answer)
-router.get("/submit-answers", submitAnswers);
+router.post("/submit-answers", submitAnswers);
 
 export default router;

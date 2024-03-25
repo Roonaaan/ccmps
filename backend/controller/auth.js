@@ -379,6 +379,7 @@ export const getUserDetails = async (req, res) => {
     }
 };
 // Roadmap (Video and Assesment [consist of Question and Answer])
+// Video
 export const getAssessment = async (req, res) => {
     try {
         // Retrieve the job title and phase from the query parameters
@@ -406,6 +407,7 @@ export const getAssessment = async (req, res) => {
     }
 };
 
+// Question
 export const getQuestions = async (req, res) => {
     try {
         // Retrieve the job title and phase from the query parameters
@@ -433,58 +435,33 @@ export const getQuestions = async (req, res) => {
     }
 };
 
+// Answer
 export const submitAnswers = async (req, res) => {
     try {
-        const userAnswers = req.body.answers; // Assuming answers are sent in the request body
+        // Extract answers from the request body
+        const { answers } = req.body;
 
-        if (!userAnswers || !Array.isArray(userAnswers)) {
-            return res.status(400).json({ error: 'Invalid or missing answers in the request' });
+        // Validate that answers are provided
+        if (!answers || !Array.isArray(answers)) {
+            return res.status(400).json({ error: 'Answers are required and must be provided in an array' });
         }
 
-        // Fetch correct answers from the database based on the job title
-        const selectedJobTitle = req.query.job;
-
-        if (!selectedJobTitle) {
-            return res.status(400).json({ error: 'No job title provided' });
-        }
-
+        // Connect to the database
         const client = await pool.connect();
-        const result = await client.query('SELECT question_number, answer FROM tblassessment WHERE position = $1', [selectedJobTitle]);
+
+        // Retrieve the correct answers from the database
+        const correctAnswers = await Promise.all(answers.map(async (answer) => {
+            const { question_number, answer: userAnswer } = answer;
+            const queryResult = await client.query('SELECT answer_number FROM tblassessment WHERE question_number = $1', [question_number]);
+            const correctAnswer = queryResult.rows[0]?.answer_number; // Assuming only one correct answer
+            return { question_number, correctAnswer, userAnswer };
+        }));
+
+        // Release the database connection
         client.release();
 
-        if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'Assessment questions not found for the selected job' });
-        }
-
-        const correctAnswers = result.rows;
-
-        // Calculate user's score based on their answers
-        let totalQuestions = 0;
-        let correctCount = 0;
-
-        userAnswers.forEach((userAnswer) => {
-            const correctAnswer = correctAnswers.find((answer) => answer.question_number === userAnswer.question_number);
-            if (correctAnswer) {
-                totalQuestions++;
-
-                // Compare user's answer with correct answer
-                const userKeywords = userAnswer.answer.toLowerCase().split(' ');
-                const correctKeywords = correctAnswer.answer.toLowerCase().split(' ');
-
-                // Calculate similarity score
-                const similarity = stringSimilarity.compareTwoStrings(userKeywords.join(' '), correctKeywords.join(' '));
-
-                // Consider the answer correct if similarity score is above a threshold
-                const threshold = 0.7; // Adjust as needed
-                if (similarity >= threshold) {
-                    correctCount++;
-                }
-            }
-        });
-
-        const accuracy = (correctCount / totalQuestions) * 100;
-
-        res.json({ accuracy });
+        // Send the correct answers back to the client
+        res.status(200).json({ correctAnswers });
     } catch (error) {
         console.error('Error submitting answers:', error);
         res.status(500).json({ error: 'Internal server error' });
