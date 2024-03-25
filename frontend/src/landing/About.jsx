@@ -7,7 +7,6 @@ import logo from "../assets/homepage/final-topright-logo.png";
 import profile1 from "../assets/aboutus/ppRonan.jpg";
 import profile2 from "../assets/aboutus/ppBulawan.jpg";
 import profile3 from "../assets/aboutus/ppPajerga.jpg";
-import profile4 from "../assets/aboutus/ppVillaluz.jpg";
 import profile5 from "../assets/aboutus/ppDeJesus.png";
 import profile6 from "../assets/aboutus/pplucky.jpg";
 import profile7 from "../assets/aboutus/ppMongaya.jpg";
@@ -124,7 +123,6 @@ const About = () => {
                         <p className="role"> Front-end Programmer </p>
                       </div>
                     </div>
-
 
                     <div className="profile-information bar">
                       <div className="display-picture-parent">
