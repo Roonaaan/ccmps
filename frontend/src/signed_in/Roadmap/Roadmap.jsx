@@ -114,16 +114,17 @@ const Roadmap = () => {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        // Retrieve selected job title from session storage
+        // Retrieve selected job title and phase from session storage
         const selectedJobTitle = sessionStorage.getItem('selectedJobTitle');
+        const phase = sessionStorage.getItem('phase');
 
-        if (!selectedJobTitle) {
-          console.error("No selected job title found in session storage");
+        if (!selectedJobTitle || !phase) {
+          console.error("No selected job title or phase found in session storage");
           return;
         }
 
-        // Fetch assessment questions with selected job title as query parameter
-        const response = await fetch(`http://localhost:8800/api/auth/questions?job=${encodeURIComponent(selectedJobTitle)}`);
+        // Fetch assessment questions with selected job title and phase as query parameters
+        const response = await fetch(`http://localhost:8800/api/auth/questions?job=${encodeURIComponent(selectedJobTitle)}&phase=${phase}`);
         const data = await response.json();
 
         if (response.ok) {
@@ -255,7 +256,7 @@ const Roadmap = () => {
       <section className="progressFrame">
         <div className="leftSide">
           <ul className="progressBarList">
-            {[1, 2, 3, 4, 5].map((num) => (
+            {[1, 2, 3, 4].map((num) => (
               <li
                 key={num}
                 className={`progressBarItem ${num === phase ? "currentItem" : ""}`}

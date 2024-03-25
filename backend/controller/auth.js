@@ -378,7 +378,7 @@ export const getUserDetails = async (req, res) => {
         res.status(500).json({ success: false, message: "An error occurred" });
     }
 };
-// Roadmap (Video and Assesment(consistof Question and Answer))
+// Roadmap (Video and Assesment [consist of Question and Answer])
 export const getAssessment = async (req, res) => {
     try {
         // Retrieve the job title and phase from the query parameters
@@ -408,20 +408,21 @@ export const getAssessment = async (req, res) => {
 
 export const getQuestions = async (req, res) => {
     try {
-        // Retrieve the job title from the query parameters
+        // Retrieve the job title and phase from the query parameters
         const selectedJobTitle = req.query.job;
+        const phase = parseInt(req.query.phase);
 
-        if (!selectedJobTitle) {
-            return res.status(400).json({ error: 'No job title provided' });
+        if (!selectedJobTitle || isNaN(phase)) {
+            return res.status(400).json({ error: 'No job title or phase provided' });
         }
 
-        // Query the database for the assessment questions based on the job title
+        // Query the database for the assessment questions based on the job title and phase
         const client = await pool.connect();
-        const result = await client.query('SELECT description, question_number FROM tblassessment WHERE position = $1', [selectedJobTitle]);
+        const result = await client.query('SELECT description, question_number FROM tblassessment WHERE position = $1 AND phase = $2', [selectedJobTitle, phase]);
         client.release();
 
         if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'Assessment questions not found for the selected job' });
+            return res.status(404).json({ error: 'Assessment questions not found for the selected job and phase' });
         }
 
         const questions = result.rows;
