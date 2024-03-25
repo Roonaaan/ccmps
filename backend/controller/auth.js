@@ -2,7 +2,6 @@ import pg from 'pg';
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import crypto from 'crypto';
-import stringSimilarity from 'string-similarity';
 
 const pool = new pg.Pool({ // Use 'pg.Pool' instead of 'Pool'
     connectionString: "postgres://default:NpLQ8gFc1dsD@ep-aged-meadow-a1op3qk0-pooler.ap-southeast-1.aws.neon.tech:5432/verceldb?sslmode=require", // Get connection string from environment variable
@@ -382,20 +381,21 @@ export const getUserDetails = async (req, res) => {
 // Roadmap (Video and Assesment(consistof Question and Answer))
 export const getAssessment = async (req, res) => {
     try {
-        // Retrieve the job title from the query parameters
+        // Retrieve the job title and phase from the query parameters
         const selectedJobTitle = req.query.job;
+        const phase = parseInt(req.query.phase);
 
-        if (!selectedJobTitle) {
-            return res.status(400).json({ error: 'No job title provided' });
+        if (!selectedJobTitle || !phase) {
+            return res.status(400).json({ error: 'No job title or phase provided' });
         }
 
-        // Query the database for the video URL based on the job title
+        // Query the database for the video URL based on the job title and phase
         const client = await pool.connect();
-        const result = await client.query('SELECT video FROM tblvideo WHERE position = $1', [selectedJobTitle]);
+        const result = await client.query('SELECT video FROM tblvideo WHERE position = $1 AND phase = $2', [selectedJobTitle, phase]);
         client.release();
 
         if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'Video not found for the selected job' });
+            return res.status(404).json({ error: 'Video not found for the selected job and phase' });
         }
 
         const videoUrl = result.rows[0].video;
