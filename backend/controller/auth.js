@@ -449,16 +449,28 @@ export const submitAnswers = async (req, res) => {
         // Connect to the database
         const client = await pool.connect();
 
-        // Retrieve the correct answers from the database
-        const correctAnswers = await Promise.all(answers.map(async (answer) => {
-            const { question_number, answer: userAnswer } = answer;
-            const queryResult = await client.query('SELECT answer_number FROM tblassessment WHERE question_number = $1', [question_number]);
-            const correctAnswer = queryResult.rows[0]?.answer_number; // Assuming only one correct answer
-            return { question_number, correctAnswer, userAnswer };
-        }));
+        // Retrieve all correct answers from the database in a single query
+        const questionNumbers = answers.map(answer => answer.question_number);
+        const queryResult = await client.query('SELECT question_number, answer_number FROM tblassessment WHERE question_number = ANY($1)', [questionNumbers]);
+        const correctAnswersMap = {};
+        queryResult.rows.forEach(row => {
+            correctAnswersMap[row.question_number] = row.answer_number;
+        });
 
         // Release the database connection
         client.release();
+
+        // Compare user's answers with correct answers
+        const correctAnswers = answers.map(answer => {
+            const { question_number, answer: userAnswer } = answer;
+            const correctAnswer = correctAnswersMap[question_number];
+            return {
+                question_number,
+                correctAnswer,
+                userAnswer,
+                isCorrect: userAnswer === correctAnswer
+            };
+        });
 
         // Send the correct answers back to the client
         res.status(200).json({ correctAnswers });

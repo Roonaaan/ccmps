@@ -109,20 +109,7 @@
 /* Middle Section CSS */
 .middleSection {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  transition: transform 0.5s ease; /* Add transition for sliding animation */
 }
-
-.middleSection.transition-prev {
-  transform: translateX(100%); /* Slide to the right when moving to the previous phase */
-}
-
-.middleSection.transition-next {
-  transform: translateX(-100%); /* Slide to the left when moving to the next phase */
-}
-
 .leftSide {
   display: flex;
   justify-content: center;
@@ -399,7 +386,26 @@
   transition: ease-in 0.3s, color 0.3s;
 }
 
-.prev-button-footer,
-.next-button-footer {
-  display: inline-block;
+/* Video Player and Assesment */
+.videoWrapper {
+  display: flex;
+  margin: 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #33658A;
+  width: 560px;
+  height: 319px;
+}
+
+.assessmentWrapper {
+  display: flex;
+  margin: 0 auto;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+  width: 500px;
+}
+
+.assessmentWrapper h2 {
+  margin-top: 20px;
 }

@@ -21,6 +21,7 @@ const Roadmap = () => {
   const [videoUrl, setVideoUrl] = useState(""); // New state to store video URL
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState([]);
+  const [error, setError] = useState('');
   {/* const [videoEnded, setVideoEnded] = useState(false); */ } // Track if video has ended (just remove the bracket)
 
   useEffect(() => {
@@ -139,9 +140,20 @@ const Roadmap = () => {
 
   // Function to submit answers
   const submitAnswers = async () => {
+    // Check if all questions are answered
+    const unansweredQuestions = questions.filter(question =>
+      !answers.find(answer => answer.question_number === question.question_number)
+    );
+
+    if (unansweredQuestions.length > 0) {
+      // Set error message and highlight unanswered questions
+      setError('Please answer all of the questions');
+      return;
+    }
+
     try {
       // Send POST request to submit answers
-      await fetch('https://ccmps-server-node.vercel.app/api/auth/submit-answers', {
+      const response = await fetch('https://ccmps-server-node.vercel.app/api/auth/submit-answers', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -149,16 +161,20 @@ const Roadmap = () => {
         body: JSON.stringify({ answers })
       });
 
-      // Optionally, you can handle success or show a success message
-      console.log('Answers submitted successfully');
+      // Check if the request was successful
+      if (response.ok) {
+        // Parse the response JSON
+        const data = await response.json();
+        console.log('Correct Answers:', data.correctAnswers);
+        // Optionally, you can handle the correct answers received from the backend
+      } else {
+        // Handle errors if the request fails
+        console.error('Failed to submit answers. Status:', response.status);
+      }
     } catch (error) {
       console.error('Error submitting answers:', error);
-      // Optionally, you can handle errors or show an error message
+      // Optionally, you can handle other errors here
     }
-  };
-
-  const handleProfileClick = () => {
-    navigate("/My-Profile");
   };
 
   // Logout User
@@ -217,44 +233,42 @@ const Roadmap = () => {
     const groupedQuestions = _.groupBy(questions, 'description');
 
     return (
-    <div className="assessmentWrapper">
-      {Object.entries(groupedQuestions).map(([description, questions]) => (
-        <section key={description}>
-          <h2>
-            {description}
-            {/* Add toggle button for the dropdown */}
-            <button className="expand-button" onClick={() => handleToggleDescription(description)}>
-              {expandedDescriptions.includes(description) ? 'Collapse' : 'Expand'}
-            </button>
-          </h2>
-          <ul style={{ display: expandedDescriptions.includes(description) ? 'block' : 'none' }}>
-            {questions.map((question, index) => {
-              // Check if the user's answer matches the correct answer
-              const isCorrect = answers[index] && answers[index].answer === question.correctAnswer;
-              return (
+      <div className="assessmentWrapper">
+        {Object.entries(groupedQuestions).map(([description, groupedQuestions]) => (
+          <section key={description}>
+            <h2>{description}</h2>
+            <ul>
+              {groupedQuestions.map((question, index) => (
                 <li key={index}>
                   <p>Q: {question.question_number}</p>
-                  {/* Add text input for user's answer */}
                   <p>
-                    A: <input type="text" placeholder="Your Answer" onChange={(e) => {
-                      const newAnswers = [...answers];
-                      newAnswers[index] = { question_number: question.question_number, answer: e.target.value };
-                      setAnswers(newAnswers);
-                    }} />
-                    {/* Conditionally render "x" icon for incorrect answer */}
-                    {answers[index] && !isCorrect && <span style={{ color: 'red' }}>x</span>}
+                    A: <input
+                      type="text"
+                      placeholder="Your Answer"
+                      onChange={(e) => {
+                        const newAnswers = [...answers];
+                        const answerIndex = newAnswers.findIndex(ans => ans.question_number === question.question_number);
+                        if (answerIndex !== -1) {
+                          newAnswers[answerIndex] = { question_number: question.question_number, answer: e.target.value };
+                        } else {
+                          newAnswers.push({ question_number: question.question_number, answer: e.target.value });
+                        }
+                        setAnswers(newAnswers);
+                      }}
+                    />
                   </p>
                 </li>
-              );
-            })}
-          </ul>
-        </section>
-      ))}
-      {/* Add button to submit answers */}
-      <button onClick={submitAnswers}>Submit Answers</button>
-    </div>
-  );
-};
+              ))}
+            </ul>
+          </section>
+        ))}
+        {/* Error message for unanswered questions */}
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+        {/* Add button to submit answers */}
+        <button onClick={submitAnswers}>Submit Answers</button>
+      </div>
+    );
+  };
 
   // Function to handle dropdown expansion/collapse
   const handleToggleDescription = (description) => {
