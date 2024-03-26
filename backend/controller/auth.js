@@ -156,7 +156,7 @@ export const resendResetEmail = async (req, res) => {
                     from: 'careercompasbscs@gmail.com', // Sender address
                     to: email, // Receiver address
                     subject: 'Password Reset', // Subject line
-                    text: `To reset your password, click on the following link: https://ccmps.vercel.app/Login/Forgot-Password/Change-Password?token=${resetToken}` // Email body with the reset token link
+                    text: `To reset your password, click on the following link: http://localhost:5173/Login/Forgot-Password/Change-Password?token=${resetToken}` // Email body with the reset token link
                 };
 
                 transporter.sendMail(mailOptions, (error, info) => {
@@ -378,6 +378,93 @@ export const getUserDetails = async (req, res) => {
         res.status(500).json({ success: false, message: "An error occurred" });
     }
 };
-// Roadmap
+// Roadmap (Video and Assesment [consist of Question and Answer])
+// Video
+export const getAssessment = async (req, res) => {
+    try {
+        // Retrieve the job title and phase from the query parameters
+        const selectedJobTitle = req.query.job;
+        const phase = parseInt(req.query.phase);
 
+        if (!selectedJobTitle || !phase) {
+            return res.status(400).json({ error: 'No job title or phase provided' });
+        }
+
+        // Query the database for the video URL based on the job title and phase
+        const client = await pool.connect();
+        const result = await client.query('SELECT video FROM tblvideo WHERE position = $1 AND phase = $2', [selectedJobTitle, phase]);
+        client.release();
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Video not found for the selected job and phase' });
+        }
+
+        const videoUrl = result.rows[0].video;
+        res.json({ videoUrl });
+    } catch (error) {
+        console.error('Error fetching video URL:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+// Question
+export const getQuestions = async (req, res) => {
+    try {
+        // Retrieve the job title and phase from the query parameters
+        const selectedJobTitle = req.query.job;
+        const phase = parseInt(req.query.phase);
+
+        if (!selectedJobTitle || isNaN(phase)) {
+            return res.status(400).json({ error: 'No job title or phase provided' });
+        }
+
+        // Query the database for the assessment questions based on the job title and phase
+        const client = await pool.connect();
+        const result = await client.query('SELECT description, question_number FROM tblassessment WHERE position = $1 AND phase = $2', [selectedJobTitle, phase]);
+        client.release();
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Assessment questions not found for the selected job and phase' });
+        }
+
+        const questions = result.rows;
+        res.json({ questions });
+    } catch (error) {
+        console.error('Error fetching assessment questions:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+// Answer
+export const submitAnswers = async (req, res) => {
+    try {
+        // Extract answers from the request body
+        const { answers } = req.body;
+
+        // Validate that answers are provided
+        if (!answers || !Array.isArray(answers)) {
+            return res.status(400).json({ error: 'Answers are required and must be provided in an array' });
+        }
+
+        // Connect to the database
+        const client = await pool.connect();
+
+        // Retrieve the correct answers from the database
+        const correctAnswers = await Promise.all(answers.map(async (answer) => {
+            const { question_number, answer: userAnswer } = answer;
+            const queryResult = await client.query('SELECT answer_number FROM tblassessment WHERE question_number = $1', [question_number]);
+            const correctAnswer = queryResult.rows[0]?.answer_number; // Assuming only one correct answer
+            return { question_number, correctAnswer, userAnswer };
+        }));
+
+        // Release the database connection
+        client.release();
+
+        // Send the correct answers back to the client
+        res.status(200).json({ correctAnswers });
+    } catch (error) {
+        console.error('Error submitting answers:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
 // Select Jobs

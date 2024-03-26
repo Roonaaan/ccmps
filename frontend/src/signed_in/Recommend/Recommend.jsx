@@ -114,7 +114,7 @@ const Recommend = () => {
     const handleJobClick = (job) => {
         setSelectedJob(job);
         // Store the entire selected job object in session storage
-        sessionStorage.setItem('selectedJob', JSON.stringify(job));
+        sessionStorage.setItem('selectedJobTitle', selectedJob.title, JSON.stringify(job));
     }
 
     // Retrieve the stored job object on component mount
