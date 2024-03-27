@@ -214,14 +214,13 @@ const Roadmap = () => {
   const renderVideo = () => {
     return (
       <div className="videoWrapper">
-        <iframe
-          width="560"
-          height="315"
+        <iframe 
           src={videoUrl}
-          title="YouTube video player"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        ></iframe>
+          width="560" 
+          height="319" 
+          allow="autoplay"
+          >
+        </iframe>
       </div>
     );
     {/* onEnded={() => setVideoEnded(true)} */ } //button is unclickble unless the video is done (add it below the "allowFullScreen")
