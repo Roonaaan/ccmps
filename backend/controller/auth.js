@@ -255,12 +255,10 @@ export const getUserProfile = async (req, res) => {
             // Extract user data
             const { firstname, image } = result.rows[0];
 
-            // Encode image data to base64 for immediate display in the frontend
-            const encodedImage = image ? Buffer.from(image).toString('base64') : null;
-
             const userData = {
                 firstName: firstname,
-                image: encodedImage // Include the encoded image in the response
+                // Include the image data in the response
+                image: image ? Buffer.from(image).toString('base64') : null
             };
 
             res.status(200).json({ success: true, userData });
@@ -376,6 +374,23 @@ export const getUserDetails = async (req, res) => {
     } catch (error) {
         console.error("An unexpected error occurred:", error);
         res.status(500).json({ success: false, message: "An error occurred" });
+    }
+};
+// Max Phase Number
+export const maxPhaseNumber = async (req, res) => {
+    try {
+        const selectedJobTitle = req.query.job; // Get the job position from query parameters
+        const client = await pool.connect();
+
+        // Modify the query to fetch the maximum phase number based on the job position
+        const result = await client.query('SELECT MAX(phase) AS max_phase FROM (SELECT phase FROM tblvideo WHERE position = $1 UNION SELECT phase FROM tblassessment WHERE position = $1) AS combined_tables', [selectedJobTitle]);
+
+        const maxPhaseNumber = result.rows[0].max_phase;
+        client.release();
+        res.json({ maxPhaseNumber });
+    } catch (error) {
+        console.error('Error fetching max phase number:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 };
 // Roadmap (Video and Assesment [consist of Question and Answer])

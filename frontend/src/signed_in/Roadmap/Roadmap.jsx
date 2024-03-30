@@ -15,6 +15,7 @@ const Roadmap = () => {
   const [recommendedJobs, setRecommendJobs] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const [phase, setPhase] = useState(1); // Track current phase
+  const [maxPhase, setMaxPhase] = useState(1); // Default max phase number
   const navigate = useNavigate();
 
   // Video Player and QA
@@ -32,7 +33,7 @@ const Roadmap = () => {
 
   const handleNextClick = () => {
     // Move to the next phase
-    if (phase < 4) {
+    if (phase < 10) {
       const nextPhase = phase + 1;
       setPhase(nextPhase);
       sessionStorage.setItem('phase', nextPhase.toString());
@@ -107,6 +108,29 @@ const Roadmap = () => {
 
     fetchVideoUrl();
   }, [phase]);
+
+  // Max Phase Connection
+  useEffect(() => {
+    const fetchMaxPhaseNumber = async () => {
+      try {
+        // Retrieve job position from session storage
+        const selectedJobTitle = sessionStorage.getItem('selectedJobTitle');
+
+        if (!selectedJobTitle) {
+          console.error("No selected job title found in session storage");
+          return;
+        }
+
+        const response = await fetch(`http://localhost:8800/api/auth/max-phase?job=${encodeURIComponent(selectedJobTitle)}`);
+        const data = await response.json();
+        setMaxPhase(data.maxPhaseNumber);
+      } catch (error) {
+        console.error("Error fetching max phase number:", error);
+      }
+    };
+
+    fetchMaxPhaseNumber();
+  }, []);
 
   // Q&A Connection (Question)
   useEffect(() => {
@@ -219,13 +243,14 @@ const Roadmap = () => {
     return (
       <div className="videoWrapper">
         <iframe
+          src={videoUrl}
           width="560"
           height="315"
-          src={videoUrl}
-          title="YouTube video player"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allow="autoplay"
           allowFullScreen
-        ></iframe>
+          controls
+        >
+        </iframe>
       </div>
     );
     {/* onEnded={() => setVideoEnded(true)} */ } //button is unclickble unless the video is done (add it below the "allowFullScreen")
@@ -240,30 +265,37 @@ const Roadmap = () => {
       <div className="assessmentWrapper">
         {Object.entries(groupedQuestions).map(([description, groupedQuestions]) => (
           <section key={description}>
-            <h2>{description}</h2>
-            <ul>
-              {groupedQuestions.map((question, index) => (
-                <li key={index}>
-                  <p>Q: {question.question_number}</p>
-                  <p>
-                    A: <input
-                      type="text"
-                      placeholder="Your Answer"
-                      onChange={(e) => {
-                        const newAnswers = [...answers];
-                        const answerIndex = newAnswers.findIndex(ans => ans.question_number === question.question_number);
-                        if (answerIndex !== -1) {
-                          newAnswers[answerIndex] = { question_number: question.question_number, answer: e.target.value };
-                        } else {
-                          newAnswers.push({ question_number: question.question_number, answer: e.target.value });
-                        }
-                        setAnswers(newAnswers);
-                      }}
-                    />
-                  </p>
-                </li>
-              ))}
-            </ul>
+            <h2>
+              {description}{' '}
+              <button onClick={() => handleToggleDescription(description)}>
+                {expandedDescriptions.includes(description) ? 'Collapse' : 'Expand'}
+              </button>
+            </h2>
+            {expandedDescriptions.includes(description) && (
+              <ul>
+                {groupedQuestions.map((question, index) => (
+                  <li key={index}>
+                    <p>Q: {question.question_number}</p>
+                    <p>
+                      A: <input
+                        type="text"
+                        placeholder="Your Answer"
+                        onChange={(e) => {
+                          const newAnswers = [...answers];
+                          const answerIndex = newAnswers.findIndex(ans => ans.question_number === question.question_number);
+                          if (answerIndex !== -1) {
+                            newAnswers[answerIndex] = { question_number: question.question_number, answer: e.target.value };
+                          } else {
+                            newAnswers.push({ question_number: question.question_number, answer: e.target.value });
+                          }
+                          setAnswers(newAnswers);
+                        }}
+                      />
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
         ))}
         {/* Error message for unanswered questions */}
@@ -307,7 +339,7 @@ const Roadmap = () => {
       <section className="progressFrame">
         <div className="leftSide">
           <ul className="progressBarList">
-            {[1, 2, 3, 4].map((num) => (
+            {Array.from({ length: maxPhase }, (_, index) => index + 1).map((num) => (
               <li
                 key={num}
                 className={`progressBarItem ${num === phase ? "currentItem" : ""}`}
@@ -321,17 +353,18 @@ const Roadmap = () => {
         </div>
       </section>
 
-      {/* Middle Section */}
+
+      [{/* Middle Section */}
       <div className="middleSection">
         <section className="rightSide">
           <div className="rightsideTitle">
             {/* Display title based on phase */}
             {phase === 1}
           </div>
-          {/* Render video component on every odd phase */}
-          {phase % 2 === 1 && videoUrl && renderVideo()}
-          {/* Render assessment questions on even phases */}
-          {phase % 2 === 0 && questions && renderAssessments()}
+          {/* Render video component */}
+          {videoUrl && renderVideo()}
+          {/* Render assessment questions */}
+          {questions && renderAssessments()}
         </section>
       </div>
       {/* Buttons */}
@@ -352,7 +385,7 @@ const Roadmap = () => {
         >
           NEXT PHASE
         </button>
-      </div>
+      </div>]
       {/* 
       **Remove the Comment and replace the Buttons. This enables to click the "Next Phase" button onced the video is done**
       <div className="button-section-footer">

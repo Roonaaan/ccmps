@@ -20,6 +20,9 @@ const Home = () => {
         const userEmail = sessionStorage.getItem('user');
         if (userEmail) {
           const response = await fetch(`http://localhost:8800/api/auth/user-profile?email=${userEmail}`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch user profile');
+          }
           const data = await response.json();
 
           if (data.success) {
