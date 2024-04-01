@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import _ from 'lodash';
+import _, { max } from 'lodash';
 
 // ROADMAP CSS
 import "./styles/style.css";
 
 import logo from "../../assets/homepage/final-topright-logo.png";
 import defaultImg from "../../assets/signed-in/defaultImg.jpg";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 
 const Roadmap = () => {
   const [userImage, setUserImage] = useState("");
@@ -33,7 +35,7 @@ const Roadmap = () => {
 
   const handleNextClick = () => {
     // Move to the next phase
-    if (phase < 10) {
+    if (phase < maxPhase) {
       const nextPhase = phase + 1;
       setPhase(nextPhase);
       sessionStorage.setItem('phase', nextPhase.toString());
@@ -49,6 +51,29 @@ const Roadmap = () => {
       sessionStorage.setItem('phase', prevPhase.toString());
     }
   };
+
+  // Max Phase Connection
+  useEffect(() => {
+    const fetchMaxPhaseNumber = async () => {
+      try {
+        // Retrieve job position from session storage
+        const selectedJobTitle = sessionStorage.getItem('selectedJobTitle');
+
+        if (!selectedJobTitle) {
+          console.error("No selected job title found in session storage");
+          return;
+        }
+
+        const response = await fetch(`http://localhost:8800/api/auth/max-phase?job=${encodeURIComponent(selectedJobTitle)}`);
+        const data = await response.json();
+        setMaxPhase(data.maxPhaseNumber);
+      } catch (error) {
+        console.error("Error fetching max phase number:", error);
+      }
+    };
+
+    fetchMaxPhaseNumber();
+  }, []);
 
   // User Page Connection
   useEffect(() => {
@@ -88,7 +113,7 @@ const Roadmap = () => {
         }
 
         // Fetch video URL with selected job title and phase as query parameters
-        const response = await fetch(`http://localhost:8800/api/auth/assesments?job=${encodeURIComponent(selectedJobTitle)}&phase=${phase}`);
+        const response = await fetch(`http://localhost:8800/api/auth/assessments?job=${encodeURIComponent(selectedJobTitle)}&phase=${phase}`);
         const data = await response.json();
 
         if (response.ok) {
@@ -97,6 +122,7 @@ const Roadmap = () => {
             setVideoUrl(data.videoUrl);
           } else {
             console.log(`No video found for phase ${phase}`);
+            setVideoUrl(null); // Reset videoUrl if no video found
           }
         } else {
           console.error("Failed to fetch video URL");
@@ -108,29 +134,6 @@ const Roadmap = () => {
 
     fetchVideoUrl();
   }, [phase]);
-
-  // Max Phase Connection
-  useEffect(() => {
-    const fetchMaxPhaseNumber = async () => {
-      try {
-        // Retrieve job position from session storage
-        const selectedJobTitle = sessionStorage.getItem('selectedJobTitle');
-
-        if (!selectedJobTitle) {
-          console.error("No selected job title found in session storage");
-          return;
-        }
-
-        const response = await fetch(`http://localhost:8800/api/auth/max-phase?job=${encodeURIComponent(selectedJobTitle)}`);
-        const data = await response.json();
-        setMaxPhase(data.maxPhaseNumber);
-      } catch (error) {
-        console.error("Error fetching max phase number:", error);
-      }
-    };
-
-    fetchMaxPhaseNumber();
-  }, []);
 
   // Q&A Connection (Question)
   useEffect(() => {
@@ -267,12 +270,12 @@ const Roadmap = () => {
           <section key={description}>
             <h2>
               {description}{' '}
-              <button onClick={() => handleToggleDescription(description)}>
-                {expandedDescriptions.includes(description) ? 'Collapse' : 'Expand'}
+              <button className="dropdownAssessment" onClick={() => handleToggleDescription(description)}>
+                 {expandedDescriptions.includes(description) ? <FontAwesomeIcon icon={faAngleUp} /> : <FontAwesomeIcon icon={faAngleDown} />}
               </button>
             </h2>
             {expandedDescriptions.includes(description) && (
-              <ul>
+               <ul style={{ display: expandedDescriptions.includes(description) ? 'block' : 'none' }}>
                 {groupedQuestions.map((question, index) => (
                   <li key={index}>
                     <p>Q: {question.question_number}</p>
@@ -353,13 +356,10 @@ const Roadmap = () => {
         </div>
       </section>
 
-
-      [{/* Middle Section */}
+      {/* Middle Section */}
       <div className="middleSection">
         <section className="rightSide">
           <div className="rightsideTitle">
-            {/* Display title based on phase */}
-            {phase === 1}
           </div>
           {/* Render video component */}
           {videoUrl && renderVideo()}
@@ -367,6 +367,7 @@ const Roadmap = () => {
           {questions && renderAssessments()}
         </section>
       </div>
+
       {/* Buttons */}
       <div className="button-section-footer">
         <button
@@ -385,7 +386,7 @@ const Roadmap = () => {
         >
           NEXT PHASE
         </button>
-      </div>]
+      </div>
       {/* 
       **Remove the Comment and replace the Buttons. This enables to click the "Next Phase" button onced the video is done**
       <div className="button-section-footer">

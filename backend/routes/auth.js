@@ -35,7 +35,7 @@ router.get("/user-details", getUserDetails);
 router.get("/max-phase", maxPhaseNumber);
 
 // Route for Video Assesment
-router.get("/assesments", getAssessment);
+router.get("/assessments", getAssessment);
 
 // Route for Q&A Assesment (question)
 router.get("/questions", getQuestions);
