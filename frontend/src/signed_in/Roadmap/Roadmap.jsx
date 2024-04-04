@@ -9,6 +9,7 @@ import logo from "../../assets/homepage/final-topright-logo.png";
 import defaultImg from "../../assets/signed-in/defaultImg.jpg";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 
 const Roadmap = () => {
   const [userImage, setUserImage] = useState("");
@@ -153,6 +154,7 @@ const Roadmap = () => {
         const data = await response.json();
 
         if (response.ok) {
+          console.log("Data received:", data); // Log data to inspect it
           setQuestions(data.questions);
         } else {
           console.error("Failed to fetch assessment questions");
@@ -264,6 +266,48 @@ const Roadmap = () => {
   const renderAssessments = () => {
     const groupedQuestions = _.groupBy(questions, 'description');
 
+    const [selectedAnswers, setSelectedAnswers] = useState({}); // State to store selected answers
+    const [answerStatus, setAnswerStatus] = useState({});
+
+    const handleAnswerSelect = (questionNumber, answer) => {
+      setSelectedAnswers({ ...selectedAnswers, [questionNumber]: answer });
+
+      // Retrieve the correct answer for the current question
+      const correctAnswer = questions.find(question => question.question_number === questionNumber).correct_choice;
+
+      // Check if the selected answer matches the correct answer
+      const isCorrect = answer === correctAnswer;
+
+      // Update the answer status state
+      setAnswerStatus({ ...answerStatus, [questionNumber]: isCorrect });
+    };
+
+    const verifyAnswers = () => {
+      let correctAnswers = 0;
+      let hasUnanswered = false;
+
+      // Loop through all questions
+      for (const question of questions) {
+        const selectedAnswer = selectedAnswers[question.question_number];
+        const isCorrect = selectedAnswer === question.correct_choice;
+
+        // Update counters and error message
+        if (selectedAnswer) {
+          correctAnswers += isCorrect ? 1 : 0;
+        } else {
+          hasUnanswered = true;
+        }
+      }
+
+      // Show feedback message and potentially proceed to the next phase
+      if (hasUnanswered) {
+        setError('Please answer all questions before submitting.');
+      } else {
+        // Handle correct/incorrect feedback and potentially proceed (logic not shown here)
+        console.log(`Correct answers: ${correctAnswers} out of ${questions.length}`);
+      }
+    };
+
     return (
       <div className="assessmentWrapper">
         {Object.entries(groupedQuestions).map(([description, groupedQuestions]) => (
@@ -271,30 +315,89 @@ const Roadmap = () => {
             <h2>
               {description}{' '}
               <button className="dropdownAssessment" onClick={() => handleToggleDescription(description)}>
-                 {expandedDescriptions.includes(description) ? <FontAwesomeIcon icon={faAngleUp} /> : <FontAwesomeIcon icon={faAngleDown} />}
+                {expandedDescriptions.includes(description) ? <FontAwesomeIcon icon={faAngleUp} /> : <FontAwesomeIcon icon={faAngleDown} />}
               </button>
             </h2>
             {expandedDescriptions.includes(description) && (
-               <ul style={{ display: expandedDescriptions.includes(description) ? 'block' : 'none' }}>
+              <ul style={{ display: expandedDescriptions.includes(description) ? 'block' : 'none' }}>
                 {groupedQuestions.map((question, index) => (
                   <li key={index}>
                     <p>Q: {question.question_number}</p>
-                    <p>
-                      A: <input
-                        type="text"
-                        placeholder="Your Answer"
-                        onChange={(e) => {
-                          const newAnswers = [...answers];
-                          const answerIndex = newAnswers.findIndex(ans => ans.question_number === question.question_number);
-                          if (answerIndex !== -1) {
-                            newAnswers[answerIndex] = { question_number: question.question_number, answer: e.target.value };
-                          } else {
-                            newAnswers.push({ question_number: question.question_number, answer: e.target.value });
-                          }
-                          setAnswers(newAnswers);
-                        }}
-                      />
-                    </p>
+                    {/* Render multiple-choice options as radio buttons */}
+                    <form>
+                      {/* Check if 'options' property exists before accessing it */}
+                      {question.options && (
+                        <>
+                          <label>
+                            <input
+                              type="radio"
+                              name={`question_${question.question_number}`}
+                              value="A"
+                              onChange={() => handleAnswerSelect(question.question_number, 'A')}
+                              checked={selectedAnswers[question.question_number] === 'A'} // Set checked based on selected answer
+                            />
+                            {question.options.a}
+                            {selectedAnswers[question.question_number] === 'A' && answerStatus[question.question_number] === false && (
+                              <FontAwesomeIcon icon={faTimesCircle} style={{ color: 'red' }} /> // Show red 'x' for incorrect answer
+                            )}
+                            {selectedAnswers[question.question_number] === 'A' && answerStatus[question.question_number] === true && (
+                              <FontAwesomeIcon icon={faCheckCircle} style={{ color: 'green' }} /> // Show green checkmark for correct answer
+                            )}
+                          </label>
+                          <br />
+                          <label>
+                            <input
+                              type="radio"
+                              name={`question_${question.question_number}`}
+                              value="B"
+                              onChange={() => handleAnswerSelect(question.question_number, 'B')}
+                              checked={selectedAnswers[question.question_number] === 'B'} // Set checked based on selected answer
+                            />
+                            {question.options.b}
+                            {selectedAnswers[question.question_number] === 'B' && answerStatus[question.question_number] === false && (
+                              <FontAwesomeIcon icon={faTimesCircle} style={{ color: 'red' }} /> // Show red 'x' for incorrect answer
+                            )}
+                            {selectedAnswers[question.question_number] === 'B' && answerStatus[question.question_number] === true && (
+                              <FontAwesomeIcon icon={faCheckCircle} style={{ color: 'green' }} /> // Show green checkmark for correct answer
+                            )}
+                          </label>
+                          <br />
+                          <label>
+                            <input
+                              type="radio"
+                              name={`question_${question.question_number}`}
+                              value="C"
+                              onChange={() => handleAnswerSelect(question.question_number, 'C')}
+                              checked={selectedAnswers[question.question_number] === 'C'} // Set checked based on selected answer
+                            />
+                            {question.options.c}
+                            {selectedAnswers[question.question_number] === 'C' && answerStatus[question.question_number] === false && (
+                              <FontAwesomeIcon icon={faTimesCircle} style={{ color: 'red' }} /> // Show red 'x' for incorrect answer
+                            )}
+                            {selectedAnswers[question.question_number] === 'C' && answerStatus[question.question_number] === true && (
+                              <FontAwesomeIcon icon={faCheckCircle} style={{ color: 'green' }} /> // Show green checkmark for correct answer
+                            )}
+                          </label>
+                          <br />
+                          <label>
+                            <input
+                              type="radio"
+                              name={`question_${question.question_number}`}
+                              value="D"
+                              onChange={() => handleAnswerSelect(question.question_number, 'D')}
+                              checked={selectedAnswers[question.question_number] === 'D'} // Set checked based on selected answer
+                            />
+                            {question.options.d}
+                            {selectedAnswers[question.question_number] === 'D' && answerStatus[question.question_number] === false && (
+                              <FontAwesomeIcon icon={faTimesCircle} style={{ color: 'red' }} /> // Show red 'x' for incorrect answer
+                            )}
+                            {selectedAnswers[question.question_number] === 'D' && answerStatus[question.question_number] === true && (
+                              <FontAwesomeIcon icon={faCheckCircle} style={{ color: 'green' }} /> // Show green checkmark for correct answer
+                            )}
+                          </label>
+                        </>
+                      )}
+                    </form>
                   </li>
                 ))}
               </ul>
@@ -308,7 +411,6 @@ const Roadmap = () => {
       </div>
     );
   };
-
   // Function to handle dropdown expansion/collapse
   const handleToggleDescription = (description) => {
     setExpandedDescriptions(prevExpandedDescriptions => {

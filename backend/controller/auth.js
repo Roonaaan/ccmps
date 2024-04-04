@@ -435,14 +435,28 @@ export const getQuestions = async (req, res) => {
 
         // Query the database for the assessment questions based on the job title and phase
         const client = await pool.connect();
-        const result = await client.query('SELECT description, question_number FROM tblassessment WHERE position = $1 AND phase = $2', [selectedJobTitle, phase]);
+        const result = await client.query('SELECT description, question_number, a, b, c, d, correct_choice FROM tblassessment WHERE position = $1 AND phase = $2', [selectedJobTitle, phase]);
         client.release();
 
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Assessment questions not found for the selected job and phase' });
         }
 
-        const questions = result.rows;
+        // Handle potential missing data in a database row
+        const questions = result.rows.map(question => {
+            return {
+                description: question.description,
+                question_number: question.question_number,
+                options: {
+                    a: question.a || '', // Set a default value (empty string) if 'a' is missing
+                    b: question.b || '',
+                    c: question.c || '',
+                    d: question.d || '',
+                },
+                correct_choice: question.correct_choice
+            };
+        });
+
         res.json({ questions });
     } catch (error) {
         console.error('Error fetching assessment questions:', error);

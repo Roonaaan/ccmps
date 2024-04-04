@@ -452,8 +452,16 @@
   width: 500px;
 }
 
+.assessmentWrapper li {
+  margin-top: 10px;
+}
+
 .assessmentWrapper h2 {
   margin-top: 20px;
+}
+
+.assessmentWrapper p {
+  font-weight: 600;
 }
 
 .videoWrapper iframe {
