@@ -452,6 +452,10 @@
   width: 500px;
 }
 
+.assessmentWrapper section {
+  width: 500px;
+}
+
 .assessmentWrapper li {
   margin-top: 10px;
 }
@@ -462,6 +466,11 @@
 
 .assessmentWrapper p {
   font-weight: 600;
+}
+
+.assessmentWrapper form {
+  display: flex;
+  flex-direction: column;
 }
 
 .videoWrapper iframe {
