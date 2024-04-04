@@ -51,6 +51,10 @@ const Roadmap = () => {
       const prevPhase = phase - 1;
       setPhase(prevPhase);
       sessionStorage.setItem('phase', prevPhase.toString());
+
+      // Filter out questions for the previous phase
+      const filteredQuestions = questions.filter(question => question.phase === prevPhase);
+      setQuestions(filteredQuestions);
     }
   };
 
@@ -365,7 +369,12 @@ const Roadmap = () => {
         {/* Error message for unanswered questions */}
         {error && <p style={{ color: 'red' }}>{error}</p>}
         {/* Add button to submit answers */}
-        <button onClick={submitAnswers}>Submit Answers</button>
+        <div>
+          {/* Your code for rendering questions */}
+          {questions.length > 0 && (
+            <button onClick={submitAnswers}>Submit Answers</button>
+          )}
+        </div>
       </div>
     );
   };

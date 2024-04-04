@@ -464,7 +464,6 @@ export const getQuestions = async (req, res) => {
     }
 };
 
-{/*
 // Answer
 export const submitAnswers = async (req, res) => {
     try {
@@ -508,6 +507,5 @@ export const submitAnswers = async (req, res) => {
         console.error('Error submitting answers:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
-}; 
-*/}
+};
 // Select Jobs

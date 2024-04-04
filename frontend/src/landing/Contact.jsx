@@ -35,7 +35,7 @@ const Contact = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-    
+
         try {
             const response = await fetch('https://careercompass-818c6.web.app/backend/contact-us/send-email.php', {
                 method: 'POST',
@@ -45,9 +45,9 @@ const Contact = () => {
                 },
                 body: JSON.stringify({ name, email, message }),
             });
-    
+
             const data = await response.json();
-    
+
             if (data.success) {
                 setSuccessMessage('Message sent successfully');
                 setName('');
@@ -85,11 +85,6 @@ const Contact = () => {
                             className="brand"
                             onClick={handleHomeClick}
                         />
-                    </div>
-
-                    <div className="login-container">
-                        <btn className="login-text">Log in</btn>
-                        <btn className="Signup-text">Sign up</btn>
                     </div>
                     {/* Login and About Header
                     <div className="navRight">
@@ -139,7 +134,7 @@ const Contact = () => {
                                     value={message}
                                     onChange={(e) => {
                                         setMessage(e.target.value),
-                                        handleChange(e, message)
+                                            handleChange(e, message)
                                     }}
                                     required
                                 />
@@ -231,10 +226,6 @@ const Contact = () => {
                             >
                                 {" "}
                                 About Us{" "}
-                            </a>
-                            <a href="" className="footerAboutLink">
-                                {" "}
-                                Mission and Vision{" "}
                             </a>
                             <a href="/Contact-Us" className="footerAboutLink" onClick={handleContactClick}>
                                 {" "}
