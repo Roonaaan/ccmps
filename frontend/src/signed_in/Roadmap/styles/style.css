@@ -1,12 +1,13 @@
 /* Navigation Bar CSS */
 .navBar {
   display: flex;
-  justify-content:center;
+  justify-content: center;
   align-items: center;
   width: auto;
   min-height: 70px;
   gap: 40em;
 }
+
 .navBarInner {
   width: 100%;
   height: 100%;
@@ -16,37 +17,45 @@
   margin-left: 32px;
   margin-right: 32px;
 }
+
 .navLogoContainer {
   display: flex;
   align-items: center;
   height: 100%;
 }
+
 .navLogo {
   width: 180px;
   cursor: pointer;
   margin-top: 12px;
   margin-bottom: 12px;
 }
+
 .navProfile {
   display: flex;
   align-items: center;
   height: 100%;
   gap: 10px;
 }
+
 .profileImg {
   aspect-ratio: 1/1;
   height: 30px;
   border-radius: 50%;
   cursor: pointer;
 }
+
 .username {
   color: #27374D;
   font-size: 16px;
 }
+
 .dropdown-modal {
   position: absolute;
-  top: 60px; /* Adjust mo nalang to par depende sa size */
-  right: 20px; /* Adjust mo nalang to par depende sa size */
+  top: 60px;
+  /* Adjust mo nalang to par depende sa size */
+  right: 20px;
+  /* Adjust mo nalang to par depende sa size */
   background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -54,40 +63,48 @@
   z-index: 1000;
   animation: fadeIn 0.3s ease forwards;
 }
+
 @keyframes fadeIn {
   from {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
+
 .dropdown-modal .profile-info {
   display: flex;
   align-items: center;
   padding: 10px;
   border-bottom: 1px solid #ccc;
 }
+
 .dropdown-modal .profile-info img {
   width: 40px;
   height: 40px;
   border-radius: 50%;
   margin-right: 10px;
 }
+
 .dropdown-modal .profile-info .username {
   margin: 0;
   font-size: 16px;
 }
+
 .dropdown-modal ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
 }
+
 .dropdown-modal li {
   padding: 10px;
 }
+
 .dropdown-modal li button {
   background: none;
   border: none;
@@ -95,6 +112,7 @@
   font-size: 16px;
   color: #333;
 }
+
 .dropdown-modal li button:hover {
   color: #007bff;
 }
@@ -110,6 +128,7 @@
 .middleSection {
   display: flex;
 }
+
 .leftSide {
   display: flex;
   justify-content: center;
@@ -117,6 +136,7 @@
   width: 60%;
   height: 100vh;
 }
+
 .progressBarList {
   display: flex;
   list-style-type: none;
@@ -125,6 +145,7 @@
   position: relative;
   z-index: 10;
 }
+
 .progressBarItem {
   padding: 0 20px;
   flex-basis: 0;
@@ -138,7 +159,8 @@
   min-width: 170px;
   position: relative;
 }
-.progressBarItem + .progressBarItem:after{
+
+.progressBarItem+.progressBarItem:after {
   content: "";
   position: absolute;
   left: 0;
@@ -149,6 +171,7 @@
   transform: translateX(-50%);
   z-index: -10;
 }
+
 .phaseCount {
   height: 40px;
   width: 40px;
@@ -162,11 +185,12 @@
   z-index: 10;
   color: transparent;
 }
+
 .phaseCount:after {
   content: "";
   height: 40px;
   width: 40px;
-  background-color:white;
+  background-color: white;
   border: solid #27374D;
   position: absolute;
   left: 50%;
@@ -175,39 +199,46 @@
   border-radius: 50%;
   z-index: -10;
 }
+
 .phaseCount:before {
   content: "";
   height: 10px;
   width: 20px;
-  border-left: 3px solid #4f6f9c ;
-  border-bottom: 3px solid #4f6f9c ;
+  border-left: 3px solid #4f6f9c;
+  border-bottom: 3px solid #4f6f9c;
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -60%) rotate(-45deg);
   transform-origin: center center;
 }
+
 .phaseProgressLabel {
   font-size: 14px;
   font-weight: 600;
-  margin-top: 10px ;
+  margin-top: 10px;
 }
+
 .currentItem .phaseCount:before,
-.currentItem ~ .progressBarItem .phaseCount:before{
+.currentItem~.progressBarItem .phaseCount:before {
   display: none;
 }
-.currentItem ~ .progressBarItem .phaseCount::after{
+
+.currentItem~.progressBarItem .phaseCount::after {
   height: 10px;
   width: 10px;
 }
-.currentItem ~ .progressBarItem .phaseProgressLabel {
+
+.currentItem~.progressBarItem .phaseProgressLabel {
   opacity: 0.5;
 }
+
 .currentItem .phaseCount:after {
   background: #fff;
-  border: 2px solid #27374D ;
+  border: 2px solid #27374D;
 }
-.currentItem .phaseCount{
+
+.currentItem .phaseCount {
   color: #27374D;
 }
 
@@ -238,7 +269,8 @@
   font-size: 18px;
   border: solid 1px;
   align-items: center;
-  padding: 0px 10px;;
+  padding: 0px 10px;
+  ;
   margin: auto;
   display: flex;
   position: relative;
@@ -274,7 +306,8 @@
   font-weight: bold;
   text-align: center;
   text-decoration: none;
-  color: #fff; /* Green text */
+  color: #fff;
+  /* Green text */
   background-color: #27374D;
   border-radius: 10px;
   cursor: pointer;
@@ -284,8 +317,10 @@
 
 /* Hover Effect */
 .button:hover {
-  background-color: #000000; /* Green background */
-  color: #ffffff; /* White text */
+  background-color: #000000;
+  /* Green background */
+  color: #ffffff;
+  /* White text */
 }
 
 /* Active Effect */
@@ -301,7 +336,8 @@
   font-weight: bold;
   text-align: center;
   text-decoration: none;
-  color: #fff; /* Green text */
+  color: #fff;
+  /* Green text */
   background-color: #27374D;
   border-radius: 10px;
   cursor: pointer;
@@ -311,8 +347,10 @@
 
 /* Hover Effect */
 .done-button1:hover {
-  background-color: #000000; /* Green background */
-  color: #ffffff; /* White text */
+  background-color: #000000;
+  /* Green background */
+  color: #ffffff;
+  /* White text */
 }
 
 /* Active Effect */
@@ -328,7 +366,8 @@
   font-weight: bold;
   text-align: center;
   text-decoration: none;
-  color: #fff; /* Green text */
+  color: #fff;
+  /* Green text */
   background-color: #27374D;
   border-radius: 10px;
   cursor: pointer;
@@ -338,8 +377,10 @@
 
 /* Hover Effect */
 .done-button1:hover {
-  background-color: #000000; /* Green background */
-  color: #ffffff; /* White text */
+  background-color: #000000;
+  /* Green background */
+  color: #ffffff;
+  /* White text */
 }
 
 /* Active Effect */
@@ -362,7 +403,8 @@
   font-weight: bold;
   text-align: center;
   text-decoration: none;
-  color: #fff; /* Green text */
+  color: #fff;
+  /* Green text */
   background-color: #27374D;
   border-radius: 10px;
   cursor: pointer;
@@ -378,7 +420,8 @@
   font-weight: bold;
   text-align: center;
   text-decoration: none;
-  color: #fff; /* Green text */
+  color: #fff;
+  /* Green text */
   background-color: #27374D;
   border-radius: 10px;
   cursor: pointer;
@@ -389,12 +432,15 @@
 /* Video Player and Assesment */
 .videoWrapper {
   display: flex;
-  margin: 0 auto;
-  align-items: center;
   justify-content: center;
-  border: 1px solid #33658A;
+  align-items: center;
   width: 560px;
   height: 319px;
+  margin: 30px auto;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: #f5f5f5;
+  overflow: hidden;
 }
 
 .assessmentWrapper {
@@ -406,6 +452,62 @@
   width: 500px;
 }
 
+.assessmentWrapper section {
+  width: 500px;
+}
+
+.assessmentWrapper li {
+  margin-top: 10px;
+}
+
 .assessmentWrapper h2 {
   margin-top: 20px;
+}
+
+.assessmentWrapper p {
+  font-weight: 600;
+}
+
+.assessmentWrapper form {
+  display: flex;
+  flex-direction: column;
+}
+
+.videoWrapper iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.dropdownAssessment {
+  width: 10px;
+  height: 18px;
+  margin-left: 10px;
+  padding: 5px;
+  border-radius: 0%;
+  background-color: transparent;
+  color: #27374D;
+  border: none;
+}
+
+.h2assessment {
+  border: 2px;
+  border-radius: 10%;
+}
+
+.inputAnswer {
+  width: 90%;
+  height: 25px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  padding: 8px;
+  box-sizing: border-box;
+  font-size: 16px;
+  text-align: justify;
+}
+
+/* Style for focus state */
+.inputAnswer:focus {
+  outline: none;
+  border-color: #27374D;
 }

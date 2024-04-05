@@ -7,6 +7,9 @@ import "./styles/style.css";
 
 import logo from "../../assets/homepage/final-topright-logo.png";
 import defaultImg from "../../assets/signed-in/defaultImg.jpg";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 
 const Roadmap = () => {
   const [userImage, setUserImage] = useState("");
@@ -15,13 +18,12 @@ const Roadmap = () => {
   const [recommendedJobs, setRecommendJobs] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const [phase, setPhase] = useState(1); // Track current phase
+  const [maxPhase, setMaxPhase] = useState(1); // Default max phase number
   const navigate = useNavigate();
 
   // Video Player and QA
   const [videoUrl, setVideoUrl] = useState(""); // New state to store video URL
   const [questions, setQuestions] = useState([]);
-  const [answers, setAnswers] = useState([]);
-  const [error, setError] = useState('');
   {/* const [videoEnded, setVideoEnded] = useState(false); */ } // Track if video has ended (just remove the bracket)
 
   useEffect(() => {
@@ -32,7 +34,7 @@ const Roadmap = () => {
 
   const handleNextClick = () => {
     // Move to the next phase
-    if (phase < 4) {
+    if (phase < maxPhase) {
       const nextPhase = phase + 1;
       setPhase(nextPhase);
       sessionStorage.setItem('phase', nextPhase.toString());
@@ -46,8 +48,35 @@ const Roadmap = () => {
       const prevPhase = phase - 1;
       setPhase(prevPhase);
       sessionStorage.setItem('phase', prevPhase.toString());
+
+      // Filter out questions for the previous phase
+      const filteredQuestions = questions.filter(question => question.phase === prevPhase);
+      setQuestions(filteredQuestions);
     }
   };
+
+  // Max Phase Connection
+  useEffect(() => {
+    const fetchMaxPhaseNumber = async () => {
+      try {
+        // Retrieve job position from session storage
+        const selectedJobTitle = sessionStorage.getItem('selectedJobTitle');
+
+        if (!selectedJobTitle) {
+          console.error("No selected job title found in session storage");
+          return;
+        }
+
+        const response = await fetch(`https://ccmps-server-node.vercel.app/api/auth/max-phase?job=${encodeURIComponent(selectedJobTitle)}`);
+        const data = await response.json();
+        setMaxPhase(data.maxPhaseNumber);
+      } catch (error) {
+        console.error("Error fetching max phase number:", error);
+      }
+    };
+
+    fetchMaxPhaseNumber();
+  }, []);
 
   // User Page Connection
   useEffect(() => {
@@ -96,6 +125,7 @@ const Roadmap = () => {
             setVideoUrl(data.videoUrl);
           } else {
             console.log(`No video found for phase ${phase}`);
+            setVideoUrl(null); // Reset videoUrl if no video found
           }
         } else {
           console.error("Failed to fetch video URL");
@@ -126,6 +156,7 @@ const Roadmap = () => {
         const data = await response.json();
 
         if (response.ok) {
+          console.log("Data received:", data); // Log data to inspect it
           setQuestions(data.questions);
         } else {
           console.error("Failed to fetch assessment questions");
@@ -138,43 +169,8 @@ const Roadmap = () => {
     fetchQuestions();
   }, [phase]);
 
-  // Function to submit answers
-  const submitAnswers = async () => {
-    // Check if all questions are answered
-    const unansweredQuestions = questions.filter(question =>
-      !answers.find(answer => answer.question_number === question.question_number)
-    );
-
-    if (unansweredQuestions.length > 0) {
-      // Set error message and highlight unanswered questions
-      setError('Please answer all of the questions');
-      return;
-    }
-
-    try {
-      // Send POST request to submit answers
-      const response = await fetch('https://ccmps-server-node.vercel.app/api/auth/submit-answers', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ answers })
-      });
-
-      // Check if the request was successful
-      if (response.ok) {
-        // Parse the response JSON
-        const data = await response.json();
-        console.log('Correct Answers:', data.correctAnswers);
-        // Optionally, you can handle the correct answers received from the backend
-      } else {
-        // Handle errors if the request fails
-        console.error('Failed to submit answers. Status:', response.status);
-      }
-    } catch (error) {
-      console.error('Error submitting answers:', error);
-      // Optionally, you can handle other errors here
-    }
+  const handleProfileClick = () => {
+    navigate("/My-Profile");
   };
 
   // Logout User
@@ -214,12 +210,14 @@ const Roadmap = () => {
   const renderVideo = () => {
     return (
       <div className="videoWrapper">
-        <iframe 
+        <iframe
           src={videoUrl}
-          width="560" 
-          height="319" 
+          width="560"
+          height="315"
           allow="autoplay"
-          >
+          allowFullScreen
+          controls
+        >
         </iframe>
       </div>
     );
@@ -231,44 +229,145 @@ const Roadmap = () => {
   const renderAssessments = () => {
     const groupedQuestions = _.groupBy(questions, 'description');
 
+    const [selectedAnswers, setSelectedAnswers] = useState({}); // State to store selected answers
+    const [answerStatus, setAnswerStatus] = useState([]);
+    const [error, setError] = useState(null);
+
+    // Retrieve user's email and position from session storage
+    const email = sessionStorage.getItem('user');
+    const position = sessionStorage.getItem('selectedJobTitle');
+
+    // Submit Answers
+    useEffect(() => {
+      // Check if all questions have been answered
+      const allQuestionsAnswered = questions.every(question => selectedAnswers[question.question_number]);
+
+      if (allQuestionsAnswered) {
+        let correctAnswers = 0;
+        let updatedAnswerStatus = {};
+
+        for (const question of questions) {
+          const selectedAnswer = selectedAnswers[question.question_number];
+          const isCorrect = selectedAnswer === question.correct_choice;
+
+          correctAnswers += isCorrect ? 1 : 0;
+
+          updatedAnswerStatus[question.question_number] = isCorrect;
+        }
+
+        setAnswerStatus(updatedAnswerStatus);
+        setError(null); // Clear any previous error message
+        console.log(`Correct answers: ${correctAnswers} out of ${questions.length}`);
+
+        {/* // Prepare data to send to the backend
+        const dataToSend = {
+          email,
+          position,
+          answers: questions.map(question => ({
+            description: question.description,
+            question: question.question,
+            answer: selectedAnswers[question.question_number], // Get user's selected answer
+            result: answerStatus[question.question_number] ? 'correct' : 'incorrect' // Determine result based on answer status
+          }))
+        };
+        */}
+
+        {/* // Send data to the backend
+        fetch('http://localhost:8800/api/auth/answers', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(dataToSend)
+        })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Failed to store answers');
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log(data); // Log success message from the backend
+          })
+          .catch(error => {
+            console.error('Error storing answers:', error);
+          }); */}
+      } else {
+        // Some questions are unanswered
+        setError('Please answer all questions before moving to the next phase.');
+      }
+    }, [selectedAnswers, questions, email, position]);
+
+
+    const handleAnswerSelect = (questionNumber, answer) => {
+      setSelectedAnswers({ ...selectedAnswers, [questionNumber]: answer });
+      // Retrieve the correct answer for the current question
+      const correctAnswer = questions.find(question => question.question_number === questionNumber).correct_choice;
+      // Check if the selected answer matches the correct answer
+      const isCorrect = answer === correctAnswer;
+      // Update the answer status state
+      setAnswerStatus({ ...answerStatus, [questionNumber]: isCorrect });
+    };
+
     return (
       <div className="assessmentWrapper">
-        {Object.entries(groupedQuestions).map(([description, groupedQuestions]) => (
-          <section key={description}>
-            <h2>{description}</h2>
-            <ul>
-              {groupedQuestions.map((question, index) => (
-                <li key={index}>
-                  <p>Q: {question.question_number}</p>
-                  <p>
-                    A: <input
-                      type="text"
-                      placeholder="Your Answer"
-                      onChange={(e) => {
-                        const newAnswers = [...answers];
-                        const answerIndex = newAnswers.findIndex(ans => ans.question_number === question.question_number);
-                        if (answerIndex !== -1) {
-                          newAnswers[answerIndex] = { question_number: question.question_number, answer: e.target.value };
-                        } else {
-                          newAnswers.push({ question_number: question.question_number, answer: e.target.value });
-                        }
-                        setAnswers(newAnswers);
-                      }}
-                    />
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
         {/* Error message for unanswered questions */}
         {error && <p style={{ color: 'red' }}>{error}</p>}
-        {/* Add button to submit answers */}
-        <button onClick={submitAnswers}>Submit Answers</button>
+        {Object.entries(groupedQuestions).map(([description, groupedQuestions]) => (
+          <section key={description}>
+            <h2>
+              {description}{' '}
+              <button className="dropdownAssessment" onClick={() => handleToggleDescription(description)}>
+                {expandedDescriptions.includes(description) ? <FontAwesomeIcon icon={faAngleUp} /> : <FontAwesomeIcon icon={faAngleDown} />}
+              </button>
+            </h2>
+            {expandedDescriptions.includes(description) && (
+              <ul style={{ display: expandedDescriptions.includes(description) ? 'block' : 'none' }}>
+                {groupedQuestions.map((question, index) => (
+                  <li key={index}>
+                    <p>Q: {question.question_number}</p>
+                    {/* Render multiple-choice options as radio buttons */}
+                    <form>
+                      {/* Check if 'options' property exists before accessing it */}
+                      {question.options && (
+                        <>
+                          {Object.entries(question.options).map(([optionKey, optionValue]) => (
+                            <label key={optionKey}>
+                              <input
+                                type="radio"
+                                name={`question_${question.question_number}`}
+                                value={optionKey.toUpperCase()} // Use uppercase letter as value
+                                onChange={() => handleAnswerSelect(question.question_number, optionKey.toUpperCase())}
+                                checked={selectedAnswers[question.question_number] === optionKey.toUpperCase()} // Set checked based on selected answer
+                                disabled={answerStatus[question.question_number] !== undefined} // Disable radio buttons after submission
+                              />
+                              {optionValue}
+                              {answerStatus[question.question_number] !== undefined && ( // Show feedback if answers have been submitted
+                                <div>
+                                  {selectedAnswers[question.question_number] === optionKey.toUpperCase() ? (
+                                    // Display correct/incorrect feedback only for the selected answer
+                                    answerStatus[question.question_number] ? (
+                                      <FontAwesomeIcon icon={faCheckCircle} style={{ color: 'green' }} />
+                                    ) : (
+                                      <FontAwesomeIcon icon={faTimesCircle} style={{ color: 'red' }} />
+                                    )
+                                  ) : null}
+                                </div>
+                              )}
+                            </label>
+                          ))}
+                        </>
+                      )}
+                    </form>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        ))}
       </div>
     );
   };
-
   // Function to handle dropdown expansion/collapse
   const handleToggleDescription = (description) => {
     setExpandedDescriptions(prevExpandedDescriptions => {
@@ -302,7 +401,7 @@ const Roadmap = () => {
       <section className="progressFrame">
         <div className="leftSide">
           <ul className="progressBarList">
-            {[1, 2, 3, 4].map((num) => (
+            {Array.from({ length: maxPhase }, (_, index) => index + 1).map((num) => (
               <li
                 key={num}
                 className={`progressBarItem ${num === phase ? "currentItem" : ""}`}
@@ -320,15 +419,14 @@ const Roadmap = () => {
       <div className="middleSection">
         <section className="rightSide">
           <div className="rightsideTitle">
-            {/* Display title based on phase */}
-            {phase === 1}
           </div>
-          {/* Render video component on every odd phase */}
-          {phase % 2 === 1 && videoUrl && renderVideo()}
-          {/* Render assessment questions on even phases */}
-          {phase % 2 === 0 && questions && renderAssessments()}
+          {/* Render video component */}
+          {videoUrl && renderVideo()}
+          {/* Render assessment questions */}
+          {questions && renderAssessments()}
         </section>
       </div>
+
       {/* Buttons */}
       <div className="button-section-footer">
         <button

@@ -255,12 +255,10 @@ export const getUserProfile = async (req, res) => {
             // Extract user data
             const { firstname, image } = result.rows[0];
 
-            // Encode image data to base64 for immediate display in the frontend
-            const encodedImage = image ? Buffer.from(image).toString('base64') : null;
-
             const userData = {
                 firstName: firstname,
-                image: encodedImage // Include the encoded image in the response
+                // Include the image data in the response
+                image: image ? Buffer.from(image).toString('base64') : null
             };
 
             res.status(200).json({ success: true, userData });
@@ -378,6 +376,23 @@ export const getUserDetails = async (req, res) => {
         res.status(500).json({ success: false, message: "An error occurred" });
     }
 };
+// Max Phase Number
+export const maxPhaseNumber = async (req, res) => {
+    try {
+        const selectedJobTitle = req.query.job; // Get the job position from query parameters
+        const client = await pool.connect();
+
+        // Modify the query to fetch the maximum phase number based on the job position
+        const result = await client.query('SELECT MAX(phase) AS max_phase FROM (SELECT phase FROM tblvideo WHERE position = $1 UNION SELECT phase FROM tblassessment WHERE position = $1) AS combined_tables', [selectedJobTitle]);
+
+        const maxPhaseNumber = result.rows[0].max_phase;
+        client.release();
+        res.json({ maxPhaseNumber });
+    } catch (error) {
+        console.error('Error fetching max phase number:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
 // Roadmap (Video and Assesment [consist of Question and Answer])
 // Video
 export const getAssessment = async (req, res) => {
@@ -420,14 +435,28 @@ export const getQuestions = async (req, res) => {
 
         // Query the database for the assessment questions based on the job title and phase
         const client = await pool.connect();
-        const result = await client.query('SELECT description, question_number FROM tblassessment WHERE position = $1 AND phase = $2', [selectedJobTitle, phase]);
+        const result = await client.query('SELECT description, question_number, a, b, c, d, correct_choice FROM tblassessment WHERE position = $1 AND phase = $2', [selectedJobTitle, phase]);
         client.release();
 
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Assessment questions not found for the selected job and phase' });
         }
 
-        const questions = result.rows;
+        // Handle potential missing data in a database row
+        const questions = result.rows.map(question => {
+            return {
+                description: question.description,
+                question_number: question.question_number,
+                options: {
+                    a: question.a || '', // Set a default value (empty string) if 'a' is missing
+                    b: question.b || '',
+                    c: question.c || '',
+                    d: question.d || '',
+                },
+                correct_choice: question.correct_choice
+            };
+        });
+
         res.json({ questions });
     } catch (error) {
         console.error('Error fetching assessment questions:', error);
@@ -435,48 +464,31 @@ export const getQuestions = async (req, res) => {
     }
 };
 
-// Answer
-export const submitAnswers = async (req, res) => {
+{/*
+// Store Answer
+export const getAnswerStored = async (req, res) => {
     try {
-        // Extract answers from the request body
-        const { answers } = req.body;
+        // Extract data from the request body
+        const { email, position, answers } = req.body;
 
-        // Validate that answers are provided
-        if (!answers || !Array.isArray(answers)) {
-            return res.status(400).json({ error: 'Answers are required and must be provided in an array' });
+        // Construct the SQL query
+        const query = `
+            INSERT INTO tblroadmap (email, position, description, question, answer, result)
+            VALUES ($1, $2, $3, $4, $5, $6)
+        `;
+
+        // Iterate through each answer and execute the SQL query for each one
+        for (const answer of answers) { // Use a different variable name here
+            await pool.query(query, [email, position, answer.description, answer.question, answer.answer, answer.result]);
         }
 
-        // Connect to the database
-        const client = await pool.connect();
-
-        // Retrieve all correct answers from the database in a single query
-        const questionNumbers = answers.map(answer => answer.question_number);
-        const queryResult = await client.query('SELECT question_number, answer_number FROM tblassessment WHERE question_number = ANY($1)', [questionNumbers]);
-        const correctAnswersMap = {};
-        queryResult.rows.forEach(row => {
-            correctAnswersMap[row.question_number] = row.answer_number;
-        });
-
-        // Release the database connection
-        client.release();
-
-        // Compare user's answers with correct answers
-        const correctAnswers = answers.map(answer => {
-            const { question_number, answer: userAnswer } = answer;
-            const correctAnswer = correctAnswersMap[question_number];
-            return {
-                question_number,
-                correctAnswer,
-                userAnswer,
-                isCorrect: userAnswer === correctAnswer
-            };
-        });
-
-        // Send the correct answers back to the client
-        res.status(200).json({ correctAnswers });
+        // Send a success response
+        res.status(200).json({ message: 'Answers stored successfully' });
     } catch (error) {
-        console.error('Error submitting answers:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        // Log the error message for debugging
+        console.error('Error storing answers:', error);
+        res.status(500).json({ error: 'An error occurred while storing the answers' });
     }
 };
+*/}
 // Select Jobs
