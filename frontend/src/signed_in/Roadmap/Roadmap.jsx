@@ -116,7 +116,7 @@ const Roadmap = () => {
         }
 
         // Fetch video URL with selected job title and phase as query parameters
-        const response = await fetch(`https://ccmps-server-node.vercel.app/api/auth/assesments?job=${encodeURIComponent(selectedJobTitle)}&phase=${phase}`);
+        const response = await fetch(`https://ccmps-server-node.vercel.app/api/auth/assessments?job=${encodeURIComponent(selectedJobTitle)}&phase=${phase}`);
         const data = await response.json();
 
         if (response.ok) {
