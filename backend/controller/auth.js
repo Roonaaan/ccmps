@@ -464,48 +464,29 @@ export const getQuestions = async (req, res) => {
     }
 };
 
-// Answer
-export const submitAnswers = async (req, res) => {
+// Store Answer
+export const getAnswerStored = async (req, res) => {
     try {
-        // Extract answers from the request body
-        const { answers } = req.body;
+        // Extract data from the request body
+        const { email, position, answers } = req.body;
 
-        // Validate that answers are provided
-        if (!answers || !Array.isArray(answers)) {
-            return res.status(400).json({ error: 'Answers are required and must be provided in an array' });
+        // Construct the SQL query
+        const query = `
+            INSERT INTO tblroadmap (email, position, description, question, answer, result)
+            VALUES ($1, $2, $3, $4, $5, $6)
+        `;
+
+        // Iterate through each answer and execute the SQL query for each one
+        for (const answer of answers) { // Use a different variable name here
+            await pool.query(query, [email, position, answer.description, answer.question, answer.answer, answer.result]);
         }
 
-        // Connect to the database
-        const client = await pool.connect();
-
-        // Retrieve all correct answers from the database in a single query
-        const questionNumbers = answers.map(answer => answer.question_number);
-        const queryResult = await client.query('SELECT question_number, answer_number FROM tblassessment WHERE question_number = ANY($1)', [questionNumbers]);
-        const correctAnswersMap = {};
-        queryResult.rows.forEach(row => {
-            correctAnswersMap[row.question_number] = row.answer_number;
-        });
-
-        // Release the database connection
-        client.release();
-
-        // Compare user's answers with correct answers
-        const correctAnswers = answers.map(answer => {
-            const { question_number, answer: userAnswer } = answer;
-            const correctAnswer = correctAnswersMap[question_number];
-            return {
-                question_number,
-                correctAnswer,
-                userAnswer,
-                isCorrect: userAnswer === correctAnswer
-            };
-        });
-
-        // Send the correct answers back to the client
-        res.status(200).json({ correctAnswers });
+        // Send a success response
+        res.status(200).json({ message: 'Answers stored successfully' });
     } catch (error) {
-        console.error('Error submitting answers:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        // Log the error message for debugging
+        console.error('Error storing answers:', error);
+        res.status(500).json({ error: 'An error occurred while storing the answers' });
     }
 };
 // Select Jobs

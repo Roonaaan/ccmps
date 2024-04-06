@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import _, { max } from 'lodash';
+import _ from 'lodash';
 
 // ROADMAP CSS
 import "./styles/style.css";
@@ -24,9 +24,6 @@ const Roadmap = () => {
   // Video Player and QA
   const [videoUrl, setVideoUrl] = useState(""); // New state to store video URL
   const [questions, setQuestions] = useState([]);
-  const [answers, setAnswers] = useState([]);
-  const [error, setError] = useState('');
-  const [selectedAnswers, setSelectedAnswers] = useState({});
   {/* const [videoEnded, setVideoEnded] = useState(false); */ } // Track if video has ended (just remove the bracket)
 
   useEffect(() => {
@@ -172,74 +169,6 @@ const Roadmap = () => {
     fetchQuestions();
   }, [phase]);
 
-  {/* // Function to submit answers
-  const submitAnswers = async () => {
-    // Check if all questions are answered
-    const unansweredQuestions = questions.filter(question =>
-      !answers.find(answer => answer.question_number === question.question_number)
-    );
-
-    if (unansweredQuestions.length > 0) {
-      // Set error message and highlight unanswered questions
-      setError('Please answer all of the questions');
-      return;
-    }
-
-    try {
-      // Send POST request to submit answers
-      const response = await fetch('http://localhost:8800/api/auth/submit-answers', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ answers })
-      });
-
-      // Check if the request was successful
-      if (response.ok) {
-        // Parse the response JSON
-        const data = await response.json();
-        console.log('Correct Answers:', data.correctAnswers);
-        // Optionally, you can handle the correct answers received from the backend
-      } else {
-        // Handle errors if the request fails
-        console.error('Failed to submit answers. Status:', response.status);
-      }
-    } catch (error) {
-      console.error('Error submitting answers:', error);
-      // Optionally, you can handle other errors here
-    }
-  };
-  */}
-
-  // Submit Answers
-  const submitAnswers = () => {
-    let correctAnswers = 0;
-    let hasUnanswered = false;
-    let updatedAnswerStatus = {};
-
-    for (const question of questions) {
-      const selectedAnswer = selectedAnswers[question.question_number];
-      const isCorrect = selectedAnswer === question.correct_choice;
-
-      if (selectedAnswer) {
-        correctAnswers += isCorrect ? 1 : 0;
-      } else {
-        hasUnanswered = true;
-      }
-
-      updatedAnswerStatus[question.question_number] = isCorrect;
-    }
-
-    setAnswerStatus(updatedAnswerStatus);
-
-    if (hasUnanswered) {
-      setError('Please answer all questions before submitting.');
-    } else {
-      console.log(`Correct answers: ${correctAnswers} out of ${questions.length}`);
-    }
-  };
-
   const handleProfileClick = () => {
     navigate("/My-Profile");
   };
@@ -277,6 +206,10 @@ const Roadmap = () => {
     setShowDropdown(!showDropdown);
   };
 
+  const handleVideoEnd = () => {
+    setVideoEnded(true);
+  };
+
   // Render the video component
   const renderVideo = () => {
     return (
@@ -288,6 +221,7 @@ const Roadmap = () => {
           allow="autoplay"
           allowFullScreen
           controls
+          onEnded={handleVideoEnd} // Call handleVideoEnd function when the video ends
         >
         </iframe>
       </div>
@@ -298,12 +232,78 @@ const Roadmap = () => {
 
   // Render assessment questions
   const renderAssessments = () => {
+    
     const groupedQuestions = _.groupBy(questions, 'description');
 
     const [selectedAnswers, setSelectedAnswers] = useState({}); // State to store selected answers
-    const [answerStatus, setAnswerStatus] = useState({});
+    const [answerStatus, setAnswerStatus] = useState([]);
     const [error, setError] = useState(null);
 
+    // Retrieve user's email and position from session storage
+    const email = sessionStorage.getItem('user');
+    const position = sessionStorage.getItem('selectedJobTitle');
+
+    // Submit Answers
+    useEffect(() => {
+      // Check if all questions have been answered
+      const allQuestionsAnswered = questions.every(question => selectedAnswers[question.question_number]);
+
+      if (allQuestionsAnswered) {
+        let correctAnswers = 0;
+        let updatedAnswerStatus = {};
+
+        for (const question of questions) {
+          const selectedAnswer = selectedAnswers[question.question_number];
+          const isCorrect = selectedAnswer === question.correct_choice;
+
+          correctAnswers += isCorrect ? 1 : 0;
+
+          updatedAnswerStatus[question.question_number] = isCorrect;
+        }
+
+        setAnswerStatus(updatedAnswerStatus);
+        setError(null); // Clear any previous error message
+        console.log(`Correct answers: ${correctAnswers} out of ${questions.length}`);
+
+        // Prepare data to send to the backend
+        const dataToSend = {
+          email,
+          position,
+          answers: questions.map(question => ({
+            description: question.description,
+            question: question.question,
+            answer: selectedAnswers[question.question_number], // Get user's selected answer
+            result: answerStatus[question.question_number] ? 'correct' : 'incorrect' // Determine result based on answer status
+          }))
+        };
+        
+
+        // Send data to the backend
+        fetch('http://localhost:8800/api/auth/answers', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(dataToSend)
+        })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Failed to store answers');
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log(data); // Log success message from the backend
+          })
+          .catch(error => {
+            console.error('Error storing answers:', error);
+          });
+      } else {
+        // Some questions are unanswered
+        setError('Please answer all questions before moving to the next phase.');
+      }
+    }, [selectedAnswers, questions, email, position]);
+      
 
     const handleAnswerSelect = (questionNumber, answer) => {
       setSelectedAnswers({ ...selectedAnswers, [questionNumber]: answer });
@@ -317,6 +317,8 @@ const Roadmap = () => {
 
     return (
       <div className="assessmentWrapper">
+        {/* Error message for unanswered questions */}
+        {error && <p style={{ color: 'red' }}>{error}</p>}
         {Object.entries(groupedQuestions).map(([description, groupedQuestions]) => (
           <section key={description}>
             <h2>
@@ -343,18 +345,21 @@ const Roadmap = () => {
                                 value={optionKey.toUpperCase()} // Use uppercase letter as value
                                 onChange={() => handleAnswerSelect(question.question_number, optionKey.toUpperCase())}
                                 checked={selectedAnswers[question.question_number] === optionKey.toUpperCase()} // Set checked based on selected answer
+                                disabled={answerStatus[question.question_number] !== undefined} // Disable radio buttons after submission
                               />
                               {optionValue}
-                              {selectedAnswers[question.question_number] === optionKey.toUpperCase() &&
-                                answerStatus[question.question_number] !== undefined && ( // Show feedback if an answer is selected
-                                  <div>
-                                    {answerStatus[question.question_number] ? (
+                              {answerStatus[question.question_number] !== undefined && ( // Show feedback if answers have been submitted
+                                <div>
+                                  {selectedAnswers[question.question_number] === optionKey.toUpperCase() ? (
+                                    // Display correct/incorrect feedback only for the selected answer
+                                    answerStatus[question.question_number] ? (
                                       <FontAwesomeIcon icon={faCheckCircle} style={{ color: 'green' }} />
                                     ) : (
                                       <FontAwesomeIcon icon={faTimesCircle} style={{ color: 'red' }} />
-                                    )}
-                                  </div>
-                                )}
+                                    )
+                                  ) : null}
+                                </div>
+                              )}
                             </label>
                           ))}
                         </>
@@ -366,15 +371,6 @@ const Roadmap = () => {
             )}
           </section>
         ))}
-        {/* Error message for unanswered questions */}
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        {/* Add button to submit answers */}
-        <div>
-          {/* Your code for rendering questions */}
-          {questions.length > 0 && (
-            <button onClick={submitAnswers}>Submit Answers</button>
-          )}
-        </div>
       </div>
     );
   };

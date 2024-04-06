@@ -7,8 +7,8 @@ import { login,
         resendResetEmail, 
         getAssessment, 
         maxPhaseNumber, 
-        getQuestions, 
-        submitAnswers 
+        getQuestions,
+        getAnswerStored
 } from "../controller/auth.js";
 
 const router = express.Router();
@@ -40,7 +40,7 @@ router.get("/assessments", getAssessment);
 // Route for Q&A Assesment (question)
 router.get("/questions", getQuestions);
 
-// Route for Q&A Assesment (answer)
-router.post("/submit-answers", submitAnswers);
+// Route for storing answer
+router.post("/answers", getAnswerStored);
 
 export default router;
