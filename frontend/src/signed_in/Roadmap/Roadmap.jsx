@@ -206,10 +206,6 @@ const Roadmap = () => {
     setShowDropdown(!showDropdown);
   };
 
-  const handleVideoEnd = () => {
-    setVideoEnded(true);
-  };
-
   // Render the video component
   const renderVideo = () => {
     return (
@@ -221,7 +217,6 @@ const Roadmap = () => {
           allow="autoplay"
           allowFullScreen
           controls
-          onEnded={handleVideoEnd} // Call handleVideoEnd function when the video ends
         >
         </iframe>
       </div>
