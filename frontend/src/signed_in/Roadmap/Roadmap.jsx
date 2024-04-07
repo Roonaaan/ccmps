@@ -419,8 +419,6 @@ const Roadmap = () => {
       {/* Middle Section */}
       <div className="middleSection">
         <section className="rightSide">
-          <div className="rightsideTitle">
-          </div>
           {/* Render video component */}
           {videoUrl && renderVideo()}
           {/* Render assessment questions */}
