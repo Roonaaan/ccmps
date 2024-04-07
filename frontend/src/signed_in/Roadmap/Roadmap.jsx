@@ -266,7 +266,7 @@ const Roadmap = () => {
           position,
           answers: questions.map(question => ({
             description: question.description,
-            question: question.question,
+            question: question.question_number, // Use question field directly
             answer: selectedAnswers[question.question_number], // Get user's selected answer
             result: answerStatus[question.question_number] ? 'correct' : 'incorrect' // Determine result based on answer status
           }))
