@@ -111,10 +111,10 @@ const Recommend = () => {
         navigate('/Select-Department');
     }
 
-    const handleJobClick = (job) => {
-        setSelectedJob(job);
-        // Store the entire selected job object in session storage
-        sessionStorage.setItem('selectedJobTitle', selectedJob.title, JSON.stringify(job));
+    const handleJobClick = (job, index) => {
+        setSelectedJob(index); // Store the index of the selected job
+        // Store the title of the selected job in session storage
+        sessionStorage.setItem('selectedJobTitle', job.title);
     }
 
     // Retrieve the stored job object on component mount
@@ -166,7 +166,7 @@ const Recommend = () => {
                                     key={index}
                                     className={`recommendJobContainerPanel ${selectedJob === index ? 'selected' : ''}`}
                                     onClick={() => {
-                                        handleJobClick(job); // Pass the entire job object
+                                        handleJobClick(job, index); // Pass the entire job object and its index
                                         toggleDescription(`job${index + 1}`);
                                     }}
                                 >
