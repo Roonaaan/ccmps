@@ -6,6 +6,7 @@ import { login,
         sendResetEmail, 
         resendResetEmail, 
         getAssessment, 
+        getUserJob,
         saveJob,
         maxPhaseNumber, 
         getQuestions,
@@ -31,6 +32,9 @@ router.get("/user-profile", getUserProfile);
 
 // Route for getting user info
 router.get("/user-details", getUserDetails);
+
+// Route for Getting User Selected Job
+router.get("/get-job", getUserJob);
 
 // Route for Selected Job to store on Database
 router.post("/save-job", saveJob);

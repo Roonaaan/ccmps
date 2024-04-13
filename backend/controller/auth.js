@@ -377,6 +377,35 @@ export const getUserDetails = async (req, res) => {
     }
 };
 
+// Fetch user job
+export const getUserJob = async (req, res) => {
+    try {
+        const userEmail = req.query.email; // Retrieve user's email from query parameter
+
+        // Query to fetch user's selected job from the database
+        const query = `
+            SELECT job_selected
+            FROM tblprofile
+            WHERE email = $1
+        `;
+        
+        // Execute the query with user's email as parameter
+        const result = await pool.query(query, [userEmail]);
+
+        // Check if a job is selected for the user
+        if (result.rows.length > 0 && result.rows[0].job_selected) {
+            // User has already selected a job
+            res.status(200).json({ jobSelected: true });
+        } else {
+            // User has not selected a job yet
+            res.status(200).json({ jobSelected: false });
+        }
+    } catch (error) {
+        console.error("Error fetching user job:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
 // Save Selected Job to the Database
 export const saveJob = async (req, res) => {
     try {

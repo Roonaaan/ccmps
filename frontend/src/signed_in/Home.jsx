@@ -11,6 +11,7 @@ const Home = () => {
   const [userImage, setUserImage] = useState('');
   const [userName, setUserName] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
+  const [hasSelectedJob, setHasSelectedJob] = useState(false); // Track if user has selected a job
   const navigate = useNavigate();
 
   // User Page Connection
@@ -38,6 +39,32 @@ const Home = () => {
     };
 
     fetchUserProfile();
+  }, []);
+
+  // Fetch User Job Connection
+  useEffect(() => {
+    const checkUserJob = async () => {
+      try {
+        const userEmail = sessionStorage.getItem('user');
+        if (userEmail) {
+          const response = await fetch(`http://localhost:8800/api/auth/get-job?email=${userEmail}`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch user job');
+          }
+          const data = await response.json();
+
+          if (data.jobSelected) {
+            setHasSelectedJob(true);
+          } else {
+            setHasSelectedJob(false);
+          }
+        }
+      } catch (error) {
+        console.error('An error occurred', error);
+      }
+    };
+
+    checkUserJob();
   }, []);
 
   const handleProfileClick = () => {
@@ -99,14 +126,14 @@ const Home = () => {
         <section className='createRoadmap'>
           <div className='headerText'>
             <p className='welcomeText'> Welcome to CareerCompass </p>
-            <p className='clickText'> Click to create your own roadmap! </p>
+            <p className='clickText'>{hasSelectedJob ? 'Continue on your progress' : 'Click to create your own roadmap!'}</p>
           </div>
 
           <div className='buttonContainer'>
             <button
               className='createButton'
               onClick={handleRoadmapClick}
-            > CREATE ROADMAP
+            >{hasSelectedJob ? 'CONTINUE PROGRESS' : 'CREATE ROADMAP'}
             </button>
           </div>
         </section>
