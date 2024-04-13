@@ -376,6 +376,32 @@ export const getUserDetails = async (req, res) => {
         res.status(500).json({ success: false, message: "An error occurred" });
     }
 };
+
+// Save Selected Job to the Database
+export const saveJob = async (req, res) => {
+    try {
+        const userEmail = req.query.email;
+        const selectedJobTitle = req.query.job;
+
+        // Check if the user exists
+        const userExistsQuery = 'SELECT * FROM tblprofile WHERE email = $1';
+        const userExistsResult = await pool.query(userExistsQuery, [userEmail]);
+        
+        if (userExistsResult.rows.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Update job selection for the user
+        const updateJobQuery = 'UPDATE tblprofile SET job_selected = $1 WHERE email = $2';
+        await pool.query(updateJobQuery, [selectedJobTitle, userEmail]);
+
+        return res.status(200).json({ message: 'Job selection saved successfully' });
+    } catch (error) {
+        console.error('Error saving job selection:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
 // Max Phase Number
 export const maxPhaseNumber = async (req, res) => {
     try {
@@ -489,4 +515,5 @@ export const getAnswerStored = async (req, res) => {
         res.status(500).json({ error: 'An error occurred while storing the answers' });
     }
 };
+
 // Select Jobs

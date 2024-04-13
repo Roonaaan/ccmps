@@ -125,13 +125,37 @@ const Recommend = () => {
         }
     }, []);
 
-    const handleProceed = () => {
+    const handleProceed = async () => {
         if (selectedJob !== null) {
-            navigate('/Roadmap', { state: { selectedJob, recommendedJobs } }); // Pass selected job and recommended jobs to Roadmap
+            const selectedJobTitle = recommendedJobs[selectedJob].title; // Get the title of the selected job
+            const userEmail = sessionStorage.getItem('user');
+    
+            try {
+                const response = await fetch(`http://localhost:8800/api/auth/save-job?job=${encodeURIComponent(selectedJobTitle)}&email=${userEmail}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+    
+                const data = await response.json();
+    
+                if (response.ok) {
+                    // Proceed to Roadmap if job selection saved successfully
+                    navigate('/Roadmap', { state: { selectedJob, recommendedJobs } });
+                } else {
+                    // Handle error response
+                    console.error('Failed to save job selection:', data.error);
+                    alert('Failed to save job selection. Please try again.');
+                }
+            } catch (error) {
+                console.error('An error occurred while saving job selection:', error);
+                alert('An error occurred while saving job selection. Please try again later.');
+            }
         } else {
             alert('Please select a job before proceeding');
         }
-    }
+    };
 
     return (
         <>
