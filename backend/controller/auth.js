@@ -395,10 +395,11 @@ export const getUserJob = async (req, res) => {
         // Check if a job is selected for the user
         if (result.rows.length > 0 && result.rows[0].job_selected) {
             // User has already selected a job
-            res.status(200).json({ jobSelected: true });
+            const jobTitle = result.rows[0].job_selected;
+            res.status(200).json({ jobSelected: true, jobTitle: jobTitle }); // Include job title in the response
         } else {
             // User has not selected a job yet
-            res.status(200).json({ jobSelected: false });
+            res.status(200).json({ jobSelected: false, jobTitle: null }); // Return null for job title
         }
     } catch (error) {
         console.error("Error fetching user job:", error);

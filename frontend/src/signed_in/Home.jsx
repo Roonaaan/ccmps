@@ -52,18 +52,20 @@ const Home = () => {
             throw new Error('Failed to fetch user job');
           }
           const data = await response.json();
-
+  
           if (data.jobSelected) {
             setHasSelectedJob(true);
+            sessionStorage.setItem('selectedJobTitle', data.jobTitle); // Store the job title in session storage
           } else {
             setHasSelectedJob(false);
+            sessionStorage.removeItem('selectedJobTitle'); // Remove the job title from session storage if no job is selected
           }
         }
       } catch (error) {
         console.error('An error occurred', error);
       }
     };
-
+  
     checkUserJob();
   }, []);
 
@@ -101,8 +103,15 @@ const Home = () => {
   }
 
   const handleRoadmapClick = () => {
-    navigate('/Recommend');
+    if (hasSelectedJob) {
+      // If user has selected a job, directly navigate to the roadmap
+      navigate('/Roadmap'); // Assuming the route to the roadmap is '/Roadmap'
+    } else {
+      // If user hasn't selected a job, navigate to the job selection page
+      navigate('/Recommend');
+    }
   }
+  
   return (
     <>
       <div className='parent'>
