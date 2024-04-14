@@ -111,10 +111,10 @@ const Recommend = () => {
         navigate('/Select-Department');
     }
 
-    const handleJobClick = (job) => {
-        setSelectedJob(job);
-        // Store the entire selected job object in session storage
-        sessionStorage.setItem('selectedJobTitle', selectedJob.title, JSON.stringify(job));
+    const handleJobClick = (job, index) => {
+        setSelectedJob(index); // Store the index of the selected job
+        // Store the title of the selected job in session storage
+        sessionStorage.setItem('selectedJobTitle', job.title);
     }
 
     // Retrieve the stored job object on component mount
@@ -125,13 +125,37 @@ const Recommend = () => {
         }
     }, []);
 
-    const handleProceed = () => {
+    const handleProceed = async () => {
         if (selectedJob !== null) {
-            navigate('/Roadmap', { state: { selectedJob, recommendedJobs } }); // Pass selected job and recommended jobs to Roadmap
+            const selectedJobTitle = recommendedJobs[selectedJob].title; // Get the title of the selected job
+            const userEmail = sessionStorage.getItem('user');
+    
+            try {
+                const response = await fetch(`https://ccmps-server-node.vercel.app/api/auth/save-job?job=${encodeURIComponent(selectedJobTitle)}&email=${userEmail}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+    
+                const data = await response.json();
+    
+                if (response.ok) {
+                    // Proceed to Roadmap if job selection saved successfully
+                    navigate('/Roadmap', { state: { selectedJob, recommendedJobs } });
+                } else {
+                    // Handle error response
+                    console.error('Failed to save job selection:', data.error);
+                    alert('Failed to save job selection. Please try again.');
+                }
+            } catch (error) {
+                console.error('An error occurred while saving job selection:', error);
+                alert('An error occurred while saving job selection. Please try again later.');
+            }
         } else {
             alert('Please select a job before proceeding');
         }
-    }
+    };
 
     return (
         <>
@@ -166,7 +190,7 @@ const Recommend = () => {
                                     key={index}
                                     className={`recommendJobContainerPanel ${selectedJob === index ? 'selected' : ''}`}
                                     onClick={() => {
-                                        handleJobClick(job); // Pass the entire job object
+                                        handleJobClick(job, index); // Pass the entire job object and its index
                                         toggleDescription(`job${index + 1}`);
                                     }}
                                 >

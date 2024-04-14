@@ -11,31 +11,63 @@ const Home = () => {
   const [userImage, setUserImage] = useState('');
   const [userName, setUserName] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
+  const [hasSelectedJob, setHasSelectedJob] = useState(false); // Track if user has selected a job
   const navigate = useNavigate();
 
   // User Page Connection
   useEffect(() => {
     const fetchUserProfile = async () => {
-        try {
-            const userEmail = sessionStorage.getItem('user');
-            if (userEmail) {
-                const response = await fetch(`https://ccmps-server-node.vercel.app/api/auth/user-profile?email=${userEmail}`);
-                const data = await response.json();
+      try {
+        const userEmail = sessionStorage.getItem('user');
+        if (userEmail) {
+          const response = await fetch(`https://ccmps-server-node.vercel.app/api/auth/user-profile?email=${userEmail}`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch user profile');
+          }
+          const data = await response.json();
 
-                if (data.success) {
-                    setUserName(data.userData.firstName);
-                    setUserImage(data.userData.image ? `data:image/jpeg;base64,${data.userData.image}` : userImage);
-                } else {
-                    console.log('Failed to fetch user profile');
-                }
-            }
-        } catch (error) {
-            console.error('An error occurred', error);
+          if (data.success) {
+            setUserName(data.userData.firstName);
+            setUserImage(data.userData.image ? `data:image/jpeg;base64,${data.userData.image}` : userImage);
+          } else {
+            console.log('Failed to fetch user profile');
+          }
         }
+      } catch (error) {
+        console.error('An error occurred', error);
+      }
     };
 
     fetchUserProfile();
-}, []);
+  }, []);
+
+  // Fetch User Job Connection
+  useEffect(() => {
+    const checkUserJob = async () => {
+      try {
+        const userEmail = sessionStorage.getItem('user');
+        if (userEmail) {
+          const response = await fetch(`https://ccmps-server-node.vercel.app/api/auth/get-job?email=${userEmail}`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch user job');
+          }
+          const data = await response.json();
+  
+          if (data.jobSelected) {
+            setHasSelectedJob(true);
+            sessionStorage.setItem('selectedJobTitle', data.jobTitle); // Store the job title in session storage
+          } else {
+            setHasSelectedJob(false);
+            sessionStorage.removeItem('selectedJobTitle'); // Remove the job title from session storage if no job is selected
+          }
+        }
+      } catch (error) {
+        console.error('An error occurred', error);
+      }
+    };
+  
+    checkUserJob();
+  }, []);
 
   const handleProfileClick = () => {
     navigate('/My-Profile');
@@ -71,8 +103,15 @@ const Home = () => {
   }
 
   const handleRoadmapClick = () => {
-    navigate('/Recommend');
+    if (hasSelectedJob) {
+      // If user has selected a job, directly navigate to the roadmap
+      navigate('/Roadmap');
+    } else {
+      // If user hasn't selected a job, navigate to the job selection page
+      navigate('/Recommend');
+    }
   }
+  
   return (
     <>
       <div className='parent'>
@@ -96,14 +135,14 @@ const Home = () => {
         <section className='createRoadmap'>
           <div className='headerText'>
             <p className='welcomeText'> Welcome to CareerCompass </p>
-            <p className='clickText'> Click to create your own roadmap! </p>
+            <p className='clickText'>{hasSelectedJob ? 'Continue on your progress' : 'Click to create your own roadmap!'}</p>
           </div>
 
           <div className='buttonContainer'>
             <button
               className='createButton'
               onClick={handleRoadmapClick}
-            > CREATE ROADMAP
+            >{hasSelectedJob ? 'CONTINUE PROGRESS' : 'CREATE ROADMAP'}
             </button>
           </div>
         </section>

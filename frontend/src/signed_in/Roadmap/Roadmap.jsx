@@ -227,6 +227,7 @@ const Roadmap = () => {
 
   // Render assessment questions
   const renderAssessments = () => {
+    
     const groupedQuestions = _.groupBy(questions, 'description');
 
     const [selectedAnswers, setSelectedAnswers] = useState({}); // State to store selected answers
@@ -259,21 +260,21 @@ const Roadmap = () => {
         setError(null); // Clear any previous error message
         console.log(`Correct answers: ${correctAnswers} out of ${questions.length}`);
 
-        {/* // Prepare data to send to the backend
+        // Prepare data to send to the backend
         const dataToSend = {
           email,
           position,
           answers: questions.map(question => ({
             description: question.description,
-            question: question.question,
+            question: question.question_number, // Use question field directly
             answer: selectedAnswers[question.question_number], // Get user's selected answer
             result: answerStatus[question.question_number] ? 'correct' : 'incorrect' // Determine result based on answer status
           }))
         };
-        */}
+        
 
-        {/* // Send data to the backend
-        fetch('http://localhost:8800/api/auth/answers', {
+        // Send data to the backend
+        fetch('https://ccmps-server-node.vercel.app/api/auth/answers', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -291,13 +292,13 @@ const Roadmap = () => {
           })
           .catch(error => {
             console.error('Error storing answers:', error);
-          }); */}
+          });
       } else {
         // Some questions are unanswered
         setError('Please answer all questions before moving to the next phase.');
       }
     }, [selectedAnswers, questions, email, position]);
-
+      
 
     const handleAnswerSelect = (questionNumber, answer) => {
       setSelectedAnswers({ ...selectedAnswers, [questionNumber]: answer });
@@ -418,8 +419,6 @@ const Roadmap = () => {
       {/* Middle Section */}
       <div className="middleSection">
         <section className="rightSide">
-          <div className="rightsideTitle">
-          </div>
           {/* Render video component */}
           {videoUrl && renderVideo()}
           {/* Render assessment questions */}

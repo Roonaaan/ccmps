@@ -254,12 +254,11 @@
 .rightSide {
   width: 80%;
   padding: 10px;
-}
-
-.rightsideTitle {
-  font-weight: bold;
-  text-align: center;
-  font-size: 21px;
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-direction: row;
+  margin-bottom: 30px;
 }
 
 .taskTitle {
@@ -436,7 +435,7 @@
   align-items: center;
   width: 560px;
   height: 319px;
-  margin: 30px auto;
+  /* margin: 30px auto; */
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   background-color: #f5f5f5;
@@ -444,12 +443,13 @@
 }
 
 .assessmentWrapper {
-  display: flex;
-  margin: 0 auto;
-  align-items: flex-start;
-  justify-content: center;
-  flex-direction: column;
-  width: 500px;
+  /* display: flex; */
+  /* margin: 0 auto; */
+  /* align-items: flex-start; */
+  /* flex-direction: column; */
+  /* width: 500px; */
+  height: 319px;
+  overflow: scroll;
 }
 
 .assessmentWrapper section {

@@ -6,11 +6,12 @@ import { login,
         sendResetEmail, 
         resendResetEmail, 
         getAssessment, 
+        getUserJob,
+        saveJob,
         maxPhaseNumber, 
         getQuestions,
+        getAnswerStored
 } from "../controller/auth.js";
-
-{/* getAnswerStored */}
 
 const router = express.Router();
 
@@ -32,6 +33,12 @@ router.get("/user-profile", getUserProfile);
 // Route for getting user info
 router.get("/user-details", getUserDetails);
 
+// Route for Getting User Selected Job
+router.get("/get-job", getUserJob);
+
+// Route for Selected Job to store on Database
+router.post("/save-job", saveJob);
+
 // Route for Video Assesment
 router.get("/max-phase", maxPhaseNumber);
 
@@ -42,6 +49,6 @@ router.get("/assessments", getAssessment);
 router.get("/questions", getQuestions);
 
 // Route for storing answer
- {/* router.post("/answers", getAnswerStored); */}
+router.post("/answers", getAnswerStored);
 
 export default router;

@@ -376,6 +376,62 @@ export const getUserDetails = async (req, res) => {
         res.status(500).json({ success: false, message: "An error occurred" });
     }
 };
+
+// Fetch user job
+export const getUserJob = async (req, res) => {
+    try {
+        const userEmail = req.query.email; // Retrieve user's email from query parameter
+
+        // Query to fetch user's selected job from the database
+        const query = `
+            SELECT job_selected
+            FROM tblprofile
+            WHERE email = $1
+        `;
+        
+        // Execute the query with user's email as parameter
+        const result = await pool.query(query, [userEmail]);
+
+        // Check if a job is selected for the user
+        if (result.rows.length > 0 && result.rows[0].job_selected) {
+            // User has already selected a job
+            const jobTitle = result.rows[0].job_selected;
+            res.status(200).json({ jobSelected: true, jobTitle: jobTitle }); // Include job title in the response
+        } else {
+            // User has not selected a job yet
+            res.status(200).json({ jobSelected: false, jobTitle: null }); // Return null for job title
+        }
+    } catch (error) {
+        console.error("Error fetching user job:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
+// Save Selected Job to the Database
+export const saveJob = async (req, res) => {
+    try {
+        const userEmail = req.query.email;
+        const selectedJobTitle = req.query.job;
+
+        // Check if the user exists
+        const userExistsQuery = 'SELECT * FROM tblprofile WHERE email = $1';
+        const userExistsResult = await pool.query(userExistsQuery, [userEmail]);
+        
+        if (userExistsResult.rows.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Update job selection for the user
+        const updateJobQuery = 'UPDATE tblprofile SET job_selected = $1 WHERE email = $2';
+        await pool.query(updateJobQuery, [selectedJobTitle, userEmail]);
+
+        return res.status(200).json({ message: 'Job selection saved successfully' });
+    } catch (error) {
+        console.error('Error saving job selection:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
 // Max Phase Number
 export const maxPhaseNumber = async (req, res) => {
     try {
@@ -464,7 +520,6 @@ export const getQuestions = async (req, res) => {
     }
 };
 
-{/*
 // Store Answer
 export const getAnswerStored = async (req, res) => {
     try {
@@ -490,5 +545,5 @@ export const getAnswerStored = async (req, res) => {
         res.status(500).json({ error: 'An error occurred while storing the answers' });
     }
 };
-*/}
+
 // Select Jobs
