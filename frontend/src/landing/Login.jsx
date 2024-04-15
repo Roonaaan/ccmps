@@ -87,7 +87,7 @@ export const Login = ({ onClose }) => {
             <div className="modal">
                 <div className="modal-content">
                     <span className="close" onClick={onClose}>&times;</span>
-                    <div className="container">
+                    <div className="modalContainer">
                         <div className='loginHeader'>
                             <img src={Logo} alt='Logo' className='logo' />
                         </div>

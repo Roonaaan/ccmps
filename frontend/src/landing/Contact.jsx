@@ -218,7 +218,6 @@ const Contact = () => {
                             </div>
                         </div>
                         <div className="footerAbout">
-                            <h1 className="footerAboutHeader"> Our Team </h1>
                             <a
                                 href="/About"
                                 className="footerAboutLink"

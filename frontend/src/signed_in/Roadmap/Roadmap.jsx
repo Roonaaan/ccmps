@@ -24,24 +24,25 @@ const Roadmap = () => {
   // Video Player and QA
   const [videoUrl, setVideoUrl] = useState(""); // New state to store video URL
   const [questions, setQuestions] = useState([]);
-  {/* const [videoEnded, setVideoEnded] = useState(false); */ } // Track if video has ended (just remove the bracket)
 
+  // Phase auto set to 1
   useEffect(() => {
     // Ensure phase is always set to 1 when the component mounts or refreshes
     setPhase(1);
     sessionStorage.setItem('phase', '1');
   }, []);
 
+  // Next Button
   const handleNextClick = () => {
     // Move to the next phase
     if (phase < maxPhase) {
       const nextPhase = phase + 1;
       setPhase(nextPhase);
       sessionStorage.setItem('phase', nextPhase.toString());
-      {/* setVideoEnded(false); */ } // Button is unclickble unless the video is done
     }
   };
 
+  // Previous Button
   const handlePrevClick = () => {
     // Move to the previous phase
     if (phase > 1) {
@@ -179,6 +180,7 @@ const Roadmap = () => {
     navigate("/");
   };
 
+  // Dropdown
   const DropdownModal = ({ logoutHandler }) => {
     return (
       <div className="dropdown-modal">
@@ -221,7 +223,6 @@ const Roadmap = () => {
         </iframe>
       </div>
     );
-    {/* onEnded={() => setVideoEnded(true)} */ } //button is unclickble unless the video is done (add it below the "allowFullScreen")
   };
 
 
@@ -369,6 +370,7 @@ const Roadmap = () => {
       </div>
     );
   };
+
   // Function to handle dropdown expansion/collapse
   const handleToggleDescription = (description) => {
     setExpandedDescriptions(prevExpandedDescriptions => {
@@ -445,27 +447,6 @@ const Roadmap = () => {
           NEXT PHASE
         </button>
       </div>
-      {/* 
-      **Remove the Comment and replace the Buttons. This enables to click the "Next Phase" button onced the video is done**
-      <div className="button-section-footer">
-        <button
-          className="prev-button-footer"
-          onClick={handlePrevClick}
-          disabled={phase === 1 || phase % 2 === 0} // Disable previous button on assessment phases
-          style={{ opacity: (phase === 1 || phase % 2 === 0) ? 0.5 : 1 }}
-        >
-          PREV PHASE
-        </button>
-        <button
-          className="next-button-footer"
-          onClick={handleNextClick}
-          disabled={(phase === 4 && !videoEnded) || (phase % 2 === 0)} // Disable next button on assessment phases and when video not ended
-          style={{ opacity: ((phase === 4 && !videoEnded) || (phase % 2 === 0)) ? 0.5 : 1 }}
-        >
-        NEXT PHASE
-        </button>
-      </div>
-      */}
       {showDropdown && <DropdownModal logoutHandler={handleLogout} />}
     </div>
   );

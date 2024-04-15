@@ -2,6 +2,7 @@ import React, { Fragment, useState } from "react";
 import { features } from "./constants/features";
 import { useNavigate } from "react-router-dom";
 import LoginModal from "./Login";
+import { faFacebookSquare, faGoogle, faYoutube, faGithub } from "@fortawesome/free-brands-svg-icons";
 
 //link Home CSS
 import "./styles/Home.css";
@@ -9,12 +10,13 @@ import "./styles/Home.css";
 //link Images from Assets
 import logo from "../assets/homepage/final-topright-logo.png";
 import footerlogo from "../assets/homepage/footerlogo.png";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Home = () => {
   const Logo = logo;
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
-  
+
   const handleLoginClick = () => {
     setShowModal(true);
   };
@@ -49,16 +51,18 @@ const Home = () => {
 
       {/* Hero */}
       <div className="heroWrapper">
-        <div className="heroInner inner-frame">
-          <p className="header-text">CREATE YOUR OWN ROADMAP</p>
-          <p className="discover-text">
-            Discover your own career path! Input your skills, experience, and
-            our system crafts a personalize roadmap just for you.
-          </p>
-          <div className="heroButtonBar">
-            <btn className="create-Button" onClick={handleLoginClick}>
-              CREATE ROADMAP
-            </btn>
+        <div className="container">
+          <div className="inner-frame">
+            <p className="header-text">CREATE YOUR OWN ROADMAP</p>
+            <p className="discover-text">
+              Discover your own career path! Input your skills, experience, and
+              our system crafts a personalize roadmap just for you.
+            </p>
+            <div className="heroButtonBar">
+              <btn className="create-Button" onClick={handleLoginClick}>
+                CREATE ROADMAP
+              </btn>
+            </div>
           </div>
         </div>
       </div>
@@ -82,12 +86,12 @@ const Home = () => {
                 <div className="featureDiv">
                   <Fragment>
                     <div className="feature">
-                      <p>{feature}</p>
+                      <p className="feature-name">{feature}</p>
                     </div>
                     <div className="featureDescription">
                       <p className="feature-text">{description}</p>
                     </div>
-                    <div>
+                    <div className="feature-image-placeholder">
                       <img className="featureImg" src={image} alt="img" />
                     </div>
                   </Fragment>
@@ -99,44 +103,36 @@ const Home = () => {
         </div>
       </div>
       {/* End of Features */}
+
       {/* Footer */}
       <div className="footerNavbarWrapper">
         <div className="footerNavbarColumn">
           <div className="footerNavbarInner">
             <div className="footerLogoWrapper">
-              <div className="footerNavleft">
-                <a href="#top"><img 
-                  src={footerlogo}
-                  alt="Logo"
-                  className="footerLogo"
-                /></a>
-              </div>
-              <div className="footerConnect">
-                <h1 className="connectWithUsText"> Connect with us </h1>
-                <div style={{ display: "flex", justifyContent: "center" }}>
-                  <span style={{ margin: "0 10px" }}>
-                    <a
-                      href="#facebook"
-                      className="fab fa-facebook-square fa-4x"
-                      style={{ color: "white" }}
-                    >
-                      {""}
-                    </a>
-                  </span>
-                  <span style={{ margin: "0 10px" }}>
-                    <a
-                      href="#google"
-                      className="fab fa-google fa-4x"
-                      style={{ color: "white" }}
-                    >
-                      {""}
-                    </a>
-                  </span>
-                </div>
+                <a href="#top">
+                  <img src={footerlogo} alt="Logo" className="footerLogo" />
+                </a>
+            </div>
+            <div className="footerConnect">
+              <div className ="footerConnectIcon"style={{ display: "flex", justifyContent: "center" }}>
+                <span style={{ margin: "0 10px" }}>
+                  <a href="https://www.facebook.com/people/CareerCompass/61558113852266/" style={{ color: "white" }}>
+                    <FontAwesomeIcon icon={faFacebookSquare} size="4x" />
+                  </a>
+                </span>
+                <span style={{ margin: "0 10px" }}>
+                  <a href="http://www.youtube.com/@CareerCompass-td2oq" style={{ color: "white" }}>
+                    <FontAwesomeIcon icon={faYoutube} size="4x" />
+                  </a>
+                </span>
+                <span style={{ margin: "0 10px" }}>
+                  <a href="https://github.com/Roonaaan/ccmps" style={{ color: "white" }}>
+                    <FontAwesomeIcon icon={faGithub} size="4x" />
+                  </a>
+                </span>
               </div>
             </div>
             <div className="footerAbout">
-              <h1 className="footerAboutHeader"> Our Team </h1>
               <a
                 href="/About"
                 className="footerAboutLink"

@@ -1,7 +1,3 @@
-body {
-  font-size: 16px;
-}
-
 /* Navigation Bar */
 .navigationbarWrapper {
   width: 100%;
@@ -16,14 +12,12 @@ body {
 
 }
 
-.navbarInner { 
-  width: 100%;
+.navbarInner {
+  width: 90%;
   height: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-left: 32px;
-  margin-right: 32px;
 }
 
 .navLeft {
@@ -34,21 +28,19 @@ body {
 
 /* Logo CSS */
 .brand {
-  width: 180px; 
+  width: 180px;
   cursor: pointer;
-  margin-top: 12px;
-  margin-bottom: 12px;
+  position: relative;
 
 }
 
 /* Login/Sign-in CSS */
-.login-container{
+.login-container {
   display: flex;
   justify-content: space-evenly;
 }
 
-
-/* Login Button Interactiveness */
+/* Login Button Interactiveness 
 .login-text {
   display: inline-block;
   color: #343538;
@@ -74,10 +66,11 @@ body {
 
 .login-text:active {
   opacity: 80%;
-
 }
 
-/* Division for Log-in/Sign in */
+*/
+
+/* Division for Log-in/Sign in 
 .division {
   width: 5px;
   height: 30px;
@@ -85,7 +78,7 @@ body {
   
 }
 
-/* Sign up button Interactiveness */
+/* Sign up button Interactiveness 
 .Signup-text {
   display: inline-block;
   color:#343538 ;
@@ -114,7 +107,9 @@ body {
 
 }
 
-/* background-color: red; */
+*/
+
+/* background-color: red; 
 .about {
   padding: 0.7rem 1.1rem;
   border-radius: 50px;
@@ -128,12 +123,14 @@ body {
   border-style: none;
 }
 
-/* MEDIA QUERIES */
-@media (max-width: 900px) {
-  .hamburger {
-    display: flex;
-  }
+*/
 
+/* END OF NAVIGATION BAR CSS */
+
+/* ---------------------------------- */
+
+/* MEDIA QUERIES FOR NAVIGATION BAR */
+@media (max-width: 901px) {
   .navLinksWrapper {
     display: none;
   }
@@ -143,47 +140,58 @@ body {
   }
 
   .navLeft {
-    width: 300px;
+    width: 180px;
   }
 
   .navbarWrapper {
     box-shadow: 5px 2px 25px #cecece;
   }
 
-  .navbarInner {
-    margin: 0 10px;
-  }
 }
 
 @media (max-width: 500px) {
-
-  .signup,
-  .login {
-    font-size: 14px;
-  }
-
-  .signup {
-    margin-left: 10px;
+  .brand {
+    width: 160px;
+    margin: 0px;
   }
 
   .navLeft {
-    min-width: 150px;
+    display: flex;
+    width: 160px;
   }
 
   .navbarInner {
     overflow: hidden;
+    margin: 0px;
   }
 }
 
+/*END OF NAVIGATION BAR CSS */
+
+/* ---------------------------------- */
+
 /*Hero Section */
 .heroWrapper {
-  min-height: 500px; 
+  min-height: 500px;
   background-image: url(/src/assets/homepage/final-hero.jpg);
-  background-size:cover;
+  background-size: cover;
   display: flex;
-  flex-wrap: wrap;
-  justify-content:left;
+  justify-content: center;
   align-items: center;
+  width: auto;
+  margin-right: auto;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  width: 88%;
+  height: 400px;
+  padding: 0;
+  margin: 0;
+
 }
 
 .heroInner {
@@ -191,20 +199,36 @@ body {
   flex-direction: column;
   justify-content: flex-start;
   flex-wrap: wrap;
-  min-width: 100%;
-  min-height: 400px;
   justify-content: center;
-
 }
 
 .discover-text {
   color: white;
   font-size: 20px;
-  margin-left: 30px;
-  margin-right: 80px;
   line-height: 1.5em;
-  width:500px;
+  position: relative;
+}
 
+/* Hero Image */
+.heroImageContainer {
+  display: flex;
+  background-size: 800px;
+  background-repeat: no-repeat;
+}
+
+.heroImage {
+  position: relative;
+  width: 600px;
+  height: 500px;
+}
+
+.dropDown {
+  display: none;
+}
+
+.headerText {
+  font-size: 48px;
+  margin-bottom: 15px;
 }
 
 .dropDown {
@@ -220,59 +244,24 @@ body {
 }
 
 .inner-frame {
-  min-width: 100%;
   display: flex;
   justify-content: flex-start;
   flex-wrap: wrap;
+  width: 45%;
+  gap: 1em;
 
 }
 
 .header-text {
-  display:inline-block;
+  display: inline-block;
   letter-spacing: 1.5px;
   line-height: 1.5em;
-  font-size: 48px; 
+  font-size: 48px;
   color: white;
   font-weight: bold;
   margin: 0px;
-  min-width: 400px;
-  margin-bottom: 25px;
-  margin-left: 30px;
   line-height: 1.5em;
-  margin-top: 20px;
-  margin-right: 680px;
-}
-
-
-
-@media screen and (max-width: 768px) {
- 
-  .header-text {
-    font-size: 40px; 
-
-    
-  }
-  
-  .discover-text,
-  .feature-text,
-  .mainFeaturesText {
-    font-size: 18px;
-    
-  }
-
-
-
-}
-
-@media screen and (max-width: 540px) {
-  
-  .headerText {
-    font-size: 36px; 
-  }
-
-  .login-container {
-    visibility: hidden;
-  }
+  position: relative;
 }
 
 .heroButtonBar {
@@ -283,7 +272,7 @@ body {
   outline-style: none;
   border-style: none;
   width: 100%;
-  margin-top: 60px;
+  margin-top: 50px;
 }
 
 /*Create Button Responsiveness */
@@ -294,11 +283,11 @@ body {
   background-color: #33658A;
   color: white;
   cursor: pointer;
-  padding-top:13px;
-  padding-bottom:13px;
+  padding-top: 13px;
+  padding-bottom: 13px;
   padding-left: 18px;
   padding-right: 18px;
-  margin-left: 30px;
+  position: relative;
   transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
@@ -314,7 +303,261 @@ body {
 
 }
 
-/*Login Button Responsiveness */
+/*Hero Section Media Queries*/
+
+@media (max-width: 1008px) {
+  .inner-frame {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    width: 55%;
+    gap: 1em;
+  }
+
+}
+
+@media (max-width: 826px) {
+  .inner-frame {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    width: 60%;
+    gap: 1em;
+  }
+
+}
+
+@media (max-width: 900px) {
+  .heroImage {
+    width: 100%;
+  }
+
+  .heroImage img {
+    transform: rotate(-90deg) scale(1.2);
+    height: 100vw;
+    object-fit: cover;
+    position: absolute;
+    left: 10%;
+    bottom: 10px;
+  }
+
+  .heroWrapper {
+    align-items: center;
+
+  }
+
+  .signup {
+    margin-top: 20px;
+    width: 0%;
+  }
+
+}
+
+
+@media screen and (max-width: 768px) {
+  .inner-frame {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    width: 60%;
+    gap: 1em;
+  }
+
+  .discover-text,
+  .feature-text,
+  .mainFeaturesText {
+    font-size: 18px;
+
+  }
+}
+
+@media screen and (max-width: 757px) {
+  .inner-frame {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    width: 70%;
+    gap: 1em;
+  }
+}
+
+@media screen and (max-width: 650px) {
+  .inner-frame {
+    width: 80%;
+  }
+}
+
+@media screen and (max-width: 569px) {
+  .inner-frame {
+    width: 90%;
+  }
+}
+
+@media screen and (max-width: 505px) {
+  .navbarInner {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    align-items: center;
+  }
+
+  .inner-frame {
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    align-items: center;
+
+  }
+
+  .header-text {
+    font-size: 40px;
+    min-width: 350px;
+    padding: 0 10px;
+
+  }
+
+  .discover-text {
+    font-size: 16px;
+    min-width: 350px;
+    padding: 0 10px;
+  }
+
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    height: 100%;
+    text-align: center;
+  }
+
+  .heroButtonBar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 550px) {
+  .inputLocation {
+    width: 100%;
+  }
+
+  .heroImage img {
+    bottom: 160px;
+  }
+
+  .headerText {
+    width: 80%;
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .inner-frame {
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+
+  }
+
+  .discover-text {
+    min-width: 300px;
+    font-size: 18px;
+  }
+
+  .header-text {
+    width: 100%;
+    font-size: 40px;
+
+  }
+
+  .create-Button,
+  .login-Button {
+    margin: 0;
+  }
+
+}
+
+@media (max-width: 400px) {
+  .heroWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .header-text {
+    font-size: 36px;
+    min-width: 300px;
+    margin: auto;
+    padding: 0px 20px;
+  }
+
+  .discover-text {
+    font-size: 16px;
+    min-width: 300px;
+    margin-left: 15px;
+    margin-right: 15px;
+    margin-bottom: 15px;
+    padding: 0 10px;
+  }
+
+  .create-Button {
+    margin: 0;
+  }
+
+  .heroButtonBar {
+    margin-top: 30px;
+    margin: auto;
+  }
+
+  .inner-frame {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    margin: auto;
+  }
+
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    margin: auto;
+  }
+}
+
+@media (max-width: 361px) {
+  .header-text {
+    font-size: 30px;
+    min-width: 300px;
+    margin: auto;
+    padding: 0px 20px;
+  }
+
+  .discover-text {
+    font-size: 14px;
+    min-width: 300px;
+    margin-left: 15px;
+    margin-right: 15px;
+    margin-bottom: 15px;
+    padding: 0 10px;
+  }
+}
+
+/*Login Button Responsiveness 
 .login-Button {
   font-size: 18px;
   font-weight: 600;
@@ -340,139 +583,37 @@ body {
   opacity: 80%;
 }
 
+/*END OF HERO SECTION CSS */
 
-/* Hero Image */
-.heroImageContainer {
-  display: flex;
-  background-size: 800px;
-  background-repeat: no-repeat;
-
-}
-
-.heroImage {
-  position: relative;
-  width: 600px;
-  height: 500px;
-}
-
-.arrow {
-  color: #38bc38;
-}
-
-@media (max-width: 900px) {
-  .heroImage {
-    width: 100%;
-  }
-
-  .heroImage img {
-    transform: rotate(-90deg) scale(1.2);
-    height: 100vw;
-    object-fit: cover;
-    position: absolute;
-    left: 10%;
-    bottom: 10px;
-  }
-
-  .heroWrapper {
-    align-items:center;
-    
-    
-  }
-
-  .signup {
-    margin-top: 20px;
-    width: 0%;
-  }
-
-
-@media screen and (min-width: 0px) {
-    .slogan {
-        display: block; 
-    }
-}
-
-  }
-
-  .dropDown {
-    display: none;
-  }
-
-  .headerText {
-    font-size: 48px;
-    margin-bottom: 15px;
-  }
-
-
-@media (max-width: 550px) {
-  .inputLocation {
-    width: 100%;
-  }
-
-  .heroImage img {
-    bottom: 160px;
-  }
-
-  .headerText {
-    width: 80%;
-    font-size: 1.75rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .heroWrapper {
-    display: flex;
-    justify-content: flex-start;
-    align-items:center ;
-  }
-
- .inner-frame {
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  align-items:flex-start ;
- }
-
-  .discover-text {
-    width: 300px;
-    font-size: 16px;
-    margin: 20px;
-  }
-
-  .header-text {
-    width: 300px;
-    margin: 20px;
-    font-size: 30px;
-
-  }
-
-  .create-Button,
-  .login-Button {
-    margin: 0;
-    margin-left: 20px;
-    padding: 10px 15;
-
-  }
-  
-}
+/* ------------------------------------------- */
 
 /* Feature */
+.feature-name {
+  font-weight: bold;
+  font-size: 24px;
+}
+
 .featuresWrapper {
   display: flex;
   flex-direction: column;
 }
 
 .featuresHeading {
-  margin-top: 48px;
-  margin-left: 160px;
-  margin-right: 160px;
-  margin-bottom: 64px;
-  font-size: 1.8rem; 
+  margin: 10px;
+  padding: 20px 40px;
+  font-size: 1.8rem;
   text-align: center;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+
 }
 
-
 .mainFeaturesText {
-  font-size:20px;
+  font-size: 20px;
   color: #27374D;
+  width: 100%;
+  position: relative;
 }
 
 @media screen and (max-width: 1024px) {
@@ -483,11 +624,10 @@ body {
 }
 
 @media screen and (max-width: 768px) {
-  
   .featuresHeading {
-    margin-left: 50px;
-    margin-right: 50px;
-    font-size: 1.5rem; 
+    margin-left: 30px;
+    margin-right: 30px;
+    font-size: 1.5rem;
   }
 
   .mainFeaturesText {
@@ -496,8 +636,8 @@ body {
 }
 
 @media screen and (max-width: 480px) {
-  
   .featuresHeading {
+    padding: 5px;
     margin-left: 20px;
     margin-right: 20px;
     font-size: 1.2rem;
@@ -505,33 +645,51 @@ body {
 
   .mainFeaturesText {
     font-size: 16px;
+    margin: auto;
+    padding: auto;
+  }
+
+  .feature-text {
+    font-size: 16px;
   }
 }
-
 
 .featureTitle {
   display: inline-block;
   font-size: 40px;
-  font-weight: 600;
-  color: #27374D;  
-  margin-bottom: 20px;
-  margin-top: 20px;
-  
+  font-weight: bold;
+  color: #27374D;
+  margin: 15px;
+  padding: 10px;
+  width: auto;
+  position: relative;
+  line-height: 1.5em;
 }
 
+.featuresList {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  width: auto;
+  gap: 2em 2em;
+  padding: 10px;
+  margin: 10px;
+}
 
 @media screen and (max-width: 768px) {
   .featureTitle {
-    font-size: 35px; 
+    font-size: 35px;
   }
 }
 
 @media screen and (max-width: 480px) {
-  .featureTitle, .feature {
-    font-size: 21px; 
+
+  .featureTitle,
+  .feature {
+    font-size: 36px;
   }
 }
-
 
 @media screen and (max-width: 480px) {
   .mainFeaturesText {
@@ -547,34 +705,32 @@ body {
 
 @media screen and (max-width: 768px) {
   .featureDesc {
-    font-size: 1rem; 
+    font-size: 1rem;
     text-align: center;
   }
 }
 
 @media screen and (max-width: 480px) {
   .featureDesc {
-    font-size: 0.9rem; 
+    font-size: 0.9rem;
     text-align: center;
   }
 }
-
-
 
 .featuresListWrapper {
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 1rem; 
-  flex-wrap: wrap; 
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  position: relative;
+  height: fit-content;
 }
-
 
 ::-webkit-scrollbar {
   display: none;
 }
-
 
 .featuresListWrapper {
   scrollbar-width: none;
@@ -582,10 +738,13 @@ body {
 }
 
 @media screen and (min-width: 1100px) {
- .featuresListWrapper {
-  display: flex;
-   flex-direction: row;
- }
+  .featuresListWrapper {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: auto;
+    height: fit-content;
+  }
 }
 
 .featuresList {
@@ -593,34 +752,22 @@ body {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  width: auto; 
+  width: auto;
   gap: 2em 2em;
 }
-
-@media screen and (max-width: 768px) {
-  .featuresList {
-    flex-direction: column;
-    height: auto; 
-    margin: 0.5rem; 
-   
-  }
-}
-
-
 
 .featureDiv {
   flex-direction: column;
   justify-content: center;
   align-items: center;
   background: #f6f7f8;
-  max-width: 340px;
+  max-width: 400px;
   min-height: auto;
+  aspect-ratio: 1/1;
   border-radius: 0.5rem;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.2);
   z-index: 1;
 
-
-  
 }
 
 .fecfec {
@@ -643,7 +790,7 @@ body {
   display: flex;
   justify-content: center;
   text-align: center;
-  
+
 }
 
 .featureDescription {
@@ -663,124 +810,149 @@ body {
   font-size: 20px;
 }
 
-
-@media (max-width: 786px){
+@media (max-width: 786px) {
   .feature {
     display: flex;
     justify-content: center;
-
-  }
-
-  .feature-text {
-    font-size: 18px;
   }
 }
 
 .featureDescription {
   min-height: 130px;
-
 }
 
-@media (max-width: 786px){
+@media (max-width: 786px) {
   .featureDescription {
     text-align: center;
-
   }
 }
 
-
+.feature-image-placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 300px;
+}
 
 .featureImg {
   width: 100%;
   height: 100%;
-  min-width: 340px;
   border-bottom-left-radius: 0.5rem;
   border-bottom-right-radius: 0.5rem;
-
 }
 
-@media (max-width: 480px){
+@media (max-width: 480px) {
   .feature-text {
     font-size: 16px;
   }
 }
 
-
 @media (max-width: 1100px) {
   .featuresListWrapper {
     justify-content: flex-start;
-
-
-  }
-}
-
-@media (max-width: 900px) {
-  .featuresHeading {
-    font-size: 20px;
   }
 }
 
 @media (max-width: 768px) {
   .featureDiv:nth-of-type(2) {
     margin: 0 10px;
-
   }
 
   .featureDiv {
-  justify-content: center;
-  align-items: center;
-
-
-    
-  }
-
-  .feature,
-  .featureDescription {
-    padding: 30px 20px;
- 
+    justify-content: center;
+    align-items: center;
   }
 
   .featuresListWrapper {
     display: flex;
     justify-content: center;
-    
- 
   }
 
   .featureDiv {
     min-width: 350px;
-    
- 
   }
+}
+
+@media (max-width: 400px) {
+
+  .featuresListWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+
+  }
+
+  .featureDiv {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    position: relative;
+    width: 100%;
+    border: none;
+    border-style: none;
+    margin-top: 30px;
+  }
+
+  .featuresList {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 2em;
+  }
+
+  .feature {
+    width: 100%;
+    padding: 10px;
+    margin: 20;
+    font-weight: bold;
+  }
+}
+
+@media screen and (max-width: 361px) {
+  .mainFeaturesText {
+    font-size: 14px;
+  }
+
 }
 
 
 /* Footer */
 .footerNavbarWrapper {
-  bottom: 0;
   width: 100%;
-  margin-top: 10px;
   background-color: #2F4858;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-  
+.footerLogoWrapper img {
+  width: 130px;
 }
 
 .footerNavbarColumn {
-  border-top: 1px solid rgba(52, 53, 56, 0.1);
   width: 100%;
   height: 100%;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
 .footerNavbarInner {
-  margin: 24px 0 0 ;
-  width: 100%;
+  width: 95%;
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
   justify-content: space-between;
 }
 
-.footerLogoWrapper{
+.footerLogoWrapper {
   display: flex;
+  padding: 10px;
+  margin: 10px;
 }
 
 .footerNavLeft {
@@ -792,76 +964,41 @@ body {
 .footerLogo {
   width: 120px;
   cursor: pointer;
-  margin-left: 48px;
-  margin-left: 45ppx;
   flex-grow: 1;
   align-items: center;
 }
-@media screen and (max-width: 900px) {
-  .footerLogo {
-    width: 140px; 
-    margin: 15px 15px; 
-    align-items: center;
-  }
-}
-
-
-@media screen and (max-width: 0px) {
-  .footerLogo {
-    width: 130px; 
-    margin: 15px 15px; 
-    align-items: center;
-  }
-}
-
-
 
 .footerConnect {
   display: flex;
   color: white;
-  font-size: 12px;
+  font-size: 9px;
   align-items: center;
   flex-direction: column;
-  margin-left: 24px;
 }
 
-
-@media screen and (max-width: 768px) {
-  .footerConnect {
-    flex-direction: column; 
-    align-items: center;
-    margin-left: 0; 
-    margin-top: 10px; 
-    
-  }
+.footerConnectIcon {
+  gap: 20px;
 }
-  @media screen and (max-width: 0px) {
-    .footerConnect {
-      flex-direction: column; 
-      align-items: center;
-      margin-left: 0; 
-      margin-top: 10px; 
-     
-    }
-  }
-.footerAbout{
+
+.footerAbout {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   font-size: 15px;
-  font-weight: 700;
   color: white;
-  margin-right: 48px;
-  margin-bottom: 24px;
+  margin: 10px 20px;
+  padding: 10px;
+  gap: 1em;
 }
 
-.footerAboutLink{
+.footerAboutLink {
   margin-top: 4px;
   color: white;
-  font-weight: normal;
-  font-size:15px;
+  font-weight: 700;
+  font-size: 15px;
 }
 
-.underline{
+.underline {
   border-style: solid;
   border-width: 1px;
   border-color: white;
@@ -870,30 +1007,122 @@ body {
 .footerText {
   width: 100%;
   height: 100%;
-  text-align:center;
+  text-align: center;
   color: white;
   font-size: 16px;
-}
-
-
-@media (max-width: 600px) {
-  .footerNavbarInner {
-    flex-direction: column;
-    justify-content: space-between;
-  
-  }
-}
-
-
-
-
-.footerAboutHeader {
-  font-size: 18px;
-  font-weight: 600;
 }
 
 .connectWithUsText {
   font-size: 16px;
 }
 
+@media screen and (max-width: 900px) {
+  .footerLogo {
+    width: 140px;
+    margin: 15px 15px;
+    align-items: center;
+  }
+}
 
+@media screen and (max-width: 0px) {
+  .footerLogo {
+    width: 130px;
+    margin: 15px 15px;
+    align-items: center;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .footerConnect {
+    flex-direction: column;
+    align-items: center;
+    margin-left: 0;
+    margin-top: 10px;
+
+  }
+}
+
+@media screen and (max-width: 0px) {
+  .footerConnect {
+    flex-direction: column;
+    align-items: center;
+    margin-left: 0;
+    margin-top: 10px;
+
+  }
+}
+
+@media (max-width: 600px) {
+  .footerNavbarInner {
+    flex-direction: column;
+    justify-content: space-between;
+
+  }
+}
+
+/* ------------------- */
+@media (max-width: 400px) {
+  .featureTitle {
+    font-size: 30px;
+  }
+
+  .featureDescription {
+    padding: 0px 30px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+  }
+
+  .feature-text {
+    font-size: 14px;
+  }
+
+  .footerNavbarWrapper {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+  }
+
+  .footerNavbarColumn {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    flex-direction: column;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .footerNavbarInner {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footerLogoWrapper {
+    padding: 0;
+    margin: 0;
+  }
+}
+
+@media (max-width: 788px) {
+  .footerNavbarInner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+  }
+
+  .footerLogoWrapper {
+    gap: 2em;
+  }
+}
