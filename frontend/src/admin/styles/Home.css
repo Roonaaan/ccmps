@@ -1,0 +1,107 @@
+.parent-main-frame {
+  display: flex;
+  width: auto;
+  flex-direction: row;
+  height: 100vh;
+}
+
+.dashboard {
+  height: auto;
+  width: 255px;
+  display: flex;
+  justify-content: center;
+  background-color: #f7f8f9;
+}
+
+.dashboard-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.career-compass-logo {
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+  padding: 25px;
+  width: auto;
+  
+}
+
+.career-compass-image {
+  width: 200px;
+}
+
+.dashboard button {
+  margin-bottom: 10px;
+}
+
+ul {
+  display: flex;
+  gap: 0.5em;
+  flex-direction: column;
+}
+
+li {
+  font-size: 16px;
+  font-weight: 500;
+  transition: all ease 0.3s;
+  cursor: pointer;
+  justify-content: flex-start;
+  display: flex;
+  height: 30px;
+  align-items: center;
+  
+}
+
+span {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+li:hover{
+  background-color: #e8eaed;
+}
+
+li:active{
+  background-color: #dedfe0;
+}
+
+.clicked {
+  background-color: #dedfe0; 
+  font-weight: 600
+}
+
+.dashboard-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1em  ;
+}
+
+.dashboard-content h2 {
+  margin-bottom: 10px;
+}
+
+.dashboard-content ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.dashboard-content ul li {
+  padding: 0px 20px;
+  margin: 0px 10px;
+  width: auto;
+  
+}
+
+
+
+.dashboard-content ul li:last-child {
+  border-bottom: none;
+  
+}
+
+.user-icon-image {
+  width: 20px;
+  margin-right: 10px;
+}

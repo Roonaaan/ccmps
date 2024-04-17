@@ -1,0 +1,50 @@
+.statistic-parent-frame {
+  display: flex;
+  justify-content: flex-start;
+  height: 100vh;
+  width: 100%;
+
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: auto;
+  height: auto;
+  margin: 0px 20px;
+}
+
+.stat-header {
+  margin: 15px;
+  padding: 10px;
+}
+
+.stat-table {
+  display: flex;
+  justify-content: flex-start;
+  gap: 1em;
+  margin: 10px;
+  padding: 10px;
+  
+}
+
+.stats {
+  display: flex;
+  justify-content: flex-start;
+  position: relative;
+  width: 100%;
+  height: auto;
+  position: relative;
+
+}
+
+.stat-type {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 200px;
+  height: 200px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
