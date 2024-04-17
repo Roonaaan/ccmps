@@ -228,7 +228,7 @@ const Roadmap = () => {
 
   // Render assessment questions
   const renderAssessments = () => {
-    
+
     const groupedQuestions = _.groupBy(questions, 'description');
 
     const [selectedAnswers, setSelectedAnswers] = useState({}); // State to store selected answers
@@ -272,7 +272,7 @@ const Roadmap = () => {
             result: answerStatus[question.question_number] ? 'correct' : 'incorrect' // Determine result based on answer status
           }))
         };
-        
+
 
         // Send data to the backend
         fetch('http://localhost:8800/api/auth/answers', {
@@ -299,7 +299,7 @@ const Roadmap = () => {
         setError('Please answer all questions before moving to the next phase.');
       }
     }, [selectedAnswers, questions, email, position]);
-      
+
 
     const handleAnswerSelect = (questionNumber, answer) => {
       setSelectedAnswers({ ...selectedAnswers, [questionNumber]: answer });
@@ -401,20 +401,16 @@ const Roadmap = () => {
         </div>
       </header>
 
-      <section className="progressFrame">
-        <div className="leftSide">
-          <ul className="progressBarList">
+      <section className="carousel-container">
+        <div className="carousel-content">
+          <div className="carousel-slide" style={{ transform: `translateX(-${(phase - 1) * 100}%)` }}>
             {Array.from({ length: maxPhase }, (_, index) => index + 1).map((num) => (
-              <li
-                key={num}
-                className={`progressBarItem ${num === phase ? "currentItem" : ""}`}
-              >
+              <div key={num} className={`slide ${num === phase ? "active" : (num === phase - 1 || num === phase + 1) ? "neighbor" : ""}`}>
                 <span className="phaseCount">{num}</span>
-                <span className="phaseProgressLabel">Phase {num}</span>
-              </li>
+                <span className="phaseProgressLabel">Phase</span>
+              </div>
             ))}
-          </ul>
-          <div className="progressDescription"></div>
+          </div>
         </div>
       </section>
 

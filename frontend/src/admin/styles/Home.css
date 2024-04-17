@@ -35,13 +35,13 @@
   margin-bottom: 10px;
 }
 
-ul {
+.parent-main-frame ul {
   display: flex;
   gap: 0.5em;
   flex-direction: column;
 }
 
-li {
+.parent-main-frame li {
   font-size: 16px;
   font-weight: 500;
   transition: all ease 0.3s;
@@ -53,17 +53,17 @@ li {
   
 }
 
-span {
+.parent-main-frame span {
   align-items: center;
   display: flex;
   justify-content: center;
 }
 
-li:hover{
+.parent-main-frame li:hover{
   background-color: #e8eaed;
 }
 
-li:active{
+.parent-main-frame li:active{
   background-color: #dedfe0;
 }
 

@@ -2,7 +2,7 @@ import React, { Fragment, useState } from "react";
 import { features } from "./constants/features";
 import { useNavigate } from "react-router-dom";
 import LoginModal from "./Login";
-import { faFacebookSquare, faGoogle, faYoutube, faGithub } from "@fortawesome/free-brands-svg-icons";
+import { faFacebookSquare, faYoutube, faGithub } from "@fortawesome/free-brands-svg-icons";
 
 //link Home CSS
 import "./styles/Home.css";

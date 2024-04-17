@@ -8,7 +8,7 @@ import profile1 from "../assets/aboutus/ppRonan.jpg";
 import profile2 from "../assets/aboutus/ppBulawan.jpg";
 import profile3 from "../assets/aboutus/ppPajerga.jpg";
 import profile5 from "../assets/aboutus/ppDeJesus.png";
-import profile6 from "../assets/aboutus/ppLucky.jpg";
+import profile6 from "../assets/aboutus/pplucky.jpg";
 import profile7 from "../assets/aboutus/ppMongaya.jpg";
 import profile8 from "../assets/aboutus/ppMabuti.jpg";
 import profile9 from "../assets/aboutus/ppGenove.jpg";
