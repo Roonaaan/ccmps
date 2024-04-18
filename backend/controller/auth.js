@@ -449,6 +449,7 @@ export const maxPhaseNumber = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
 // Roadmap (Video and Assesment [consist of Question and Answer])
 // Video
 export const getAssessment = async (req, res) => {
@@ -546,4 +547,48 @@ export const getAnswerStored = async (req, res) => {
     }
 };
 
+// Save Phase Number
+export const savePhaseNumber = async (req, res) => {
+    try {
+        const { email, phase } = req.query;
+        const client = await pool.connect();
+        const query = `
+            UPDATE tblprofile
+            SET current_phase = $1
+            WHERE email = $2
+        `;
+        const values = [phase, email];
+        await client.query(query, values);
+        client.release();
+        res.status(200).json({ message: "Phase number saved successfully." });
+    } catch (error) {
+        console.error("Error saving phase number:", error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+}
+
+// Retrieve Phase Number
+export const getPhaseNumber = async (req, res) => {
+    try {
+        const { email } = req.query;
+        const client = await pool.connect();
+        const query = `
+            SELECT current_phase
+            FROM tblprofile
+            WHERE email = $1
+        `;
+        const values = [email];
+        const result = await client.query(query, values);
+        client.release();
+        if (result.rows.length > 0) {
+            const phaseNumber = result.rows[0].current_phase;
+            res.status(200).json({ phaseNumber });
+        } else {
+            res.status(404).json({ message: "User not found." });
+        }
+    } catch (error) {
+        console.error("Error retrieving phase number:", error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+}
 // Select Jobs

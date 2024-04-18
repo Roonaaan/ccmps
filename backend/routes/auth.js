@@ -10,7 +10,9 @@ import { login,
         saveJob,
         maxPhaseNumber, 
         getQuestions,
-        getAnswerStored
+        getAnswerStored,
+        savePhaseNumber,
+        getPhaseNumber
 } from "../controller/auth.js";
 
 const router = express.Router();
@@ -51,4 +53,9 @@ router.get("/questions", getQuestions);
 // Route for storing answer
 router.post("/answers", getAnswerStored);
 
+// Route for storing answer
+router.post("/save-phase", savePhaseNumber);
+
+// Route for storing answer
+router.get("/get-phase", getPhaseNumber);
 export default router;

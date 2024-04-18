@@ -14,6 +14,7 @@ import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 const Roadmap = () => {
   const [userImage, setUserImage] = useState("");
   const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
   const [expandedDescriptions, setExpandedDescriptions] = useState([]);
   const [recommendedJobs, setRecommendJobs] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
@@ -33,28 +34,37 @@ const Roadmap = () => {
   }, []);
 
   // Next Button
-  const handleNextClick = () => {
+  const handleNextClick = async () => {
     // Move to the next phase
     if (phase < maxPhase) {
       const nextPhase = phase + 1;
       setPhase(nextPhase);
       sessionStorage.setItem('phase', nextPhase.toString());
+      await savePhaseNumber(userEmail, nextPhase); // Save phase number to the database
     }
   };
 
   // Previous Button
-  const handlePrevClick = () => {
+  const handlePrevClick = async () => {
     // Move to the previous phase
     if (phase > 1) {
       const prevPhase = phase - 1;
       setPhase(prevPhase);
       sessionStorage.setItem('phase', prevPhase.toString());
-
+      await savePhaseNumber(userEmail, prevPhase); // Save phase number to the database
       // Filter out questions for the previous phase
       const filteredQuestions = questions.filter(question => question.phase === prevPhase);
       setQuestions(filteredQuestions);
     }
   };
+
+  useEffect(() => {
+    // Fetch phase number when component mounts
+    const fetchPhaseNumber = async () => {
+      await getPhaseNumber(userEmail);
+    };
+    fetchPhaseNumber();
+  }, [userEmail]);
 
   // Max Phase Connection
   useEffect(() => {
@@ -169,6 +179,47 @@ const Roadmap = () => {
 
     fetchQuestions();
   }, [phase]);
+
+  const savePhaseNumber = async () => {
+    try {
+      const userEmail = sessionStorage.getItem('user'); // Retrieve user's email from session storage
+      const phase = sessionStorage.getItem('phase'); // Retrieve phase number from session storage
+      const response = await fetch(`http://localhost:8800/api/auth/save-phase?email=${userEmail}&phase=${phase}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data.message); // Log success message
+      } else {
+        const errorData = await response.json();
+        console.error(errorData.message); // Log error message
+      }
+    } catch (error) {
+      console.error("Error saving phase number:", error);
+    }
+  }
+  
+  const getPhaseNumber = async () => {
+    try {
+        const userEmail = sessionStorage.getItem('user'); // Retrieve user's email from session storage
+        const response = await fetch(`http://localhost:8800/api/auth/get-phase?email=${userEmail}`);
+        if (response.ok) {
+            const data = await response.json();
+            const phaseNumber = data.phaseNumber;
+            console.log("Phase Number:", phaseNumber);
+            setPhase(phaseNumber); // Set phase state based on the phase number fetched from the backend
+            // Handle routing to the phase based on phaseNumber if needed
+        } else {
+            const errorData = await response.json();
+            console.error(errorData.message); // Log error message
+        }
+    } catch (error) {
+        console.error("Error retrieving phase number:", error);
+    }
+}
 
   const handleProfileClick = () => {
     navigate("/My-Profile");
