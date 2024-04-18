@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import _ from 'lodash';
 
@@ -292,6 +292,8 @@ const Roadmap = () => {
     // Retrieve user's email and position from session storage
     const email = sessionStorage.getItem('user');
     const position = sessionStorage.getItem('selectedJobTitle');
+    const phase = parseInt(sessionStorage.getItem('phase'));
+
 
     // Submit Answers
     useEffect(() => {
@@ -319,11 +321,12 @@ const Roadmap = () => {
         const dataToSend = {
           email,
           position,
+          phase, // Include phase number
           answers: questions.map(question => ({
             description: question.description,
-            question: question.question_number, // Use question field directly
-            answer: selectedAnswers[question.question_number], // Get user's selected answer
-            result: answerStatus[question.question_number] ? 'correct' : 'incorrect' // Determine result based on answer status
+            question: question.question_number,
+            answer: selectedAnswers[question.question_number],
+            result: answerStatus[question.question_number] ? 'correct' : 'incorrect'
           }))
         };
 
@@ -353,6 +356,32 @@ const Roadmap = () => {
         setError('Please answer all questions before moving to the next phase.');
       }
     }, [selectedAnswers, questions, email, position]);
+
+
+    const userEmail = sessionStorage.getItem('user');
+    const answersRetrieved = useRef(false); // Use useRef to track if answers have been retrieved
+    if (userEmail && !answersRetrieved.current) {
+      fetch(`http://localhost:8800/api/auth/retrieve-answers?email=${userEmail}`)
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error('Failed to retrieve answers');
+          }
+        })
+        .then(data => {
+          const fetchedAnswers = data.answers || [];
+          const updatedSelectedAnswers = { ...selectedAnswers }; // Copy existing selected answers
+          fetchedAnswers.forEach(answer => {
+            updatedSelectedAnswers[answer.question] = answer.answer; // Autofill answers for questions based on fetched data
+          });
+          setSelectedAnswers(updatedSelectedAnswers); // Update selected answers state
+          answersRetrieved.current = true; // Set answersRetrieved to true after fetching answers
+        })
+        .catch(error => {
+          console.error('Error retrieving answers:', error);
+        });
+    }
 
 
     const handleAnswerSelect = (questionNumber, answer) => {

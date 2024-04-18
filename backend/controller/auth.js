@@ -388,7 +388,7 @@ export const getUserJob = async (req, res) => {
             FROM tblprofile
             WHERE email = $1
         `;
-        
+
         // Execute the query with user's email as parameter
         const result = await pool.query(query, [userEmail]);
 
@@ -416,7 +416,7 @@ export const saveJob = async (req, res) => {
         // Check if the user exists
         const userExistsQuery = 'SELECT * FROM tblprofile WHERE email = $1';
         const userExistsResult = await pool.query(userExistsQuery, [userEmail]);
-        
+
         if (userExistsResult.rows.length === 0) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -525,17 +525,28 @@ export const getQuestions = async (req, res) => {
 export const getAnswerStored = async (req, res) => {
     try {
         // Extract data from the request body
-        const { email, position, answers } = req.body;
+        const { email, position, phase, answers } = req.body;
+
+        // Check if answers for this user, position, and phase already exist
+        const existingAnswers = await pool.query(
+            `SELECT COUNT(*) AS count FROM tblroadmap WHERE email = $1 AND position = $2 AND phase = $3`,
+            [email, position, phase]
+        );
+
+        // If answers already exist, return a message or handle as needed
+        if (existingAnswers.rows[0].count > 0) {
+            return res.status(400).json({ error: 'Answers for this user, position, and phase already exist' });
+        }
 
         // Construct the SQL query
         const query = `
-            INSERT INTO tblroadmap (email, position, description, question, answer, result)
-            VALUES ($1, $2, $3, $4, $5, $6)
+            INSERT INTO tblroadmap (email, position, phase, description, question, answer, result)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
         `;
 
         // Iterate through each answer and execute the SQL query for each one
         for (const answer of answers) { // Use a different variable name here
-            await pool.query(query, [email, position, answer.description, answer.question, answer.answer, answer.result]);
+            await pool.query(query, [email, position, phase, answer.description, answer.question, answer.answer, answer.result]);
         }
 
         // Send a success response
@@ -546,6 +557,34 @@ export const getAnswerStored = async (req, res) => {
         res.status(500).json({ error: 'An error occurred while storing the answers' });
     }
 };
+
+// Retrieve Answer 
+export const retrieveAnswer = async (req, res) => {
+    try {
+        const userEmail = req.query.email; // Retrieve user's email from request query
+        const client = await pool.connect();
+        const query = `
+            SELECT question, answer
+            FROM tblroadmap
+            WHERE email = $1
+        `;
+        const values = [userEmail];
+        const result = await client.query(query, values);
+        client.release();
+        if (result.rows.length > 0) {
+            const answers = result.rows.map(row => ({
+                question: row.question,
+                answer: row.answer
+            }));
+            res.status(200).json({ answers });
+        } else {
+            res.status(404).json({ message: "No answers found for the user." });
+        }
+    } catch (error) {
+        console.error("Error retrieving answers:", error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+}; 
 
 // Save Phase Number
 export const savePhaseNumber = async (req, res) => {
@@ -565,7 +604,7 @@ export const savePhaseNumber = async (req, res) => {
         console.error("Error saving phase number:", error);
         res.status(500).json({ message: "Internal server error." });
     }
-}
+};
 
 // Retrieve Phase Number
 export const getPhaseNumber = async (req, res) => {
@@ -590,5 +629,5 @@ export const getPhaseNumber = async (req, res) => {
         console.error("Error retrieving phase number:", error);
         res.status(500).json({ message: "Internal server error." });
     }
-}
+};
 // Select Jobs

@@ -1,16 +1,18 @@
 import express from "express";
-import { login, 
-        sendEmail, 
-        getUserProfile, 
-        getUserDetails, 
-        sendResetEmail, 
-        resendResetEmail, 
-        getAssessment, 
+import {
+        login,
+        sendEmail,
+        getUserProfile,
+        getUserDetails,
+        sendResetEmail,
+        resendResetEmail,
+        getAssessment,
         getUserJob,
         saveJob,
-        maxPhaseNumber, 
+        maxPhaseNumber,
         getQuestions,
         getAnswerStored,
+        retrieveAnswer,
         savePhaseNumber,
         getPhaseNumber
 } from "../controller/auth.js";
@@ -53,9 +55,13 @@ router.get("/questions", getQuestions);
 // Route for storing answer
 router.post("/answers", getAnswerStored);
 
+// Route for retrieving answer
+router.get("/retrieve-answers", retrieveAnswer); //temporarily disabled
+
 // Route for storing answer
 router.post("/save-phase", savePhaseNumber);
 
-// Route for storing answer
+// Route for retrieving answer
 router.get("/get-phase", getPhaseNumber);
+
 export default router;
