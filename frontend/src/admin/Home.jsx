@@ -36,21 +36,20 @@ const Home = () => {
         <section className='dashboard'>
           <div className='dashboard-content'>
             <div className='career-compass-logo'>
-              <img src={logo} alt='career-compass-logo' className='career-compass-image'/>
+              <img src={logo} alt='career-compass-logo' className='career-compass-image' />
             </div>
-
             <ul>
-              <li
-                className={selectedItem === 0 ? 'clicked' : ''}
-                onClick={() => handleClick(0)}
-              >
-                <span className='icons'><img src={userIcon} alt="user-icon" className='user-icon-image'/></span>Employees
-              </li>
               <li
                 className={selectedItem === 1 ? 'clicked' : ''}
                 onClick={() => handleClick(1)}
               >
-                <span className='icons'><img src={userStatistic} alt="user-icon" className='user-icon-image'/></span>Statistics
+                <span className='icons'><img src={userStatistic} alt="user-icon" className='user-icon-image' /></span>Home
+              </li>
+              <li
+                className={selectedItem === 0 ? 'clicked' : ''}
+                onClick={() => handleClick(0)}
+              >
+                <span className='icons'><img src={userIcon} alt="user-icon" className='user-icon-image' /></span>Employees
               </li>
             </ul>
           </div>

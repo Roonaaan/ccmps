@@ -14,11 +14,14 @@ import {
         getAnswerStored,
         retrieveAnswer,
         savePhaseNumber,
-        getPhaseNumber
+        getPhaseNumber,
+        adminLogin,
+        getUserInfo
 } from "../controller/auth.js";
 
 const router = express.Router();
-
+ 
+// User Side Routes
 // Route for user login
 router.post("/login", login);
 
@@ -63,5 +66,12 @@ router.post("/save-phase", savePhaseNumber);
 
 // Route for retrieving answer
 router.get("/get-phase", getPhaseNumber);
+
+// Admin Side Routes
+// Route for admin login
+router.post("/admin-login", adminLogin);
+
+// Route for user first name
+router.post("/user-info", getUserInfo);
 
 export default router;

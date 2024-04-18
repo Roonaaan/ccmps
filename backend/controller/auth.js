@@ -10,6 +10,7 @@ const pool = new pg.Pool({ // Use 'pg.Pool' instead of 'Pool'
     }
 });
 
+// User Side
 // Login
 export const login = async (req, res) => {
     let client;
@@ -584,7 +585,7 @@ export const retrieveAnswer = async (req, res) => {
         console.error("Error retrieving answers:", error);
         res.status(500).json({ message: "Internal server error." });
     }
-}; 
+};
 
 // Save Phase Number
 export const savePhaseNumber = async (req, res) => {
@@ -631,3 +632,80 @@ export const getPhaseNumber = async (req, res) => {
     }
 };
 // Select Jobs
+
+
+
+// Admin Side
+// Admin Login
+export const adminLogin = async (req, res) => {
+    let client;
+
+    try {
+        client = await pool.connect();
+        const result = await client.query("SELECT * FROM tblaccount WHERE account_email = $1", [req.body.email]);
+
+        if (result.rows.length === 0) {
+            return res.status(401).json("Admin not found!");
+        }
+
+        const adminUser = result.rows[0];
+
+        // Check if the user's role is 'Admin'
+        if (adminUser.role !== 'Admin') {
+            return res.status(403).json("You are not authorized to login as an admin!");
+        }
+
+        const hashedPassword = adminUser.account_password;
+
+        if (!hashedPassword) {
+            return res.status(400).json("Password not set for this admin!");
+        }
+
+        const isPasswordValid = bcrypt.compareSync(req.body.password, hashedPassword);
+
+        if (!isPasswordValid) {
+            return res.status(401).json("Incorrect email or password!");
+        }
+
+        // If password is valid, proceed with login
+        res.status(200).json(adminUser);
+    } catch (error) {
+        console.error(error); // Log the actual error message
+        res.status(500).json({ error: "Internal server error" }); // Send a generic error message
+    } finally {
+        if (client) {
+            await client.release();
+        }
+    }
+};
+
+// Welcome Back User
+export const getUserInfo = async (req, res) => {
+    try {
+        // Retrieve the email address from the session storage
+        const email = req.body.email || req.session.email;
+
+        // Ensure email is provided
+        if (!email) {
+            return res.status(400).json({ message: 'Email address is required' });
+        }
+
+        // Retrieve user information from the database based on the email address
+        const client = await pool.connect();
+        const result = await client.query('SELECT firstname FROM tblaccount WHERE account_email = $1', [email]);
+
+        if (result.rows.length === 0) {
+            // If user not found, return 404 status code
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Extract user's first name from the database result
+        const firstName = result.rows[0].firstname;
+
+        // Send the user's information in the response
+        res.status(200).json({ firstName });
+    } catch (error) {
+        console.error('Error fetching user information:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
