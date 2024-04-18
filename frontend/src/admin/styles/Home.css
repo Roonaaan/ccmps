@@ -105,3 +105,8 @@
   width: 20px;
   margin-right: 10px;
 }
+
+.selected-content {
+  width: 100%;
+  display: flex;
+}

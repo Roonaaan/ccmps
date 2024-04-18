@@ -10,11 +10,8 @@ import userStatistic from "../assets/admin/statistics.png";
 import EmployeesDashboard from "./dashboard/EmployeeDashboard";
 import StatisticsDashboard from "./dashboard/StatisticsDashboard";
 
-
-
-
 const Home = () => {
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(1); // Set default to 1 for Statistics
 
   const handleClick = (index) => {
     setSelectedItem(index);
@@ -26,8 +23,6 @@ const Home = () => {
         return <EmployeesDashboard />;
       case 1:
         return <StatisticsDashboard />;
-      case 2:
-        return <RoadmapDashboard />;
       default:
         return null;
     }
@@ -55,7 +50,6 @@ const Home = () => {
               >
                 <span className='icons'><img src={userStatistic} alt="user-icon" className='user-icon-image'/></span>Statistics
               </li>
-              
             </ul>
           </div>
         </section>
