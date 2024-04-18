@@ -58,6 +58,7 @@ const Roadmap = () => {
     }
   };
 
+  // Fetch Phase Number 
   useEffect(() => {
     // Fetch phase number when component mounts
     const fetchPhaseNumber = async () => {
@@ -180,6 +181,7 @@ const Roadmap = () => {
     fetchQuestions();
   }, [phase]);
 
+  // Save Phase Number
   const savePhaseNumber = async () => {
     try {
       const userEmail = sessionStorage.getItem('user'); // Retrieve user's email from session storage
@@ -201,25 +203,27 @@ const Roadmap = () => {
       console.error("Error saving phase number:", error);
     }
   }
-  
+
+  // Retrive Phase Number (Autosave Phase Number)
   const getPhaseNumber = async () => {
     try {
-        const userEmail = sessionStorage.getItem('user'); // Retrieve user's email from session storage
-        const response = await fetch(`http://localhost:8800/api/auth/get-phase?email=${userEmail}`);
-        if (response.ok) {
-            const data = await response.json();
-            const phaseNumber = data.phaseNumber;
-            console.log("Phase Number:", phaseNumber);
-            setPhase(phaseNumber); // Set phase state based on the phase number fetched from the backend
-            // Handle routing to the phase based on phaseNumber if needed
-        } else {
-            const errorData = await response.json();
-            console.error(errorData.message); // Log error message
-        }
+      const userEmail = sessionStorage.getItem('user'); // Retrieve user's email from session storage
+      const response = await fetch(`http://localhost:8800/api/auth/get-phase?email=${userEmail}`);
+      if (response.ok) {
+        const data = await response.json();
+        const phaseNumber = data.phaseNumber;
+        console.log("Phase Number:", phaseNumber);
+        setPhase(phaseNumber); // Set phase state based on the phase number fetched from the backend
+        sessionStorage.setItem('phase', phaseNumber); // Store phase number in session storage
+        // Handle routing to the phase based on phaseNumber if needed
+      } else {
+        const errorData = await response.json();
+        console.error(errorData.message); // Log error message
+      }
     } catch (error) {
-        console.error("Error retrieving phase number:", error);
+      console.error("Error retrieving phase number:", error);
     }
-}
+  }
 
   const handleProfileClick = () => {
     navigate("/My-Profile");
@@ -275,7 +279,6 @@ const Roadmap = () => {
       </div>
     );
   };
-
 
   // Render assessment questions
   const renderAssessments = () => {
