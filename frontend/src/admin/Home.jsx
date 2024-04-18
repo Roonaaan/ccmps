@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+
+// CSS and Assets
 import "./styles/Home.css";
 import "./styles/Employee.css";
 import "./styles/Statistics.css";

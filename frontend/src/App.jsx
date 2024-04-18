@@ -8,6 +8,7 @@ import ContactUs from "./landing/Contact";
 
 // Admin Page
 import AdminHome from "./admin/Home";
+import AdminLogin from "./admin/Login";
 
 // Signed-In user page
 import ForgotPasswordChange from "./landing/forgot-password/Forgotpasschange";
@@ -30,10 +31,7 @@ function App() {
           <Route path="/Contact-Us" element={<ContactUs />} />
 
           {/* Forgot Password Page */}
-          <Route
-            path="/Login/Forgot-Password/Change-Password"
-            element={<ForgotPasswordChange />}
-          />
+          <Route path="/Login/Forgot-Password/Change-Password" element={<ForgotPasswordChange />} />
 
           {/* Signed-In User Page */}
           <Route path="/Welcome" element={<Welcome />} />
@@ -43,7 +41,9 @@ function App() {
           <Route path="/Roadmap" element={<Roadmap />} />
 
           {/* Admin Page */}
-          <Route path="/Admin" element={<AdminHome />} />
+          <Route path="/Admin" element={<AdminLogin />} />
+          <Route path="/Admin/Welcome" element={<AdminHome />} />
+          
         </Routes>
       </BrowserRouter>
     </>

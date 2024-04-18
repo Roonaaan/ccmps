@@ -7,6 +7,8 @@
       { "source": "/My-Profile", "destination": "/" },
       { "source": "/Recommend", "destination": "/" },
       { "source": "/Select-Department", "destination": "/" },
-      { "source": "/Roadmap", "destination": "/" }
+      { "source": "/Roadmap", "destination": "/" },
+      { "source": "/Admin/Welcome", "destination": "/" },
+      { "source": "/Admin", "destination": "/" }
     ]
   }
