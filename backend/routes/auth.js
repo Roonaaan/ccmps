@@ -16,7 +16,8 @@ import {
         savePhaseNumber,
         getPhaseNumber,
         adminLogin,
-        getUserInfo
+        getUserInfo,
+        readEmployeeList
 } from "../controller/auth.js";
 
 const router = express.Router();
@@ -73,5 +74,15 @@ router.post("/admin-login", adminLogin);
 
 // Route for user first name
 router.post("/user-info", getUserInfo);
+
+// Employee List CRUD Routes
+// Create
+
+// Read
+router.get("/read-employee", readEmployeeList);
+
+// Update
+
+// Delete
 
 export default router;

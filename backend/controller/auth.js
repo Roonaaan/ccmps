@@ -709,3 +709,23 @@ export const getUserInfo = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 };
+
+// Employee List CRUD
+// Create
+
+// Read
+export const readEmployeeList = async (req, res) => {
+    try {
+        const client = await pool.connect();
+        const result = await client.query('SELECT employee_id, firstname, lastname, age, email, job_position FROM tblprofile');
+        const employees = result.rows;
+        client.release();
+        res.status(200).json(employees);
+    } catch (err) {
+        console.error('Error executing query', err);
+        res.status(500).send('Internal Server Error');
+    }
+};
+// Update
+
+// Delete
