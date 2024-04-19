@@ -1,5 +1,7 @@
 import React from 'react'
 
+import userEdit from "../dashboard/assets/edit-icon.png";
+import userDelete from "../dashboard/assets/delete-icon.png";
 
 function EmployeeDashboard() {
   return (
@@ -8,7 +10,7 @@ function EmployeeDashboard() {
         <div className='header-box'>
           <h1>Employee Table</h1>
           <button className='button'> Create </button>
-          <button className='button'> Edit </button>
+          
         </div>
         <div>
         <table>
@@ -19,6 +21,7 @@ function EmployeeDashboard() {
           <th>Email</th>
           <th>Age</th>
           <th>Job Position</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -28,6 +31,11 @@ function EmployeeDashboard() {
           <td>john.doe@example.com</td>
           <td>30</td>
           <td>Software Engineer</td>
+          <td> 
+          <img src={userEdit} alt='edit-icon' className='edit-icon' />
+          <img src={userDelete} alt='delete-icon' className='delete-icon' />
+          </td>
+          
         </tr>
         <tr>
           <td>Jane Smith</td>
@@ -35,6 +43,10 @@ function EmployeeDashboard() {
           <td>jane.smith@example.com</td>
           <td>25</td>
           <td>Project Manager</td>
+          <td> 
+          <img src={userEdit} alt='edit-icon' className='edit-icon' />
+          <img src={userDelete} alt='delete-icon' className='delete-icon' />
+          </td>
         </tr>
         {/* Add more rows as needed */}
       </tbody>
