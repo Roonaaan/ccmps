@@ -16,7 +16,6 @@ import {
         savePhaseNumber,
         getPhaseNumber,
         adminLogin,
-        getUserInfo,
         readEmployeeList
 } from "../controller/auth.js";
 
@@ -71,9 +70,6 @@ router.get("/get-phase", getPhaseNumber);
 // Admin Side Routes
 // Route for admin login
 router.post("/admin-login", adminLogin);
-
-// Route for user first name
-router.post("/user-info", getUserInfo);
 
 // Employee List CRUD Routes
 // Create
