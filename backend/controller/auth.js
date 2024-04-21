@@ -678,7 +678,121 @@ export const adminLogin = async (req, res) => {
 };
 
 // Employee List CRUD
-// Create
+// Create [Auto Employee ID and Add user profile to database]
+export const employeeID = async (req, res) => {
+    try {
+        const client = await pool.connect(); // Connect to the database
+
+        // Fetch the maximum Employee ID from the database
+        const result = await client.query('SELECT MAX(employee_id) AS max_id FROM tblprofile');
+
+        // Get the maximum Employee ID or default to 0 if no records exist
+        const maxId = result.rows[0].max_id || 0;
+
+        // Calculate the next available Employee ID
+        const nextId = maxId + 1;
+
+        // Release the database client
+        client.release();
+
+        // Send the next available Employee ID as a response
+        res.status(200).json({ employeeId: nextId });
+    } catch (error) {
+        console.error('Error fetching next employee ID:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+export const addEmployee = async (req, res) => {
+    try {
+        const {
+            image,
+            firstName,
+            lastName,
+            age,
+            email,
+            phoneNumber,
+            homeAddress,
+            district,
+            city,
+            province,
+            postalCode,
+            gender,
+            birthday,
+            nationality,
+            civilStatus,
+            jobPosition,
+            jobLevel,
+            skills
+        } = req.body;
+
+        const client = await pool.connect(); // Connect to the database
+
+        // Fetch the next available Employee ID
+        const employeeIdResult = await client.query('SELECT MAX(employee_id) AS max_id FROM tblprofile');
+        const maxId = employeeIdResult.rows[0].max_id || 0;
+        const nextId = maxId + 1;
+
+        // Encode image data (assuming base64 encoded string)
+        const encodedImage = Buffer.from(image, 'base64');
+
+        // Insert employee data with the fetched employee ID
+        await client.query(`
+            INSERT INTO tblprofile (
+                employee_id,
+                image,
+                firstname,
+                lastname,
+                age,
+                email,
+                phone_number,
+                home_address,
+                district,
+                city,
+                province,
+                postal_code,
+                gender,
+                birthday,
+                nationality,
+                civil_status,
+                job_position,
+                job_level,
+                skills
+            ) VALUES (
+                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19
+            )
+        `, [
+            nextId,
+            encodedImage,
+            firstName,
+            lastName,
+            age,
+            email,
+            phoneNumber,
+            homeAddress,
+            district,
+            city,
+            province,
+            postalCode,
+            gender,
+            birthday,
+            nationality,
+            civilStatus,
+            jobPosition,
+            jobLevel,
+            skills
+        ]);
+
+        // Release the database client
+        client.release();
+
+        // Send success response
+        res.status(201).json({ message: 'Employee added successfully', employeeId: nextId });
+    } catch (error) {
+        console.error('Error adding employee:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
 
 // Read
 export const readEmployeeList = async (req, res) => {

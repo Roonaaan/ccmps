@@ -1,22 +1,10 @@
 import express from "express";
 import {
-        login,
-        sendEmail,
-        getUserProfile,
-        getUserDetails,
-        sendResetEmail,
-        resendResetEmail,
-        getAssessment,
-        getUserJob,
-        saveJob,
-        maxPhaseNumber,
-        getQuestions,
-        getAnswerStored,
-        retrieveAnswer,
-        savePhaseNumber,
-        getPhaseNumber,
-        adminLogin,
-        readEmployeeList
+        login, sendEmail, getUserProfile, getUserDetails,
+        sendResetEmail, resendResetEmail, getAssessment, getUserJob, 
+        saveJob, maxPhaseNumber, getQuestions, getAnswerStored,
+        retrieveAnswer, savePhaseNumber, getPhaseNumber, adminLogin,
+        employeeID, addEmployee, readEmployeeList
 } from "../controller/auth.js";
 
 const router = express.Router();
@@ -73,6 +61,8 @@ router.post("/admin-login", adminLogin);
 
 // Employee List CRUD Routes
 // Create
+router.get("/employeeid", employeeID);
+router.post("/add-employee", addEmployee);
 
 // Read
 router.get("/read-employee", readEmployeeList);

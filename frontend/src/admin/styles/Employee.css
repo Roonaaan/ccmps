@@ -35,6 +35,7 @@
   height: 26px;
   width: 60px;
   cursor: pointer;
+  border-radius: 3px;
 }
 
 table {
@@ -68,6 +69,7 @@ th {
   font-size: 15px;
   border: none;
   cursor: pointer;
+  border-radius: 3px;
 }
 
 .employee-table-delete-button {
@@ -78,4 +80,5 @@ th {
   font-size: 15px;
   border: none;
   cursor: pointer;
+  border-radius: 3px;
 }
