@@ -679,7 +679,7 @@ export const adminLogin = async (req, res) => {
 
 // Employee List CRUD
 // Create [Auto Employee ID and Add user profile to database]
-export const employeeID = async (req, res) => {
+export const employeeID = async (req, res) => { // Auto Employee ID
     try {
         const client = await pool.connect(); // Connect to the database
 
@@ -703,7 +703,7 @@ export const employeeID = async (req, res) => {
     }
 };
 
-export const addEmployee = async (req, res) => {
+export const addEmployee = async (req, res) => { // Add User Profile
     try {
         const {
             image,

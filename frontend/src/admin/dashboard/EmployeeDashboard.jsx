@@ -40,7 +40,8 @@ function EmployeeDashboard() {
     setIsAddModalOpen(!isAddModalOpen);
   };
 
-  const toggleEditModal = () => {
+  const toggleEditModal = (employeeId) => {
+    sessionStorage.setItem('editEmployeeId', employeeId);
     setIsEditModalOpen(!isEditModalOpen);
   };
 
@@ -74,7 +75,7 @@ function EmployeeDashboard() {
                     <td>{employee.job_position}</td>
                     <td>
                       <div className="employee-table-button">
-                        <button className='employee-table-edit-button' onClick={toggleEditModal}> <FontAwesomeIcon icon={faEdit} /> </button>
+                        <button className='employee-table-edit-button' onClick={() => toggleEditModal(employee.employee_id)}> <FontAwesomeIcon icon={faEdit} /> </button>
                         <button className='employee-table-delete-button'> <FontAwesomeIcon icon={faTrash} /> </button>
                       </div>
                     </td>
