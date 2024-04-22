@@ -45,6 +45,19 @@ function EmployeeDashboard() {
     setIsEditModalOpen(!isEditModalOpen);
   };
 
+  const handleDelete = async (employeeId) => {
+    const confirmed = window.confirm('Are you sure you want to delete this employee?');
+    if (confirmed) {
+      try {
+        await axios.post('http://localhost:8800/api/auth/delete-employee', { employeeId }); // Send employee ID in the request body
+        // Refresh the employee list after deletion
+        fetchEmployees();
+      } catch (error) {
+        console.error('Error deleting employee:', error);
+      }
+    }
+  };
+
   return (
     <>
       <div className='employee-dashboard-main-frame'>
@@ -76,7 +89,7 @@ function EmployeeDashboard() {
                     <td>
                       <div className="employee-table-button">
                         <button className='employee-table-edit-button' onClick={() => toggleEditModal(employee.employee_id)}> <FontAwesomeIcon icon={faEdit} /> </button>
-                        <button className='employee-table-delete-button'> <FontAwesomeIcon icon={faTrash} /> </button>
+                        <button className='employee-table-delete-button' onClick={() => handleDelete(employee.employee_id)}> <FontAwesomeIcon icon={faTrash} /> </button>
                       </div>
                     </td>
                   </tr>

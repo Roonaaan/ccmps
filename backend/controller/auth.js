@@ -810,3 +810,31 @@ export const readEmployeeList = async (req, res) => {
 // Update
 
 // Delete
+export const deleteEmployeeList = async (req, res) => {
+    const employeeId = req.body.employeeId; // Retrieve employee ID from request body
+
+    if (!employeeId) {
+        return res.status(400).json({ error: 'Employee ID not provided in the request body' });
+    }
+
+    try {
+        // Construct the SQL query to delete the row with the specified employee ID
+        const query = {
+            text: 'DELETE FROM tblprofile WHERE employee_id = $1',
+            values: [employeeId],
+        };
+
+        // Execute the SQL query
+        const result = await pool.query(query);
+
+        // Check if any row was affected
+        if (result.rowCount > 0) {
+            res.status(200).json({ message: 'Employee deleted successfully' });
+        } else {
+            res.status(404).json({ error: 'Employee not found' });
+        }
+    } catch (error) {
+        console.error('Error deleting employee:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
