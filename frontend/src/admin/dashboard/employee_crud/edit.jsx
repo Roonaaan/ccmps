@@ -12,9 +12,6 @@ function edit({ onClose }) {
                     <h2>Edit Employee</h2>
                     <span className='close' onClick={onClose} >&times;</span>
                     <form>
-                        <label htmlFor='employeeId'>Employee ID:</label>
-                        <input type='text' id='employeeId' name='employeeId' />
-
                         <label htmlFor='image'>Upload Image:</label>
                         <input type='file' id='image' name='image' accept='image/*' />
 
