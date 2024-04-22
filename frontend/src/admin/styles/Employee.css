@@ -1,0 +1,85 @@
+.employee-dashboard-main-frame {
+    display: flex;
+    justify-content: flex-start;
+    height: 100vh;
+    width: 100%;
+}
+
+.employee-table {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    width: auto;
+    height: auto;
+    margin: 0px 20px;
+    width: 100%;
+}
+
+.header-box {
+    margin: 15px;
+    padding: 10px;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 1em;
+
+}
+
+.employee-table-add-button {
+    font-size: 18px;
+    background-color: lightskyblue;
+    color: white;
+    border: none;
+    height: 26px;
+    width: 60px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+.employee-table-button {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.employee-table-edit-button {
+    background-color: lightskyblue;
+    color: white;
+    width: 20px;
+    height: 20px;
+    font-size: 15px;
+    border: none;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.employee-table-delete-button {
+    background-color: red;
+    color: white;
+    width: 20px;
+    height: 20px;
+    font-size: 15px;
+    border: none;
+    cursor: pointer;
+    border-radius: 3px;
+}

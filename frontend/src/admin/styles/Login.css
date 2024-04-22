@@ -1,0 +1,32 @@
+.adminContainer {
+    display: flex;
+    width: auto;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+}
+
+.adminPanel {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    background-color: #2F4858;
+    height: 500px;
+    width: 600px;
+    border-radius: 20px;
+}
+
+.adminLogoPanel {
+    display: flex;
+}
+
+.adminLogo {
+    width: 100px;
+}
+
+.adminLoginPanel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    color: #DDE6ED;
+}

@@ -1,20 +1,15 @@
 import express from "express";
-import { login, 
-        sendEmail, 
-        getUserProfile, 
-        getUserDetails, 
-        sendResetEmail, 
-        resendResetEmail, 
-        getAssessment, 
-        getUserJob,
-        saveJob,
-        maxPhaseNumber, 
-        getQuestions,
-        getAnswerStored
+import {
+        login, sendEmail, getUserProfile, getUserDetails,
+        sendResetEmail, resendResetEmail, getAssessment, getUserJob, 
+        saveJob, maxPhaseNumber, getQuestions, getAnswerStored,
+        retrieveAnswer, savePhaseNumber, getPhaseNumber, adminLogin,
+        employeeID, addEmployee, readEmployeeList
 } from "../controller/auth.js";
 
 const router = express.Router();
-
+ 
+// User Side Routes
 // Route for user login
 router.post("/login", login);
 
@@ -50,5 +45,30 @@ router.get("/questions", getQuestions);
 
 // Route for storing answer
 router.post("/answers", getAnswerStored);
+
+// Route for retrieving answer
+router.get("/retrieve-answers", retrieveAnswer); //temporarily disabled
+
+// Route for storing answer
+router.post("/save-phase", savePhaseNumber);
+
+// Route for retrieving answer
+router.get("/get-phase", getPhaseNumber);
+
+// Admin Side Routes
+// Route for admin login
+router.post("/admin-login", adminLogin);
+
+// Employee List CRUD Routes
+// Create
+router.get("/employeeid", employeeID);
+router.post("/add-employee", addEmployee);
+
+// Read
+router.get("/read-employee", readEmployeeList);
+
+// Update
+
+// Delete
 
 export default router;

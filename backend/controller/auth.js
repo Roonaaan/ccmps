@@ -10,6 +10,7 @@ const pool = new pg.Pool({ // Use 'pg.Pool' instead of 'Pool'
     }
 });
 
+// User Side
 // Login
 export const login = async (req, res) => {
     let client;
@@ -388,7 +389,7 @@ export const getUserJob = async (req, res) => {
             FROM tblprofile
             WHERE email = $1
         `;
-        
+
         // Execute the query with user's email as parameter
         const result = await pool.query(query, [userEmail]);
 
@@ -416,7 +417,7 @@ export const saveJob = async (req, res) => {
         // Check if the user exists
         const userExistsQuery = 'SELECT * FROM tblprofile WHERE email = $1';
         const userExistsResult = await pool.query(userExistsQuery, [userEmail]);
-        
+
         if (userExistsResult.rows.length === 0) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -449,6 +450,7 @@ export const maxPhaseNumber = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
 // Roadmap (Video and Assesment [consist of Question and Answer])
 // Video
 export const getAssessment = async (req, res) => {
@@ -524,17 +526,28 @@ export const getQuestions = async (req, res) => {
 export const getAnswerStored = async (req, res) => {
     try {
         // Extract data from the request body
-        const { email, position, answers } = req.body;
+        const { email, position, phase, answers } = req.body;
+
+        // Check if answers for this user, position, and phase already exist
+        const existingAnswers = await pool.query(
+            `SELECT COUNT(*) AS count FROM tblroadmap WHERE email = $1 AND position = $2 AND phase = $3`,
+            [email, position, phase]
+        );
+
+        // If answers already exist, return a message or handle as needed
+        if (existingAnswers.rows[0].count > 0) {
+            return res.status(400).json({ error: 'Answers for this user, position, and phase already exist' });
+        }
 
         // Construct the SQL query
         const query = `
-            INSERT INTO tblroadmap (email, position, description, question, answer, result)
-            VALUES ($1, $2, $3, $4, $5, $6)
+            INSERT INTO tblroadmap (email, position, phase, description, question, answer, result)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
         `;
 
         // Iterate through each answer and execute the SQL query for each one
         for (const answer of answers) { // Use a different variable name here
-            await pool.query(query, [email, position, answer.description, answer.question, answer.answer, answer.result]);
+            await pool.query(query, [email, position, phase, answer.description, answer.question, answer.answer, answer.result]);
         }
 
         // Send a success response
@@ -546,4 +559,254 @@ export const getAnswerStored = async (req, res) => {
     }
 };
 
+// Retrieve Answer 
+export const retrieveAnswer = async (req, res) => {
+    try {
+        const userEmail = req.query.email; // Retrieve user's email from request query
+        const client = await pool.connect();
+        const query = `
+            SELECT question, answer
+            FROM tblroadmap
+            WHERE email = $1
+        `;
+        const values = [userEmail];
+        const result = await client.query(query, values);
+        client.release();
+        if (result.rows.length > 0) {
+            const answers = result.rows.map(row => ({
+                question: row.question,
+                answer: row.answer
+            }));
+            res.status(200).json({ answers });
+        } else {
+            res.status(404).json({ message: "No answers found for the user." });
+        }
+    } catch (error) {
+        console.error("Error retrieving answers:", error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+};
+
+// Save Phase Number
+export const savePhaseNumber = async (req, res) => {
+    try {
+        const { email, phase } = req.query;
+        const client = await pool.connect();
+        const query = `
+            UPDATE tblprofile
+            SET current_phase = $1
+            WHERE email = $2
+        `;
+        const values = [phase, email];
+        await client.query(query, values);
+        client.release();
+        res.status(200).json({ message: "Phase number saved successfully." });
+    } catch (error) {
+        console.error("Error saving phase number:", error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+};
+
+// Retrieve Phase Number
+export const getPhaseNumber = async (req, res) => {
+    try {
+        const { email } = req.query;
+        const client = await pool.connect();
+        const query = `
+            SELECT current_phase
+            FROM tblprofile
+            WHERE email = $1
+        `;
+        const values = [email];
+        const result = await client.query(query, values);
+        client.release();
+        if (result.rows.length > 0) {
+            const phaseNumber = result.rows[0].current_phase;
+            res.status(200).json({ phaseNumber });
+        } else {
+            res.status(404).json({ message: "User not found." });
+        }
+    } catch (error) {
+        console.error("Error retrieving phase number:", error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+};
 // Select Jobs
+
+// Admin Side
+// Admin Login
+export const adminLogin = async (req, res) => {
+    let client;
+
+    try {
+        client = await pool.connect();
+        const result = await client.query("SELECT * FROM tblaccount WHERE account_email = $1", [req.body.email]);
+
+        if (result.rows.length === 0) {
+            return res.status(401).json("Admin not found!");
+        }
+
+        const adminUser = result.rows[0];
+
+        // Check if the user's role is 'Admin'
+        if (adminUser.role !== 'Admin') {
+            return res.status(403).json("You are not authorized to login as an admin!");
+        }
+
+        const hashedPassword = adminUser.account_password;
+
+        if (!hashedPassword) {
+            return res.status(400).json("Password not set for this admin!");
+        }
+
+        const isPasswordValid = bcrypt.compareSync(req.body.password, hashedPassword);
+
+        if (!isPasswordValid) {
+            return res.status(401).json("Incorrect email or password!");
+        }
+
+        // If password is valid, proceed with login
+        res.status(200).json(adminUser);
+    } catch (error) {
+        console.error(error); // Log the actual error message
+        res.status(500).json({ error: "Internal server error" }); // Send a generic error message
+    } finally {
+        if (client) {
+            await client.release();
+        }
+    }
+};
+
+// Employee List CRUD
+// Create [Auto Employee ID and Add user profile to database]
+export const employeeID = async (req, res) => { // Auto Employee ID
+    try {
+        const client = await pool.connect(); // Connect to the database
+
+        // Fetch the maximum Employee ID from the database
+        const result = await client.query('SELECT MAX(employee_id) AS max_id FROM tblprofile');
+
+        // Get the maximum Employee ID or default to 0 if no records exist
+        const maxId = result.rows[0].max_id || 0;
+
+        // Calculate the next available Employee ID
+        const nextId = maxId + 1;
+
+        // Release the database client
+        client.release();
+
+        // Send the next available Employee ID as a response
+        res.status(200).json({ employeeId: nextId });
+    } catch (error) {
+        console.error('Error fetching next employee ID:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+export const addEmployee = async (req, res) => { // Add User Profile
+    try {
+        const {
+            image,
+            firstName,
+            lastName,
+            age,
+            email,
+            phoneNumber,
+            homeAddress,
+            district,
+            city,
+            province,
+            postalCode,
+            gender,
+            birthday,
+            nationality,
+            civilStatus,
+            jobPosition,
+            jobLevel,
+            skills
+        } = req.body;
+
+        const client = await pool.connect(); // Connect to the database
+
+        // Fetch the next available Employee ID
+        const employeeIdResult = await client.query('SELECT MAX(employee_id) AS max_id FROM tblprofile');
+        const maxId = employeeIdResult.rows[0].max_id || 0;
+        const nextId = maxId + 1;
+
+        // Encode image data (assuming base64 encoded string)
+        const encodedImage = Buffer.from(image, 'base64');
+
+        // Insert employee data with the fetched employee ID
+        await client.query(`
+            INSERT INTO tblprofile (
+                employee_id,
+                image,
+                firstname,
+                lastname,
+                age,
+                email,
+                phone_number,
+                home_address,
+                district,
+                city,
+                province,
+                postal_code,
+                gender,
+                birthday,
+                nationality,
+                civil_status,
+                job_position,
+                job_level,
+                skills
+            ) VALUES (
+                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19
+            )
+        `, [
+            nextId,
+            encodedImage,
+            firstName,
+            lastName,
+            age,
+            email,
+            phoneNumber,
+            homeAddress,
+            district,
+            city,
+            province,
+            postalCode,
+            gender,
+            birthday,
+            nationality,
+            civilStatus,
+            jobPosition,
+            jobLevel,
+            skills
+        ]);
+
+        // Release the database client
+        client.release();
+
+        // Send success response
+        res.status(201).json({ message: 'Employee added successfully', employeeId: nextId });
+    } catch (error) {
+        console.error('Error adding employee:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+// Read
+export const readEmployeeList = async (req, res) => {
+    try {
+        const client = await pool.connect();
+        const result = await client.query('SELECT employee_id, firstname, lastname, age, email, job_position FROM tblprofile');
+        const employees = result.rows;
+        client.release();
+        res.status(200).json(employees);
+    } catch (err) {
+        console.error('Error executing query', err);
+        res.status(500).send('Internal Server Error');
+    }
+};
+// Update
+
+// Delete
