@@ -67,7 +67,7 @@ export const Login = ({ onClose }) => {
             const response = await axios.post('https://ccmps-server-node.vercel.app/api/auth/login', { email, password }, { withCredentials: true });
             if (response.data) {
                 sessionStorage.setItem('user', email);
-                {/* sessionStorage.setItem('token', response.data.token); */}
+                {/* sessionStorage.setItem('token', response.data.token); */ }
                 setSuccessMsg('Welcome');
                 setSuccessMsg(<span style={{ color: 'green' }}> Welcome </span>);
                 setTimeout(() => {
@@ -87,7 +87,7 @@ export const Login = ({ onClose }) => {
             <div className="modal">
                 <div className="modal-content">
                     <span className="close" onClick={onClose}>&times;</span>
-                    <div className="container">
+                    <div className="modalContainer">
                         <div className='loginHeader'>
                             <img src={Logo} alt='Logo' className='logo' />
                         </div>

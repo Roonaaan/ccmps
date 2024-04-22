@@ -21,9 +21,6 @@ const Home = () => {
         const userEmail = sessionStorage.getItem('user');
         if (userEmail) {
           const response = await fetch(`https://ccmps-server-node.vercel.app/api/auth/user-profile?email=${userEmail}`);
-          if (!response.ok) {
-            throw new Error('Failed to fetch user profile');
-          }
           const data = await response.json();
 
           if (data.success) {
@@ -52,7 +49,7 @@ const Home = () => {
             throw new Error('Failed to fetch user job');
           }
           const data = await response.json();
-  
+
           if (data.jobSelected) {
             setHasSelectedJob(true);
             sessionStorage.setItem('selectedJobTitle', data.jobTitle); // Store the job title in session storage
@@ -65,9 +62,19 @@ const Home = () => {
         console.error('An error occurred', error);
       }
     };
-  
+
     checkUserJob();
   }, []);
+
+  function arrayBufferToBase64(buffer) {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return window.btoa(binary);
+  }
 
   const handleProfileClick = () => {
     navigate('/My-Profile');
@@ -105,13 +112,13 @@ const Home = () => {
   const handleRoadmapClick = () => {
     if (hasSelectedJob) {
       // If user has selected a job, directly navigate to the roadmap
-      navigate('/Roadmap');
+      navigate('/Roadmap'); // Assuming the route to the roadmap is '/Roadmap'
     } else {
       // If user hasn't selected a job, navigate to the job selection page
       navigate('/Recommend');
     }
   }
-  
+
   return (
     <>
       <div className='parent'>

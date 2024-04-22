@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import _ from 'lodash';
 
@@ -14,6 +14,7 @@ import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 const Roadmap = () => {
   const [userImage, setUserImage] = useState("");
   const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
   const [expandedDescriptions, setExpandedDescriptions] = useState([]);
   const [recommendedJobs, setRecommendJobs] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
@@ -24,36 +25,47 @@ const Roadmap = () => {
   // Video Player and QA
   const [videoUrl, setVideoUrl] = useState(""); // New state to store video URL
   const [questions, setQuestions] = useState([]);
-  {/* const [videoEnded, setVideoEnded] = useState(false); */ } // Track if video has ended (just remove the bracket)
 
+  // Phase auto set to 1
   useEffect(() => {
     // Ensure phase is always set to 1 when the component mounts or refreshes
     setPhase(1);
     sessionStorage.setItem('phase', '1');
   }, []);
 
-  const handleNextClick = () => {
+  // Next Button
+  const handleNextClick = async () => {
     // Move to the next phase
     if (phase < maxPhase) {
       const nextPhase = phase + 1;
       setPhase(nextPhase);
       sessionStorage.setItem('phase', nextPhase.toString());
-      {/* setVideoEnded(false); */ } // Button is unclickble unless the video is done
+      await savePhaseNumber(userEmail, nextPhase); // Save phase number to the database
     }
   };
 
-  const handlePrevClick = () => {
+  // Previous Button
+  const handlePrevClick = async () => {
     // Move to the previous phase
     if (phase > 1) {
       const prevPhase = phase - 1;
       setPhase(prevPhase);
       sessionStorage.setItem('phase', prevPhase.toString());
-
+      await savePhaseNumber(userEmail, prevPhase); // Save phase number to the database
       // Filter out questions for the previous phase
       const filteredQuestions = questions.filter(question => question.phase === prevPhase);
       setQuestions(filteredQuestions);
     }
   };
+
+  // Fetch Phase Number 
+  useEffect(() => {
+    // Fetch phase number when component mounts
+    const fetchPhaseNumber = async () => {
+      await getPhaseNumber(userEmail);
+    };
+    fetchPhaseNumber();
+  }, [userEmail]);
 
   // Max Phase Connection
   useEffect(() => {
@@ -169,6 +181,50 @@ const Roadmap = () => {
     fetchQuestions();
   }, [phase]);
 
+  // Save Phase Number
+  const savePhaseNumber = async () => {
+    try {
+      const userEmail = sessionStorage.getItem('user'); // Retrieve user's email from session storage
+      const phase = sessionStorage.getItem('phase'); // Retrieve phase number from session storage
+      const response = await fetch(`https://ccmps-server-node.vercel.app/api/auth/save-phase?email=${userEmail}&phase=${phase}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data.message); // Log success message
+      } else {
+        const errorData = await response.json();
+        console.error(errorData.message); // Log error message
+      }
+    } catch (error) {
+      console.error("Error saving phase number:", error);
+    }
+  }
+
+  // Retrive Phase Number (Autosave Phase Number)
+  const getPhaseNumber = async () => {
+    try {
+      const userEmail = sessionStorage.getItem('user'); // Retrieve user's email from session storage
+      const response = await fetch(`https://ccmps-server-node.vercel.app/api/auth/get-phase?email=${userEmail}`);
+      if (response.ok) {
+        const data = await response.json();
+        const phaseNumber = data.phaseNumber;
+        console.log("Phase Number:", phaseNumber);
+        setPhase(phaseNumber); // Set phase state based on the phase number fetched from the backend
+        sessionStorage.setItem('phase', phaseNumber); // Store phase number in session storage
+        // Handle routing to the phase based on phaseNumber if needed
+      } else {
+        const errorData = await response.json();
+        console.error(errorData.message); // Log error message
+      }
+    } catch (error) {
+      console.error("Error retrieving phase number:", error);
+    }
+  }
+
   const handleProfileClick = () => {
     navigate("/My-Profile");
   };
@@ -179,6 +235,7 @@ const Roadmap = () => {
     navigate("/");
   };
 
+  // Dropdown
   const DropdownModal = ({ logoutHandler }) => {
     return (
       <div className="dropdown-modal">
@@ -221,13 +278,11 @@ const Roadmap = () => {
         </iframe>
       </div>
     );
-    {/* onEnded={() => setVideoEnded(true)} */ } //button is unclickble unless the video is done (add it below the "allowFullScreen")
   };
-
 
   // Render assessment questions
   const renderAssessments = () => {
-    
+
     const groupedQuestions = _.groupBy(questions, 'description');
 
     const [selectedAnswers, setSelectedAnswers] = useState({}); // State to store selected answers
@@ -237,6 +292,8 @@ const Roadmap = () => {
     // Retrieve user's email and position from session storage
     const email = sessionStorage.getItem('user');
     const position = sessionStorage.getItem('selectedJobTitle');
+    const phase = parseInt(sessionStorage.getItem('phase'));
+
 
     // Submit Answers
     useEffect(() => {
@@ -264,14 +321,15 @@ const Roadmap = () => {
         const dataToSend = {
           email,
           position,
+          phase, // Include phase number
           answers: questions.map(question => ({
             description: question.description,
-            question: question.question_number, // Use question field directly
-            answer: selectedAnswers[question.question_number], // Get user's selected answer
-            result: answerStatus[question.question_number] ? 'correct' : 'incorrect' // Determine result based on answer status
+            question: question.question_number,
+            answer: selectedAnswers[question.question_number],
+            result: answerStatus[question.question_number] ? 'correct' : 'incorrect'
           }))
         };
-        
+
 
         // Send data to the backend
         fetch('https://ccmps-server-node.vercel.app/api/auth/answers', {
@@ -298,7 +356,33 @@ const Roadmap = () => {
         setError('Please answer all questions before moving to the next phase.');
       }
     }, [selectedAnswers, questions, email, position]);
-      
+
+
+    const userEmail = sessionStorage.getItem('user');
+    const answersRetrieved = useRef(false); // Use useRef to track if answers have been retrieved
+    if (userEmail && !answersRetrieved.current) {
+      fetch(`https://ccmps-server-node.vercel.app/api/auth/retrieve-answers?email=${userEmail}`)
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error('Failed to retrieve answers');
+          }
+        })
+        .then(data => {
+          const fetchedAnswers = data.answers || [];
+          const updatedSelectedAnswers = { ...selectedAnswers }; // Copy existing selected answers
+          fetchedAnswers.forEach(answer => {
+            updatedSelectedAnswers[answer.question] = answer.answer; // Autofill answers for questions based on fetched data
+          });
+          setSelectedAnswers(updatedSelectedAnswers); // Update selected answers state
+          answersRetrieved.current = true; // Set answersRetrieved to true after fetching answers
+        })
+        .catch(error => {
+          console.error('Error retrieving answers:', error);
+        });
+    }
+
 
     const handleAnswerSelect = (questionNumber, answer) => {
       setSelectedAnswers({ ...selectedAnswers, [questionNumber]: answer });
@@ -369,6 +453,7 @@ const Roadmap = () => {
       </div>
     );
   };
+
   // Function to handle dropdown expansion/collapse
   const handleToggleDescription = (description) => {
     setExpandedDescriptions(prevExpandedDescriptions => {
@@ -399,20 +484,16 @@ const Roadmap = () => {
         </div>
       </header>
 
-      <section className="progressFrame">
-        <div className="leftSide">
-          <ul className="progressBarList">
+      <section className="carousel-container">
+        <div className="carousel-content">
+          <div className="carousel-slide" style={{ transform: `translateX(-${(phase - 1) * 100}%)` }}>
             {Array.from({ length: maxPhase }, (_, index) => index + 1).map((num) => (
-              <li
-                key={num}
-                className={`progressBarItem ${num === phase ? "currentItem" : ""}`}
-              >
+              <div key={num} className={`slide ${num === phase ? "active" : (num === phase - 1 || num === phase + 1) ? "neighbor" : ""}`}>
                 <span className="phaseCount">{num}</span>
-                <span className="phaseProgressLabel">Phase {num}</span>
-              </li>
+                <span className="phaseProgressLabel">Phase</span>
+              </div>
             ))}
-          </ul>
-          <div className="progressDescription"></div>
+          </div>
         </div>
       </section>
 
@@ -445,27 +526,6 @@ const Roadmap = () => {
           NEXT PHASE
         </button>
       </div>
-      {/* 
-      **Remove the Comment and replace the Buttons. This enables to click the "Next Phase" button onced the video is done**
-      <div className="button-section-footer">
-        <button
-          className="prev-button-footer"
-          onClick={handlePrevClick}
-          disabled={phase === 1 || phase % 2 === 0} // Disable previous button on assessment phases
-          style={{ opacity: (phase === 1 || phase % 2 === 0) ? 0.5 : 1 }}
-        >
-          PREV PHASE
-        </button>
-        <button
-          className="next-button-footer"
-          onClick={handleNextClick}
-          disabled={(phase === 4 && !videoEnded) || (phase % 2 === 0)} // Disable next button on assessment phases and when video not ended
-          style={{ opacity: ((phase === 4 && !videoEnded) || (phase % 2 === 0)) ? 0.5 : 1 }}
-        >
-        NEXT PHASE
-        </button>
-      </div>
-      */}
       {showDropdown && <DropdownModal logoutHandler={handleLogout} />}
     </div>
   );

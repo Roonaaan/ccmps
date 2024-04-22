@@ -129,7 +129,7 @@ const Recommend = () => {
         if (selectedJob !== null) {
             const selectedJobTitle = recommendedJobs[selectedJob].title; // Get the title of the selected job
             const userEmail = sessionStorage.getItem('user');
-    
+
             try {
                 const response = await fetch(`https://ccmps-server-node.vercel.app/api/auth/save-job?job=${encodeURIComponent(selectedJobTitle)}&email=${userEmail}`, {
                     method: 'POST',
@@ -137,9 +137,9 @@ const Recommend = () => {
                         'Content-Type': 'application/json'
                     }
                 });
-    
+
                 const data = await response.json();
-    
+
                 if (response.ok) {
                     // Proceed to Roadmap if job selection saved successfully
                     navigate('/Roadmap', { state: { selectedJob, recommendedJobs } });

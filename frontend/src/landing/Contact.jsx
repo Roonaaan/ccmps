@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from 'axios';
 
 // CSS
 import './styles/Contact.css';
@@ -32,30 +31,35 @@ const Contact = () => {
         navigate("/Contact-Us");
     };
 
-    //Contact Us Connection
-    const sendEmail = async () => {
-        try {
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            const response = await axios.post('http://localhost:8800/api/auth/send-email', { name, email, message });
+    //PHP API Connection
 
-            if (response.status === 200) {
-                setSuccessMessage(<span style={{ color: 'green' }}> Message Sent. Thanks for the Feedback </span>);
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+
+        try {
+            const response = await fetch('https://ccmps-server-node.vercel.app/backend/contact-us/send-email.php', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json', // Fixed typo here
+                },
+                body: JSON.stringify({ name, email, message }),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                setSuccessMessage('Message sent successfully');
                 setName('');
                 setEmail('');
                 setMessage('');
             } else {
-                setErrorMessage('Failed to send message');
+                setErrorMessage(data.message);
             }
         } catch (error) {
-            console.error('An error occurred while sending the message:', error);
+            console.error('An error occurred while sending the message:', error); // Log error to console
             setErrorMessage('An error occurred while sending the message');
         }
-    };
-
-    // Function to handle form submission
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        await sendEmail();
     };
 
     // Message Limit
@@ -81,11 +85,6 @@ const Contact = () => {
                             className="brand"
                             onClick={handleHomeClick}
                         />
-                    </div>
-
-                    <div className="login-container">
-                        <btn className="login-text">Log in</btn>
-                        <btn className="Signup-text">Sign up</btn>
                     </div>
                     {/* Login and About Header
                     <div className="navRight">
@@ -219,7 +218,6 @@ const Contact = () => {
                             </div>
                         </div>
                         <div className="footerAbout">
-                            <h1 className="footerAboutHeader"> Our Team </h1>
                             <a
                                 href="/About"
                                 className="footerAboutLink"
@@ -227,10 +225,6 @@ const Contact = () => {
                             >
                                 {" "}
                                 About Us{" "}
-                            </a>
-                            <a href="" className="footerAboutLink">
-                                {" "}
-                                Mission and Vision{" "}
                             </a>
                             <a href="/Contact-Us" className="footerAboutLink" onClick={handleContactClick}>
                                 {" "}
