@@ -1,6 +1,6 @@
 import React from 'react';
 
-function StatisticsDashboard() {
+function HomeDashboard() {
   
   return (
     <div className='statistic-parent-frame'>
@@ -21,4 +21,4 @@ function StatisticsDashboard() {
   );
 }
 
-export default StatisticsDashboard;
+export default HomeDashboard;

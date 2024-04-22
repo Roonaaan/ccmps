@@ -677,8 +677,8 @@ export const adminLogin = async (req, res) => {
     }
 };
 
-// Employee List CRUD
-// Create [Auto Employee ID and Add user profile to database]
+// Employee Basic Info CRUD
+// Create [Auto Employee ID and Add user basic info to database]
 export const employeeID = async (req, res) => { // Auto Employee ID
     try {
         const client = await pool.connect(); // Connect to the database
@@ -703,7 +703,7 @@ export const employeeID = async (req, res) => { // Auto Employee ID
     }
 };
 
-export const addEmployee = async (req, res) => { // Add User Profile
+export const addEmployee = async (req, res) => { // Add Employee Basic Information
     try {
         const {
             image,
@@ -720,10 +720,7 @@ export const addEmployee = async (req, res) => { // Add User Profile
             gender,
             birthday,
             nationality,
-            civilStatus,
-            jobPosition,
-            jobLevel,
-            skills
+            civilStatus
         } = req.body;
 
         const client = await pool.connect(); // Connect to the database
@@ -754,12 +751,9 @@ export const addEmployee = async (req, res) => { // Add User Profile
                 gender,
                 birthday,
                 nationality,
-                civil_status,
-                job_position,
-                job_level,
-                skills
+                civil_status
             ) VALUES (
-                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19
+                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16
             )
         `, [
             nextId,
@@ -777,10 +771,7 @@ export const addEmployee = async (req, res) => { // Add User Profile
             gender,
             birthday,
             nationality,
-            civilStatus,
-            jobPosition,
-            jobLevel,
-            skills
+            civilStatus
         ]);
 
         // Release the database client
@@ -798,7 +789,26 @@ export const addEmployee = async (req, res) => { // Add User Profile
 export const readEmployeeList = async (req, res) => {
     try {
         const client = await pool.connect();
-        const result = await client.query('SELECT employee_id, firstname, lastname, age, email, job_position FROM tblprofile');
+        const result = await client.query(`
+            SELECT 
+                employee_id, 
+                image, 
+                firstname, 
+                lastname, 
+                age, 
+                email, 
+                phone_number, 
+                home_address, 
+                district, 
+                city, 
+                province, 
+                postal_code, 
+                gender, 
+                birthday, 
+                nationality, 
+                civil_status 
+            FROM tblprofile
+        `);
         const employees = result.rows;
         client.release();
         res.status(200).json(employees);
@@ -808,6 +818,73 @@ export const readEmployeeList = async (req, res) => {
     }
 };
 // Update
+export const editEmployeeList = async (req, res) => {
+    const {
+        image,
+        firstname,
+        lastname,
+        age,
+        email,
+        phone_number,
+        home_address,
+        district,
+        city,
+        province,
+        postal_code,
+        gender,
+        birthday,
+        nationality,
+        civil_status
+    } = req.body;
+
+    const employeeId = req.body.employeeId; // Assuming the employee ID is also sent in the request body
+
+    if (!employeeId) {
+        return res.status(400).json({ error: 'Employee ID not provided in the request body' });
+    }
+
+    try {
+        // Construct the SQL query to update the row with the specified employee ID
+        const query = {
+            text: `UPDATE tblprofile
+                   SET image = $1, firstname = $2, lastname = $3, age = $4, email = $5, phone_number = $6,
+                       home_address = $7, district = $8, city = $9, province = $10, postal_code = $11,
+                       gender = $12, birthday = $13, nationality = $14, civil_status = $15
+                   WHERE employee_id = $16`,
+            values: [
+                image,
+                firstname,
+                lastname,
+                age,
+                email,
+                phone_number,
+                home_address,
+                district,
+                city,
+                province,
+                postal_code,
+                gender,
+                birthday,
+                nationality,
+                civil_status,
+                employeeId
+            ],
+        };
+
+        // Execute the SQL query
+        const result = await pool.query(query);
+
+        // Check if any row was affected
+        if (result.rowCount > 0) {
+            res.status(200).json({ message: 'Employee updated successfully' });
+        } else {
+            res.status(404).json({ error: 'Employee not found' });
+        }
+    } catch (error) {
+        console.error('Error updating employee:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
 
 // Delete
 export const deleteEmployeeList = async (req, res) => {

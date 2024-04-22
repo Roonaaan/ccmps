@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 
-import "./style.css"
+import "./style.css";
 
-function add({ onClose }) {
-    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+function Add({ onClose }) {
     const [employeeId, setEmployeeId] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [formData, setFormData] = useState({
@@ -18,13 +17,10 @@ function add({ onClose }) {
         city: '',
         province: '',
         postalCode: '',
-        gender: 'male', // Default gender to male
+        gender: 'Male',
         birthday: '',
         nationality: '',
-        civilStatus: 'single', // Default civil status to single
-        jobPosition: '',
-        jobLevel: '',
-        skills: ''
+        civilStatus: 'Single' 
     });
 
     useEffect(() => {
@@ -115,9 +111,9 @@ function add({ onClose }) {
 
                             <label htmlFor='gender'>Gender:</label>
                             <select id='gender' name='gender' value={formData.gender} onChange={handleChange}>
-                                <option value='male'>Male</option>
-                                <option value='female'>Female</option>
-                                <option value='other'>Other</option>
+                                <option value='Male'>Male</option>
+                                <option value='Female'>Female</option>
+                                <option value='Other'>Other</option>
                             </select>
 
                             <label htmlFor='birthday'>Birthday:</label>
@@ -128,24 +124,12 @@ function add({ onClose }) {
 
                             <label htmlFor='civilStatus'>Civil Status:</label>
                             <select id='civilStatus' name='civilStatus' value={formData.civilStatus} onChange={handleChange}>
-                                <option value='single'>Single</option>
-                                <option value='married'>Married</option>
-                                <option value='divorced'>Divorced</option>
-                                <option value='widowed'>Widowed</option>
+                                <option value='Single'>Single</option>
+                                <option value='Married'>Married</option>
+                                <option value='Divorced'>Divorced</option>
+                                <option value='Widowed'>Widowed</option>
                             </select>
 
-                            <label htmlFor='jobPosition'>Job Position:</label>
-                            <input type='text' id='jobPosition' name='jobPosition' value={formData.jobPosition} onChange={handleChange} />
-
-                            <label htmlFor='jobLevel'>Job Level:</label>
-                            <select type='text' id='jobLevel' name='jobLevel' value={formData.jobLevel} onChange={handleChange}>
-                                <option value='entry'>Entry-Level/Junior</option>
-                                <option value='mid'>Mid-Level/Intermediate</option>
-                                <option value='senior'>Senior Level</option>
-                                <option value='executive'>Executive/Leadership Level</option>
-                            </select>
-                            <label htmlFor='skills'>Skills:</label>
-                            <textarea id='skills' name='skills' rows="3" value={formData.skills} onChange={handleChange} />
                             <div className='savingbutton'>
                                 <button className='save'>Save</button>
                                 <button className='cancel' onClick={onClose}>Cancel</button>
@@ -154,9 +138,8 @@ function add({ onClose }) {
                     )}
                 </div>
             </div>
-            {isAddModalOpen && <Add onClose={() => setIsAddModalOpen(false)} />}
         </>
-    )
+    );
 }
 
-export default add
+export default Add;

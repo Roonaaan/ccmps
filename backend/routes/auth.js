@@ -4,7 +4,8 @@ import {
         sendResetEmail, resendResetEmail, getAssessment, getUserJob, 
         saveJob, maxPhaseNumber, getQuestions, getAnswerStored,
         retrieveAnswer, savePhaseNumber, getPhaseNumber, adminLogin,
-        employeeID, addEmployee, readEmployeeList, deleteEmployeeList
+        employeeID, addEmployee, readEmployeeList, deleteEmployeeList,
+        editEmployeeList
 } from "../controller/auth.js";
 
 const router = express.Router();
@@ -68,6 +69,7 @@ router.post("/add-employee", addEmployee);
 router.get("/read-employee", readEmployeeList);
 
 // Update
+router.post("/edit-employee", editEmployeeList);
 
 // Delete
 router.post("/delete-employee", deleteEmployeeList);

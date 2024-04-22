@@ -2,15 +2,22 @@ import React, { useState } from "react";
 
 // CSS and Assets
 import "./styles/Home.css";
-import "./styles/Employee.css";
-import "./styles/Statistics.css";
+import "./dashboard/styles/Employee.css";
+import "./dashboard/styles/Home.css";
 import logo from "../assets/homepage/final-topright-logo.png";
-import userIcon from "../assets/admin/user.png";
-import userStatistic from "../assets/admin/statistics.png";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faUser,
+  faChartBar,
+  faUserTie,
+  faAddressBook
+} from "@fortawesome/free-solid-svg-icons";
 
 // Import your other dashboard components here
-import EmployeesDashboard from "./dashboard/EmployeeDashboard";
-import StatisticsDashboard from "./dashboard/StatisticsDashboard";
+import HomeDashboard from "./dashboard/HomeDashboard";
+import BasicInfoDashboard from "./dashboard/EmployeeBasicInfoDashboard";
+import JobInfoDashboard from "./dashboard/EmployeeJobInfoDashboard";
+import AccountInfoDashboard from "./dashboard/EmployeeAccountInfo";
 
 const Home = () => {
   const [selectedItem, setSelectedItem] = useState(1); // Set default to 1 for Statistics
@@ -22,9 +29,13 @@ const Home = () => {
   const renderDashboardComponent = () => {
     switch (selectedItem) {
       case 0:
-        return <EmployeesDashboard />;
+        return <BasicInfoDashboard />;
       case 1:
-        return <StatisticsDashboard />;
+        return <HomeDashboard />;
+      case 2:
+        return <JobInfoDashboard />
+      case 3:
+        return <AccountInfoDashboard />
       default:
         return null;
     }
@@ -40,16 +51,46 @@ const Home = () => {
             </div>
             <ul>
               <li
-                className={selectedItem === 1 ? 'clicked' : ''}
+                className={selectedItem === 1 ? "clicked" : ""}
                 onClick={() => handleClick(1)}
               >
-                <span className='icons'><img src={userStatistic} alt="user-icon" className='user-icon-image' /></span>Home
+                <span className="icons">
+                  <FontAwesomeIcon icon={faChartBar} className="fa-icon" />
+                </span>
+                Home
               </li>
               <li
-                className={selectedItem === 0 ? 'clicked' : ''}
+                className={selectedItem === 0 ? "clicked" : ""}
                 onClick={() => handleClick(0)}
               >
-                <span className='icons'><img src={userIcon} alt="user-icon" className='user-icon-image' /></span>Employees
+                <span className="icons">
+                  <FontAwesomeIcon icon={faUser} className="fa-icon" />
+                </span>
+                Employees
+              </li>
+              <li
+                className={selectedItem === 2 ? "clicked" : ""}
+                onClick={() => handleClick(2)}
+              >
+                <span className="icons">
+                  <FontAwesomeIcon
+                    icon={faUserTie}
+                    className="fa-icon"
+                  />
+                </span>
+                Employee Job Info
+              </li>
+              <li
+                className={selectedItem === 3 ? "clicked" : ""}
+                onClick={() => handleClick(3)}
+              >
+                <span className="icons">
+                  <FontAwesomeIcon
+                    icon={faAddressBook}
+                    className="fa-icon"
+                  />
+                </span>
+                Employee Account Info
               </li>
             </ul>
           </div>
