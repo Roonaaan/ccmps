@@ -1,5 +1,5 @@
 /* Add Employee */
-.add-employee-modal-overlay {
+.employee-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -12,7 +12,7 @@
     align-items: center;
 }
 
-.add-employee-modal {
+.employee-modal {
     background-color: white;
     padding: 20px;
     border-radius: 5px;
@@ -25,16 +25,16 @@
     overflow-y: auto;
 }
 
-.add-employee-modal h2 {
+.employee-modal h2 {
     margin-top: 0;
 }
 
-.add-employee-modal form {
+.employee-modal form {
     display: flex;
     flex-direction: column;
 }
 
-.add-employee-modal textarea {
+.employee-modal textarea {
     resize: none;
 }
 

@@ -14,7 +14,7 @@ function EmployeeBasicInfoDashboard() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
-    const storedEmployees = sessionStorage.getItem('employees');
+    const storedEmployees = sessionStorage.getItem('basicinfo');
     if (storedEmployees) {
       // If employees exist in session storage, use them directly
       setEmployees(JSON.parse(storedEmployees));
@@ -26,12 +26,14 @@ function EmployeeBasicInfoDashboard() {
 
   const fetchEmployees = async () => {
     try {
-      const response = await axios.get('http://localhost:8800/api/auth/read-employee');
+      const response = await axios.get('http://localhost:8800/api/auth/read-basicinfo');
       const fetchedEmployees = response.data.map(employee => ({
         ...employee,
         // Convert bytea data to base64 string for image display
         image: `data:image/jpeg;base64,${employee.image.toString('base64')}`
       }));
+      // Store fetched employees in session storage
+      sessionStorage.setItem('basicinfo', JSON.stringify(fetchedEmployees));
       setEmployees(fetchedEmployees);
     } catch (error) {
       console.error('Error fetching employees:', error);
@@ -51,7 +53,7 @@ function EmployeeBasicInfoDashboard() {
     const confirmed = window.confirm('Are you sure you want to delete this employee?');
     if (confirmed) {
       try {
-        await axios.post('http://localhost:8800/api/auth/delete-employee', { employeeId }); // Send employee ID in the request body
+        await axios.post('http://localhost:8800/api/auth/delete-basicinfo', { employeeId }); // Send employee ID in the request body
         // Refresh the employee list after deletion
         fetchEmployees();
       } catch (error) {
@@ -60,13 +62,20 @@ function EmployeeBasicInfoDashboard() {
     }
   };
 
+  // Check if employees are empty and fetch them if so
+  useEffect(() => {
+    if (employees.length === 0) {
+      fetchEmployees();
+    }
+  }, [employees]);
+
   return (
     <>
       <div className='employee-dashboard-main-frame'>
         <div className='employee-table'>
           <div className='header-box'>
             <h1>Employee Basic Information</h1>
-            <button className='employee-table-add-button' onClick={toggleAddModal} > <FontAwesomeIcon icon={faPlusCircle} /> Add </button>
+            <button className='employee-table-add-button' onClick={toggleAddModal}> <FontAwesomeIcon icon={faPlusCircle} /> Add </button>
           </div>
           <div>
             <table>

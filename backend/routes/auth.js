@@ -4,8 +4,8 @@ import {
         sendResetEmail, resendResetEmail, getAssessment, getUserJob, 
         saveJob, maxPhaseNumber, getQuestions, getAnswerStored,
         retrieveAnswer, savePhaseNumber, getPhaseNumber, adminLogin,
-        employeeID, addEmployee, readEmployeeList, deleteEmployeeList,
-        editEmployeeList
+        employeeID, addBasicInfo, readBasicInfo, deleteBasicInfo,
+        editBasicInfo, readJobInfo, readAccountInfo
 } from "../controller/auth.js";
 
 const router = express.Router();
@@ -60,17 +60,30 @@ router.get("/get-phase", getPhaseNumber);
 // Route for admin login
 router.post("/admin-login", adminLogin);
 
-// Employee List CRUD Routes
-// Create
+// Route for Auto Employee ID
 router.get("/employeeid", employeeID);
-router.post("/add-employee", addEmployee);
-
+// Employee Basic Info CRUD Routes
+// Create
+router.post("/add-basicinfo", addBasicInfo);
 // Read
-router.get("/read-employee", readEmployeeList);
-
+router.get("/read-basicinfo", readBasicInfo);
 // Update
-router.post("/edit-employee", editEmployeeList);
+router.post("/edit-basicinfo", editBasicInfo);
+// Delete
+router.post("/delete-basicinfo", deleteBasicInfo);
+
+// Employee Job Info CRUD Route
+// Read
+router.get("/read-jobinfo", readJobInfo);
+// Update
 
 // Delete
-router.post("/delete-employee", deleteEmployeeList);
+
+// Employee Account Info CRUD
+// Read
+router.get("/read-accountinfo", readAccountInfo);
+// Update
+
+// Delete
+
 export default router;

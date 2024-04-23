@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 
-import "./style.css"
+import "../styles/EmployeeCrud.css";
 
 function edit({ onClose }) {
     const [formData, setFormData] = useState({
@@ -40,7 +40,7 @@ function edit({ onClose }) {
             const byteaImage = await convertImageToBytea(formData.image);
 
             // Send form data to the backend
-            const response = await axios.post('http://localhost:8800/api/auth/edit-employee', {
+            const response = await axios.post('http://localhost:8800/api/auth/edit-basicinfo', {
                 ...formData,
                 image: byteaImage, // Replace image field with bytea data
                 employeeId: sessionStorage.getItem('editEmployeeId')

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import "./style.css";
+import "../styles/EmployeeCrud.css";
 
 function Add({ onClose }) {
     const [employeeId, setEmployeeId] = useState('');
@@ -45,7 +45,7 @@ function Add({ onClose }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:8800/api/auth/add-employee', {
+            const response = await fetch('http://localhost:8800/api/auth/add-basicinfo', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -65,8 +65,8 @@ function Add({ onClose }) {
 
     return (
         <>
-            <div className="add-employee-modal-overlay">
-                <div className="add-employee-modal">
+            <div className="employee-modal-overlay">
+                <div className="employee-modal">
                     <h2>Add Employee</h2>
                     <span className='close' onClick={onClose} >&times;</span>
                     {isLoading ? (

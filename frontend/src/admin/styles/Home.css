@@ -24,7 +24,6 @@
   position: relative;
   padding: 25px;
   width: auto;
-  
 }
 
 .career-compass-image {
@@ -96,15 +95,13 @@
 
 .dashboard-content ul li:last-child {
   border-bottom: none;
-  
-}
-
-.user-icon-image {
-  width: 20px;
-  margin-right: 10px;
 }
 
 .selected-content {
   width: 100%;
   display: flex;
+}
+
+.icons {
+  margin-right: 5px;
 }

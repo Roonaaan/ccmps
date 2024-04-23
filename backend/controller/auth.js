@@ -677,8 +677,7 @@ export const adminLogin = async (req, res) => {
     }
 };
 
-// Employee Basic Info CRUD
-// Create [Auto Employee ID and Add user basic info to database]
+// Auto Employee Number
 export const employeeID = async (req, res) => { // Auto Employee ID
     try {
         const client = await pool.connect(); // Connect to the database
@@ -703,7 +702,9 @@ export const employeeID = async (req, res) => { // Auto Employee ID
     }
 };
 
-export const addEmployee = async (req, res) => { // Add Employee Basic Information
+// Employee Basic Info CRUD
+// Create
+export const addBasicInfo = async (req, res) => {
     try {
         const {
             image,
@@ -784,9 +785,8 @@ export const addEmployee = async (req, res) => { // Add Employee Basic Informati
         res.status(500).json({ error: 'Internal server error' });
     }
 };
-
 // Read
-export const readEmployeeList = async (req, res) => {
+export const readBasicInfo = async (req, res) => {
     try {
         const client = await pool.connect();
         const result = await client.query(`
@@ -818,7 +818,7 @@ export const readEmployeeList = async (req, res) => {
     }
 };
 // Update
-export const editEmployeeList = async (req, res) => {
+export const editBasicInfo = async (req, res) => {
     const {
         image,
         firstname,
@@ -885,9 +885,8 @@ export const editEmployeeList = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 }
-
 // Delete
-export const deleteEmployeeList = async (req, res) => {
+export const deleteBasicInfo = async (req, res) => {
     const employeeId = req.body.employeeId; // Retrieve employee ID from request body
 
     if (!employeeId) {
@@ -915,3 +914,57 @@ export const deleteEmployeeList = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+// Employee Job Info CRUD
+// Read
+export const readJobInfo = async (req, res) => {
+    try {
+        const client = await pool.connect();
+        const result = await client.query(`
+            SELECT 
+                employee_id, 
+                firstname, 
+                lastname, 
+                job_position, 
+                job_level,
+                skills
+            FROM tblprofile;
+        `);
+        const employees = result.rows;
+        client.release();
+        res.status(200).json(employees);
+    } catch (err) {
+        console.error('Error executing query', err);
+        res.status(500).send('Internal Server Error');
+    }
+};
+// Update
+
+// Delete
+
+// Employee Account Info CRUD
+// Read
+export const readAccountInfo = async (req, res) => {
+    try {
+        const client = await pool.connect();
+        const result = await client.query(`
+            SELECT 
+                employee_id, 
+                firstname, 
+                lastname, 
+                account_email, 
+                account_password,
+                role
+            FROM tblaccount;
+        `);
+        const employees = result.rows;
+        client.release();
+        res.status(200).json(employees);
+    } catch (err) {
+        console.error('Error executing query', err);
+        res.status(500).send('Internal Server Error');
+    }
+};
+// Update
+
+// Delete
