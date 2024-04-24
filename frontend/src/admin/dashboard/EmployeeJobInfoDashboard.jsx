@@ -76,7 +76,6 @@ function EmployeeJobInfoDashboard() {
                                         <td>
                                             <div className="employee-table-button">
                                                 <button className='employee-table-edit-button' onClick={() => toggleEditModal(employee.employee_id)}> <FontAwesomeIcon icon={faEdit} /> </button>
-                                                <button className='employee-table-delete-button'> <FontAwesomeIcon icon={faTrash} /> </button>
                                             </div>
                                         </td>
                                     </tr>

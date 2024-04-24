@@ -62,6 +62,11 @@ function EmployeeBasicInfoDashboard() {
     }
   };
 
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
   // Check if employees are empty and fetch them if so
   useEffect(() => {
     if (employees.length === 0) {
@@ -104,9 +109,9 @@ function EmployeeBasicInfoDashboard() {
                     <td>{employee.age}</td>
                     <td>{employee.email}</td>
                     <td>{employee.phone_number}</td>
-                    <td>{`${employee.home_address}, ${employee.district}, ${employee.city}, ${employee.province}, ${employee.postal_code}`}</td>
+                    <td>{`${employee.home_address}, District ${employee.district}, ${employee.city}, ${employee.province}, ${employee.postal_code}`}</td>
                     <td>{employee.gender}</td>
-                    <td>{employee.birthday}</td>
+                    <td>{employee.birthday ? formatDate(employee.birthday) : ''}</td>
                     <td>{employee.nationality}</td>
                     <td>{employee.civil_status}</td>
                     <td>

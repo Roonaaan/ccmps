@@ -721,7 +721,8 @@ export const addBasicInfo = async (req, res) => {
             gender,
             birthday,
             nationality,
-            civilStatus
+            civilStatus,
+            role
         } = req.body;
 
         const client = await pool.connect(); // Connect to the database
@@ -773,6 +774,25 @@ export const addBasicInfo = async (req, res) => {
             birthday,
             nationality,
             civilStatus
+        ]);
+
+        // Insert data into tblaccount
+        await client.query(`
+            INSERT INTO tblaccount (
+                employee_id,
+                firstname,
+                lastname,
+                account_email,
+                role
+            ) VALUES (
+                $1, $2, $3, $4, $5
+            )
+        `, [
+            nextId,
+            firstName,
+            lastName,
+            email,
+            role
         ]);
 
         // Release the database client
@@ -895,17 +915,28 @@ export const deleteBasicInfo = async (req, res) => {
 
     try {
         // Construct the SQL query to delete the row with the specified employee ID
-        const query = {
+        const queryProfile = {
             text: 'DELETE FROM tblprofile WHERE employee_id = $1',
             values: [employeeId],
         };
 
-        // Execute the SQL query
-        const result = await pool.query(query);
+        const queryAccount = {
+            text: 'DELETE FROM tblaccount WHERE employee_id = $1',
+            values: [employeeId],
+        };
 
-        // Check if any row was affected
-        if (result.rowCount > 0) {
-            res.status(200).json({ message: 'Employee deleted successfully' });
+        // Execute the SQL queries
+        const resultProfile = await pool.query(queryProfile);
+        const resultAccount = await pool.query(queryAccount);
+
+        // Check if any row was affected in tblprofile
+        if (resultProfile.rowCount > 0) {
+            // Check if any row was affected in tblaccount
+            if (resultAccount.rowCount > 0) {
+                res.status(200).json({ message: 'Employee and associated account deleted successfully' });
+            } else {
+                res.status(200).json({ message: 'Employee deleted successfully, but associated account not found' });
+            }
         } else {
             res.status(404).json({ error: 'Employee not found' });
         }

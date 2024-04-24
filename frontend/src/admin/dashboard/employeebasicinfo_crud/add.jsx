@@ -20,7 +20,8 @@ function Add({ onClose }) {
         gender: 'Male',
         birthday: '',
         nationality: '',
-        civilStatus: 'Single' 
+        civilStatus: 'Single',
+        role: 'Employee'
     });
 
     useEffect(() => {
@@ -75,6 +76,12 @@ function Add({ onClose }) {
                         <form onSubmit={handleSubmit}>
                             <label htmlFor='employeeId'>Employee ID:</label>
                             <input type='text' id='employeeId' name='employeeId' value={employeeId} readOnly />
+
+                            <label htmlFor='role'>Role</label>
+                            <select type="text" id='role' name='role' value={formData.role} onChange={handleChange} >
+                                <option value='Employee'>Employee</option>
+                                <option value='Admin'>Admin</option>
+                            </select>
 
                             <label htmlFor='image'>Upload Image:</label>
                             <input type='file' id='image' name='image' accept='image/*' onChange={handleChange} />

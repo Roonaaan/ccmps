@@ -100,6 +100,7 @@
 .selected-content {
   width: 100%;
   display: flex;
+  overflow-x: auto; /* Horizontal scrollbar will appear if content overflows horizontally */
 }
 
 .icons {
