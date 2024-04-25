@@ -29,8 +29,8 @@ function EmployeeBasicInfoDashboard() {
       const response = await axios.get('http://localhost:8800/api/auth/read-basicinfo');
       const fetchedEmployees = response.data.map(employee => ({
         ...employee,
-        // Convert bytea data to base64 string for image display
-        image: `data:image/jpeg;base64,${employee.image.toString('base64')}`
+        // Convert Buffer image data to base64 string for image display
+        image: `data:image/jpeg;base64,${arrayBufferToBase64(employee.image.data)}`
       }));
       // Store fetched employees in session storage
       sessionStorage.setItem('basicinfo', JSON.stringify(fetchedEmployees));
@@ -39,6 +39,16 @@ function EmployeeBasicInfoDashboard() {
       console.error('Error fetching employees:', error);
     }
   };
+  
+  // Function to convert ArrayBuffer to base64
+  function arrayBufferToBase64(buffer) {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    for (let i = 0; i < bytes.length; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+  }
 
   const toggleAddModal = () => {
     setIsAddModalOpen(!isAddModalOpen);

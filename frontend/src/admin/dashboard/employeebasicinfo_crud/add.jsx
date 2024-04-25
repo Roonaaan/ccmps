@@ -28,8 +28,15 @@ function Add({ onClose }) {
         fetchEmployeeId();
     }, []);
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+    const handleChange = async (e) => {
+        const { name, value } = e.target;
+        if (name === 'image') {
+            const file = e.target.files[0];
+            const base64String = await convertFileToBase64(file);
+            setFormData({ ...formData, [name]: base64String });
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
     };
 
     const fetchEmployeeId = async () => {
@@ -62,6 +69,21 @@ function Add({ onClose }) {
         } catch (error) {
             console.error('Error adding employee:', error);
         }
+    };
+
+    // Function to convert image file to base64 string
+    const convertFileToBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                const base64String = reader.result.split(',')[1];
+                resolve(base64String);
+            };
+            reader.onerror = (error) => {
+                reject(error);
+            };
+        });
     };
 
     return (

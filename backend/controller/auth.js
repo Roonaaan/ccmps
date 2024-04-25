@@ -725,39 +725,40 @@ export const addBasicInfo = async (req, res) => {
             role
         } = req.body;
 
-        const client = await pool.connect(); // Connect to the database
+        // Connect to the database
+        const client = await pool.connect();
 
         // Fetch the next available Employee ID
         const employeeIdResult = await client.query('SELECT MAX(employee_id) AS max_id FROM tblprofile');
         const maxId = employeeIdResult.rows[0].max_id || 0;
         const nextId = maxId + 1;
 
-        // Encode image data (assuming base64 encoded string)
+        // Encode image data (base64 to bytea)
         const encodedImage = Buffer.from(image, 'base64');
 
         // Insert employee data with the fetched employee ID
         await client.query(`
-            INSERT INTO tblprofile (
-                employee_id,
-                image,
-                firstname,
-                lastname,
-                age,
-                email,
-                phone_number,
-                home_address,
-                district,
-                city,
-                province,
-                postal_code,
-                gender,
-                birthday,
-                nationality,
-                civil_status
-            ) VALUES (
-                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16
-            )
-        `, [
+        INSERT INTO tblprofile (
+          employee_id,
+          image,
+          firstname,
+          lastname,
+          age,
+          email,
+          phone_number,
+          home_address,
+          district,
+          city,
+          province,
+          postal_code,
+          gender,
+          birthday,
+          nationality,
+          civil_status
+        ) VALUES (
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16
+        )
+      `, [
             nextId,
             encodedImage,
             firstName,
@@ -778,16 +779,16 @@ export const addBasicInfo = async (req, res) => {
 
         // Insert data into tblaccount
         await client.query(`
-            INSERT INTO tblaccount (
-                employee_id,
-                firstname,
-                lastname,
-                account_email,
-                role
-            ) VALUES (
-                $1, $2, $3, $4, $5
-            )
-        `, [
+        INSERT INTO tblaccount (
+          employee_id,
+          firstname,
+          lastname,
+          account_email,
+          role
+        ) VALUES (
+          $1, $2, $3, $4, $5
+        )
+      `, [
             nextId,
             firstName,
             lastName,
