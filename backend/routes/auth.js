@@ -5,7 +5,7 @@ import {
         saveJob, maxPhaseNumber, getQuestions, getAnswerStored,
         retrieveAnswer, savePhaseNumber, getPhaseNumber, adminLogin,
         employeeID, addBasicInfo, readBasicInfo, deleteBasicInfo,
-        editBasicInfo, readJobInfo, readAccountInfo
+        editBasicInfo, readJobInfo, readAccountInfo, getEmployeeById
 } from "../controller/auth.js";
 
 const router = express.Router();
@@ -48,7 +48,7 @@ router.get("/questions", getQuestions);
 router.post("/answers", getAnswerStored);
 
 // Route for retrieving answer
-router.get("/retrieve-answers", retrieveAnswer); //temporarily disabled
+router.get("/retrieve-answers", retrieveAnswer);
 
 // Route for storing answer
 router.post("/save-phase", savePhaseNumber);
@@ -69,6 +69,7 @@ router.post("/add-basicinfo", addBasicInfo);
 router.get("/read-basicinfo", readBasicInfo);
 // Update
 router.post("/edit-basicinfo", editBasicInfo);
+router.get("/get-basicinfo/:editEmployeeId", getEmployeeById);
 // Delete
 router.post("/delete-basicinfo", deleteBasicInfo);
 

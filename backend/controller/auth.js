@@ -840,72 +840,83 @@ export const readBasicInfo = async (req, res) => {
 };
 // Update
 export const editBasicInfo = async (req, res) => {
-    const {
-        image,
-        firstname,
-        lastname,
-        age,
-        email,
-        phone_number,
-        home_address,
-        district,
-        city,
-        province,
-        postal_code,
-        gender,
-        birthday,
-        nationality,
-        civil_status
-    } = req.body;
-
-    const employeeId = req.body.employeeId; // Assuming the employee ID is also sent in the request body
-
-    if (!employeeId) {
-        return res.status(400).json({ error: 'Employee ID not provided in the request body' });
-    }
-
     try {
-        // Construct the SQL query to update the row with the specified employee ID
-        const query = {
-            text: `UPDATE tblprofile
-                   SET image = $1, firstname = $2, lastname = $3, age = $4, email = $5, phone_number = $6,
-                       home_address = $7, district = $8, city = $9, province = $10, postal_code = $11,
-                       gender = $12, birthday = $13, nationality = $14, civil_status = $15
-                   WHERE employee_id = $16`,
-            values: [
-                image,
-                firstname,
-                lastname,
-                age,
-                email,
-                phone_number,
-                home_address,
-                district,
-                city,
-                province,
-                postal_code,
-                gender,
-                birthday,
-                nationality,
-                civil_status,
-                employeeId
-            ],
-        };
+        const { employee_id, image, firstName, lastName, age, email, phoneNumber, homeAddress, district, city, province, postalCode, gender, birthday, nationality, civilStatus } = req.body;
+        
+        // Update the employee information in the database
+        const query = `
+            UPDATE tblprofile 
+            SET 
+                image = $1,
+                firstname = $2,
+                lastname = $3,
+                age = $4,
+                email = $5,
+                phone_number = $6,
+                home_address = $7,
+                district = $8,
+                city = $9,
+                province = $10,
+                postal_code = $11,
+                gender = $12,
+                birthday = $13,
+                nationality = $14,
+                civil_status = $15
+            WHERE employee_id = $16
+        `;
+        
+        const values = [image, firstName, lastName, age, email, phoneNumber, homeAddress, district, city, province, postalCode, gender, birthday, nationality, civilStatus, employee_id];
+        await pool.query(query, values);
+        
+        res.status(200).json({ message: "Employee information updated successfully." });
+    } catch (error) {
+        console.error("Error updating employee information:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
 
+// Autofill Edit Panel
+export const getEmployeeById = async (req, res) => {
+    try {
+        const employeeId = req.params.editEmployeeId; // Assuming the employee ID is sent as a route parameter
+        // Construct the SQL query to select employee data based on employee ID
+        const query = {
+            text: `SELECT 
+            employee_id, 
+            image, 
+            firstname, 
+            lastname, 
+            age, 
+            email, 
+            phone_number, 
+            home_address, 
+            district, 
+            city, 
+            province, 
+            postal_code, 
+            gender, 
+            birthday, 
+            nationality, 
+            civil_status 
+        FROM tblprofile WHERE employee_id = $1`,
+            values: [employeeId],
+        };
         // Execute the SQL query
         const result = await pool.query(query);
-
-        // Check if any row was affected
-        if (result.rowCount > 0) {
-            res.status(200).json({ message: 'Employee updated successfully' });
+        // Check if any row was found
+        if (result.rows.length > 0) {
+            const employeeData = result.rows[0];
+            // Send the employee data as JSON response
+            res.status(200).json(employeeData);
         } else {
+            // If no employee with the specified ID is found, send a 404 error
             res.status(404).json({ error: 'Employee not found' });
         }
     } catch (error) {
-        console.error('Error updating employee:', error);
+        console.error('Error fetching employee data:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
-}
+};
 // Delete
 export const deleteBasicInfo = async (req, res) => {
     const employeeId = req.body.employeeId; // Retrieve employee ID from request body

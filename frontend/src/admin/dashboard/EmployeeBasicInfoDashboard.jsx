@@ -119,7 +119,7 @@ function EmployeeBasicInfoDashboard() {
                     <td>{employee.age}</td>
                     <td>{employee.email}</td>
                     <td>{employee.phone_number}</td>
-                    <td>{`${employee.home_address}, District ${employee.district}, ${employee.city}, ${employee.province}, ${employee.postal_code}`}</td>
+                    <td>{`${employee.home_address}, ${employee.city}, District ${employee.district}, ${employee.postal_code}, ${employee.province}`}</td>
                     <td>{employee.gender}</td>
                     <td>{employee.birthday ? formatDate(employee.birthday) : ''}</td>
                     <td>{employee.nationality}</td>
