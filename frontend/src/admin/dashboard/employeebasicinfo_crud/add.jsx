@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 
-import "./style.css"
+import "../styles/EmployeeCrud.css";
 
-function add({ onClose }) {
-    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+function Add({ onClose }) {
     const [employeeId, setEmployeeId] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [formData, setFormData] = useState({
@@ -18,21 +17,26 @@ function add({ onClose }) {
         city: '',
         province: '',
         postalCode: '',
-        gender: 'male', // Default gender to male
+        gender: 'Male',
         birthday: '',
         nationality: '',
-        civilStatus: 'single', // Default civil status to single
-        jobPosition: '',
-        jobLevel: '',
-        skills: ''
+        civilStatus: 'Single',
+        role: 'Employee'
     });
 
     useEffect(() => {
         fetchEmployeeId();
     }, []);
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+    const handleChange = async (e) => {
+        const { name, value } = e.target;
+        if (name === 'image') {
+            const file = e.target.files[0];
+            const base64String = await convertFileToBase64(file);
+            setFormData({ ...formData, [name]: base64String });
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
     };
 
     const fetchEmployeeId = async () => {
@@ -49,7 +53,7 @@ function add({ onClose }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('https://ccmps-server-node.vercel.app/api/auth/add-employee', {
+            const response = await fetch('https://ccmps-server-node.vercel.app/api/auth/add-basicinfo', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -67,10 +71,25 @@ function add({ onClose }) {
         }
     };
 
+    // Function to convert image file to base64 string
+    const convertFileToBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                const base64String = reader.result.split(',')[1];
+                resolve(base64String);
+            };
+            reader.onerror = (error) => {
+                reject(error);
+            };
+        });
+    };
+
     return (
         <>
-            <div className="add-employee-modal-overlay">
-                <div className="add-employee-modal">
+            <div className="employee-modal-overlay">
+                <div className="employee-modal">
                     <h2>Add Employee</h2>
                     <span className='close' onClick={onClose} >&times;</span>
                     {isLoading ? (
@@ -79,6 +98,12 @@ function add({ onClose }) {
                         <form onSubmit={handleSubmit}>
                             <label htmlFor='employeeId'>Employee ID:</label>
                             <input type='text' id='employeeId' name='employeeId' value={employeeId} readOnly />
+
+                            <label htmlFor='role'>Role</label>
+                            <select type="text" id='role' name='role' value={formData.role} onChange={handleChange} >
+                                <option value='Employee'>Employee</option>
+                                <option value='Admin'>Admin</option>
+                            </select>
 
                             <label htmlFor='image'>Upload Image:</label>
                             <input type='file' id='image' name='image' accept='image/*' onChange={handleChange} />
@@ -115,9 +140,9 @@ function add({ onClose }) {
 
                             <label htmlFor='gender'>Gender:</label>
                             <select id='gender' name='gender' value={formData.gender} onChange={handleChange}>
-                                <option value='male'>Male</option>
-                                <option value='female'>Female</option>
-                                <option value='other'>Other</option>
+                                <option value='Male'>Male</option>
+                                <option value='Female'>Female</option>
+                                <option value='Other'>Other</option>
                             </select>
 
                             <label htmlFor='birthday'>Birthday:</label>
@@ -128,24 +153,12 @@ function add({ onClose }) {
 
                             <label htmlFor='civilStatus'>Civil Status:</label>
                             <select id='civilStatus' name='civilStatus' value={formData.civilStatus} onChange={handleChange}>
-                                <option value='single'>Single</option>
-                                <option value='married'>Married</option>
-                                <option value='divorced'>Divorced</option>
-                                <option value='widowed'>Widowed</option>
+                                <option value='Single'>Single</option>
+                                <option value='Married'>Married</option>
+                                <option value='Divorced'>Divorced</option>
+                                <option value='Widowed'>Widowed</option>
                             </select>
 
-                            <label htmlFor='jobPosition'>Job Position:</label>
-                            <input type='text' id='jobPosition' name='jobPosition' value={formData.jobPosition} onChange={handleChange} />
-
-                            <label htmlFor='jobLevel'>Job Level:</label>
-                            <select type='text' id='jobLevel' name='jobLevel' value={formData.jobLevel} onChange={handleChange}>
-                                <option value='entry'>Entry-Level/Junior</option>
-                                <option value='mid'>Mid-Level/Intermediate</option>
-                                <option value='senior'>Senior Level</option>
-                                <option value='executive'>Executive/Leadership Level</option>
-                            </select>
-                            <label htmlFor='skills'>Skills:</label>
-                            <textarea id='skills' name='skills' rows="3" value={formData.skills} onChange={handleChange} />
                             <div className='savingbutton'>
                                 <button className='save'>Save</button>
                                 <button className='cancel' onClick={onClose}>Cancel</button>
@@ -154,9 +167,8 @@ function add({ onClose }) {
                     )}
                 </div>
             </div>
-            {isAddModalOpen && <Add onClose={() => setIsAddModalOpen(false)} />}
         </>
-    )
+    );
 }
 
-export default add
+export default Add;

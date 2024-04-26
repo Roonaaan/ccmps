@@ -1,14 +1,17 @@
 import express from "express";
 import {
         login, sendEmail, getUserProfile, getUserDetails,
-        sendResetEmail, resendResetEmail, getAssessment, getUserJob, 
+        sendResetEmail, resendResetEmail, getAssessment, getUserJob,
         saveJob, maxPhaseNumber, getQuestions, getAnswerStored,
         retrieveAnswer, savePhaseNumber, getPhaseNumber, adminLogin,
-        employeeID, addEmployee, readEmployeeList, deleteEmployeeList
+        employeeID, addBasicInfo, readBasicInfo, deleteBasicInfo,
+        editBasicInfo, readJobInfo, readAccountInfo, getBasicInfoById,
+        editJobInfo, getJobInfoById, deleteJobInfo, deleteAccountInfo,
+        getAccountInfoById, editAccountInfo
 } from "../controller/auth.js";
 
 const router = express.Router();
- 
+
 // User Side Routes
 // Route for user login
 router.post("/login", login);
@@ -47,7 +50,7 @@ router.get("/questions", getQuestions);
 router.post("/answers", getAnswerStored);
 
 // Route for retrieving answer
-router.get("/retrieve-answers", retrieveAnswer); //temporarily disabled
+router.get("/retrieve-answers", retrieveAnswer);
 
 // Route for storing answer
 router.post("/save-phase", savePhaseNumber);
@@ -59,16 +62,33 @@ router.get("/get-phase", getPhaseNumber);
 // Route for admin login
 router.post("/admin-login", adminLogin);
 
-// Employee List CRUD Routes
-// Create
+// Route for Auto Employee ID
 router.get("/employeeid", employeeID);
-router.post("/add-employee", addEmployee);
-
+// Employee Basic Info CRUD Routes
+// Create
+router.post("/add-basicinfo", addBasicInfo);
 // Read
-router.get("/read-employee", readEmployeeList);
-
+router.get("/read-basicinfo", readBasicInfo);
 // Update
-
+router.post("/edit-basicinfo", editBasicInfo);
+router.get("/get-basicinfo/:editEmployeeId", getBasicInfoById);
 // Delete
-router.post("/delete-employee", deleteEmployeeList);
+router.post("/delete-basicinfo", deleteBasicInfo);
+
+// Employee Job Info CRUD Route
+// Read
+router.get("/read-jobinfo", readJobInfo);
+// Update
+router.post("/edit-jobinfo", editJobInfo);
+router.get("/get-jobinfo/:editEmployeeId", getJobInfoById);
+// Delete
+router.post("/delete-jobinfo", deleteJobInfo);
+// Employee Account Info CRUD
+// Read
+router.get("/read-accountinfo", readAccountInfo);
+// Update
+router.post("/edit-accountinfo", editAccountInfo);
+router.get("/get-accountinfo/:editEmployeeId", getAccountInfoById);
+// Delete
+router.post("/delete-accountinfo", deleteAccountInfo);
 export default router;
