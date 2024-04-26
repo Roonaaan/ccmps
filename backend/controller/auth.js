@@ -874,9 +874,8 @@ export const editBasicInfo = async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 }
-
 // Autofill Edit Panel
-export const getEmployeeById = async (req, res) => {
+export const getBasicInfoById = async (req, res) => {
     try {
         const employeeId = req.params.editEmployeeId; // Assuming the employee ID is sent as a route parameter
         // Construct the SQL query to select employee data based on employee ID
@@ -982,9 +981,91 @@ export const readJobInfo = async (req, res) => {
     }
 };
 // Update
-
+export const editJobInfo = async (req, res) => {
+    try {
+        const { employee_id, jobPosition, jobLevel, skills } = req.body;
+        
+        // Update the employee information in the database
+        const query = `
+            UPDATE tblprofile 
+            SET 
+                job_position = $1,
+                job_level = $2,
+                skills = $3
+            WHERE employee_id = $4
+        `;
+        
+        const values = [jobPosition, jobLevel, skills, employee_id]; // Include employee_id
+        await pool.query(query, values);
+        
+        res.status(200).json({ message: "Employee information updated successfully." });
+    } catch (error) {
+        console.error("Error updating employee information:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+// Autofill Edit Panel
+export const getJobInfoById = async (req, res) => {
+    try {
+        const employeeId = req.params.editEmployeeId; // Assuming the employee ID is sent as a route parameter
+        // Construct the SQL query to select employee data based on employee ID
+        const query = {
+            text: `SELECT 
+             job_position,
+             job_level,
+             skills
+        FROM tblprofile WHERE employee_id = $1`,
+            values: [employeeId],
+        };
+        // Execute the SQL query
+        const result = await pool.query(query);
+        // Check if any row was found
+        if (result.rows.length > 0) {
+            const employeeData = result.rows[0];
+            // Send the employee data as JSON response
+            res.status(200).json(employeeData);
+        } else {
+            // If no employee with the specified ID is found, send a 404 error
+            res.status(404).json({ error: 'Employee not found' });
+        }
+    } catch (error) {
+        console.error('Error fetching employee data:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
 // Delete
+export const deleteJobInfo = async (req, res) => {
+    const employeeId = req.body.employeeId; // Retrieve employee ID from request body
 
+    if (!employeeId) {
+        return res.status(400).json({ error: 'Employee ID not provided in the request body' });
+    }
+
+    try {
+        // Construct the SQL query to delete the row with the specified employee ID
+        const query = {
+            text: `
+                UPDATE tblprofile 
+                SET job_position = NULL, job_level = NULL, skills = NULL
+                WHERE employee_id = $1
+            `,
+            values: [employeeId],
+        };
+
+        // Execute the SQL query
+        const result = await pool.query(query);
+
+        // Check if any row was affected
+        if (result.rowCount > 0) {
+            res.status(200).json({ message: 'Employee deleted successfully' });
+        } else {
+            res.status(404).json({ error: 'Employee not found' });
+        }
+    } catch (error) {
+        console.error('Error deleting employee:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
 // Employee Account Info CRUD
 // Read
 export const readAccountInfo = async (req, res) => {
@@ -997,6 +1078,7 @@ export const readAccountInfo = async (req, res) => {
                 lastname, 
                 account_email, 
                 account_password,
+                account_password_plain,
                 role
             FROM tblaccount;
         `);
@@ -1009,5 +1091,93 @@ export const readAccountInfo = async (req, res) => {
     }
 };
 // Update
-
+export const editAccountInfo = async (req, res) => {
+    try {
+      const { employee_id, passwordPlain } = req.body;
+  
+      // Generate a salt for password hashing
+      const saltRounds = 10; // Adjust this value as needed (higher = slower but more secure)
+      const salt = await bcrypt.genSalt(saltRounds);
+  
+      // Hash the password with the salt
+      const hashedPassword = await bcrypt.hash(passwordPlain, salt);
+  
+      // Update the employee information with hashed password
+      const query = `
+        UPDATE tblaccount 
+        SET 
+          account_password_plain = $1,
+          account_password =$2
+        WHERE employee_id = $3
+      `;
+  
+      const values = [passwordPlain, hashedPassword, employee_id]; // Use hashedPassword instead of passwordPlain
+  
+      await pool.query(query, values);
+  
+      res.status(200).json({ message: "Employee information updated successfully." });
+    } catch (error) {
+      console.error("Error updating employee information:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+// Autofill Edit Panel
+export const getAccountInfoById = async (req, res) => {
+    try {
+        const employeeId = req.params.editEmployeeId; // Assuming the employee ID is sent as a route parameter
+        // Construct the SQL query to select employee data based on employee ID
+        const query = {
+            text: `SELECT
+             account_password_plain
+        FROM tblaccount WHERE employee_id = $1`,
+            values: [employeeId],
+        };
+        // Execute the SQL query
+        const result = await pool.query(query);
+        // Check if any row was found
+        if (result.rows.length > 0) {
+            const employeeData = result.rows[0];
+            // Send the employee data as JSON response
+            res.status(200).json(employeeData);
+        } else {
+            // If no employee with the specified ID is found, send a 404 error
+            res.status(404).json({ error: 'Employee not found' });
+        }
+    } catch (error) {
+        console.error('Error fetching employee data:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
 // Delete
+export const deleteAccountInfo = async (req, res) => {
+    const employeeId = req.body.employeeId; // Retrieve employee ID from request body
+
+    if (!employeeId) {
+        return res.status(400).json({ error: 'Employee ID not provided in the request body' });
+    }
+
+    try {
+        // Construct the SQL query to delete the row with the specified employee ID
+        const query = {
+            text: `
+                UPDATE tblaccount 
+                SET account_password = NULL, account_password_plain = NULL
+                WHERE employee_id = $1
+            `,
+            values: [employeeId],
+        };
+
+        // Execute the SQL query
+        const result = await pool.query(query);
+
+        // Check if any row was affected
+        if (result.rowCount > 0) {
+            res.status(200).json({ message: 'Employee deleted successfully' });
+        } else {
+            res.status(404).json({ error: 'Employee not found' });
+        }
+    } catch (error) {
+        console.error('Error deleting employee:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};

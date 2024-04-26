@@ -5,7 +5,9 @@ import {
         saveJob, maxPhaseNumber, getQuestions, getAnswerStored,
         retrieveAnswer, savePhaseNumber, getPhaseNumber, adminLogin,
         employeeID, addBasicInfo, readBasicInfo, deleteBasicInfo,
-        editBasicInfo, readJobInfo, readAccountInfo, getEmployeeById
+        editBasicInfo, readJobInfo, readAccountInfo, getBasicInfoById,
+        editJobInfo, getJobInfoById, deleteJobInfo, deleteAccountInfo,
+        getAccountInfoById, editAccountInfo
 } from "../controller/auth.js";
 
 const router = express.Router();
@@ -69,7 +71,7 @@ router.post("/add-basicinfo", addBasicInfo);
 router.get("/read-basicinfo", readBasicInfo);
 // Update
 router.post("/edit-basicinfo", editBasicInfo);
-router.get("/get-basicinfo/:editEmployeeId", getEmployeeById);
+router.get("/get-basicinfo/:editEmployeeId", getBasicInfoById);
 // Delete
 router.post("/delete-basicinfo", deleteBasicInfo);
 
@@ -77,14 +79,16 @@ router.post("/delete-basicinfo", deleteBasicInfo);
 // Read
 router.get("/read-jobinfo", readJobInfo);
 // Update
-
+router.post("/edit-jobinfo", editJobInfo);
+router.get("/get-jobinfo/:editEmployeeId", getJobInfoById);
 // Delete
-
+router.post("/delete-jobinfo", deleteJobInfo);
 // Employee Account Info CRUD
 // Read
 router.get("/read-accountinfo", readAccountInfo);
 // Update
-
+router.post("/edit-accountinfo", editAccountInfo);
+router.get("/get-accountinfo/:editEmployeeId", getAccountInfoById);
 // Delete
-
+router.post("/delete-accountinfo", deleteAccountInfo);
 export default router;

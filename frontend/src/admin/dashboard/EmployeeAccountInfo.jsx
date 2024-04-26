@@ -4,7 +4,7 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 
-import Edit from './employeejobinfo_crud/edit';
+import Edit from './employeeaccountinfo_crud/edit';
 
 function EmployeeAccountInfo() {
   const [employees, setEmployees] = useState([]);
@@ -46,6 +46,19 @@ function EmployeeAccountInfo() {
     }
   }, [employees]);
 
+  const handleDelete = async (employeeId) => {
+    const confirmed = window.confirm('Are you sure you want to delete this employee?');
+    if (confirmed) {
+      try {
+        await axios.post('http://localhost:8800/api/auth/delete-accountinfo', { employeeId }); // Send employee ID in the request body
+        // Refresh the employee list after deletion
+        fetchEmployees();
+      } catch (error) {
+        console.error('Error deleting employee:', error);
+      }
+    }
+  };
+
   return (
     <>
       <div className='employee-dashboard-main-frame'>
@@ -72,10 +85,11 @@ function EmployeeAccountInfo() {
                     <td>{employee.employee_id}</td>
                     <td>{`${employee.firstname} ${employee.lastname}`}</td>
                     <td>{employee.account_email}</td>
-                    <td>{employee.account_password}</td>
+                    <td>{employee.account_password_plain}</td>
                     <td>
                       <div className="employee-table-button">
                         <button className='employee-table-edit-button' onClick={() => toggleEditModal(employee.employee_id)}> <FontAwesomeIcon icon={faEdit} /> </button>
+                        <button className='employee-table-delete-button' onClick={() => handleDelete(employee.employee_id)}> <FontAwesomeIcon icon={faTrash} /> </button>
                       </div>
                     </td>
                   </tr>
