@@ -5,6 +5,7 @@ import "./styles/Home.css";
 import "./dashboard/styles/Employee.css";
 import "./dashboard/styles/Home.css";
 import logo from "../assets/homepage/final-topright-logo.png";
+import defaultImg from "../assets/signed-in/defaultImg.png";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faUser,

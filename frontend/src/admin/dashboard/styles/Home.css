@@ -1,4 +1,4 @@
-.statistic-parent-frame {
+.home-parent-frame {
   display: flex;
   justify-content: flex-start;
   height: 100vh;
@@ -6,7 +6,7 @@
 
 }
 
-.stats {
+.home {
   display: flex;
   flex-direction: column;
   position: relative;
@@ -15,12 +15,12 @@
   margin: 0px 20px;
 }
 
-.stat-header {
+.home-header {
   margin: 15px;
   padding: 10px;
 }
 
-.stat-table {
+.home-table {
   display: flex;
   justify-content: flex-start;
   gap: 1em;
@@ -29,7 +29,7 @@
   
 }
 
-.stats {
+.homes {
   display: flex;
   justify-content: flex-start;
   position: relative;
@@ -39,8 +39,7 @@
 
 }
 
-.stat-type {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.home-type {
   width: 200px;
   height: 200px;
   display: flex;
