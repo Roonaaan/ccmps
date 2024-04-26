@@ -23,8 +23,13 @@ export const login = async (req, res) => {
             return res.status(401).json("User not found!");
         }
 
-        // Ensure ACCOUNT_PASSWORD is retrieved and handle potential missing value
-        const { account_password, ...userData } = result.rows[0];
+        const { role, account_password, ...userData } = result.rows[0];
+
+        // Check if the user has the 'Admin' role
+        if (role === 'Admin') {
+            return res.status(401).json("Access denied. Only employees are allowed to log in.");
+        }
+
         if (!account_password) {
             return res.status(400).json({ error: "Password not set for this user" });
         }
