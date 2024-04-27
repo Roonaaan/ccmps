@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 
 import "../styles/EmployeeCrud.css";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function edit({ onClose }) {
   const [formData, setFormData] = useState({
@@ -37,6 +39,7 @@ function edit({ onClose }) {
         const employeeId = sessionStorage.getItem('editEmployeeId');
         await axios.post('http://localhost:8800/api/auth/edit-accountinfo', { employee_id: employeeId, ...formData });
         onClose(); // Close the modal after successful submission
+        toast.success('Successfully Changed');
     } catch (error) {
         console.error('Error editing employee information:', error);
         // Handle error

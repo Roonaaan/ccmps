@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
 import "../styles/EmployeeCrud.css";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Add({ onClose }) {
     const [employeeId, setEmployeeId] = useState('');
@@ -63,6 +65,7 @@ function Add({ onClose }) {
             if (response.ok) {
                 // Employee added successfully
                 onClose();
+                toast.success('Successfully Added');
             } else {
                 console.error('Error adding employee:', response.statusText);
             }

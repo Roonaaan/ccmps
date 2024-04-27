@@ -3,6 +3,9 @@ import axios from 'axios';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2';
 
 import Edit from './employeeaccountinfo_crud/edit';
 
@@ -47,20 +50,30 @@ function EmployeeAccountInfo() {
   }, [employees]);
 
   const handleDelete = async (employeeId) => {
-    const confirmed = window.confirm('Are you sure you want to delete this employee?');
-    if (confirmed) {
-      try {
-        await axios.post('http://localhost:8800/api/auth/delete-accountinfo', { employeeId }); // Send employee ID in the request body
-        // Refresh the employee list after deletion
-        fetchEmployees();
-      } catch (error) {
-        console.error('Error deleting employee:', error);
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will not be able to recover this employee data!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axios.post('http://localhost:8800/api/auth/delete-accountinfo', { employeeId });
+          fetchEmployees();
+          toast.success('Successfully Deleted');
+        } catch (error) {
+          console.error('Error deleting employee:', error);
+        }
       }
-    }
+    });
   };
 
   return (
     <>
+      <ToastContainer />
       <div className='employee-dashboard-main-frame'>
         <div className='employee-table'>
           <div className='header-box'>
