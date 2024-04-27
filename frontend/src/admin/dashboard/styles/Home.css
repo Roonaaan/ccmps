@@ -10,8 +10,8 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  width: auto;
-  height: auto;
+  width: 100%;
+  height: 100vh;
   margin: 0px 20px;
 }
 
@@ -47,3 +47,84 @@
   justify-content: center;
 }
 
+/* Dashboard Stats CSS */
+.stats-parent {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  overflow: auto;
+}
+
+.upper-row-stats {
+  display: flex;
+  position: relative;
+  border: solid 1px grey;
+  height: 130px;
+  justify-content: center;
+  align-items: center;
+  gap:2em;
+}
+
+.row-box {
+  display: flex;
+  position: relative;
+  width: 25%;
+  height: 100px;
+  border: solid 1px grey;
+}
+
+.middle-row-graphs {
+  display: flex;
+  position: relative;
+  border: solid 1px grey;
+  height: 400px;
+  justify-content: center;
+  align-items: center;
+  gap:2em;
+}
+
+.graph-box {
+  display: flex;
+  position: relative;
+  width: 50%;
+  border: solid 1px grey;
+  height:370px;
+
+
+}
+
+.lower-row-stats {
+  display: flex;
+  position: relative;
+  border: solid 1px grey;
+  height: 150px;
+  justify-content: center;
+  align-items: center;
+
+}
+
+.low-row-box{
+  display: flex;
+  position: relative;
+  width: 25%;
+  height: 120px;
+  border: solid 1px grey;
+}
+
+.statistic-group {
+  display: flex;
+  position: relative;
+  border: solid 1px grey;
+  height: 450px;
+  justify-content: center;
+  align-items: center;
+  gap:1em;
+}
+
+.statistic-chuchu {
+  display: flex;
+  position: relative;
+  width: 33%;
+  height: 400px;
+  border: solid 1px grey;
+}
