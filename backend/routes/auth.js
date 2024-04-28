@@ -1,17 +1,20 @@
 import express from "express";
 import {
         login, sendEmail, getUserProfile, getUserDetails,
-        sendResetEmail, resendResetEmail, getAssessment, getUserJob,
+        sendResetEmail, resendResetEmail, getAssessment, getUserJob, 
         saveJob, maxPhaseNumber, getQuestions, getAnswerStored,
         retrieveAnswer, savePhaseNumber, getPhaseNumber, adminLogin,
         employeeID, addBasicInfo, readBasicInfo, deleteBasicInfo,
         editBasicInfo, readJobInfo, readAccountInfo, getBasicInfoById,
         editJobInfo, getJobInfoById, deleteJobInfo, deleteAccountInfo,
-        getAccountInfoById, editAccountInfo
+        getAccountInfoById, editAccountInfo, readPromotionInfo, readEduHistory,
+        editEduHistory, getEduHistoryById, deleteEduHistory, readJobHistory,
+        editJobHistory, getJobHistoryById, deleteJobHistory, getUserPromotionInfo,
+        promoteUser
 } from "../controller/auth.js";
 
 const router = express.Router();
-
+ 
 // User Side Routes
 // Route for user login
 router.post("/login", login);
@@ -64,6 +67,14 @@ router.post("/admin-login", adminLogin);
 
 // Route for Auto Employee ID
 router.get("/employeeid", employeeID);
+
+// Employee Promotion Routes
+// Read
+router.get("/read-promotioninfo", readPromotionInfo);
+// Promote
+router.get("/get-userpromotioninfo/:editEmployeeId", getUserPromotionInfo);
+router.post("/promoteuser/:editEmployeeId", promoteUser);
+
 // Employee Basic Info CRUD Routes
 // Create
 router.post("/add-basicinfo", addBasicInfo);
@@ -75,6 +86,24 @@ router.get("/get-basicinfo/:editEmployeeId", getBasicInfoById);
 // Delete
 router.post("/delete-basicinfo", deleteBasicInfo);
 
+// Employee Education History Route
+// Read
+router.get("/read-educhistory", readEduHistory);
+// Update
+router.post("/edit-educhistory", editEduHistory);
+router.get("/get-educhistory/:editEmployeeId", getEduHistoryById);
+// Delete
+router.post("/delete-educhistory", deleteEduHistory);
+
+// Employee Job History Route
+// Read
+router.get("/read-jobhistory", readJobHistory);
+// Update
+router.post("/edit-jobhistory", editJobHistory);
+router.get("/get-jobhistory/:editEmployeeId", getJobHistoryById);
+// Delete
+router.post("/delete-jobhistory", deleteJobHistory);
+
 // Employee Job Info CRUD Route
 // Read
 router.get("/read-jobinfo", readJobInfo);
@@ -83,6 +112,7 @@ router.post("/edit-jobinfo", editJobInfo);
 router.get("/get-jobinfo/:editEmployeeId", getJobInfoById);
 // Delete
 router.post("/delete-jobinfo", deleteJobInfo);
+
 // Employee Account Info CRUD
 // Read
 router.get("/read-accountinfo", readAccountInfo);
@@ -91,4 +121,4 @@ router.post("/edit-accountinfo", editAccountInfo);
 router.get("/get-accountinfo/:editEmployeeId", getAccountInfoById);
 // Delete
 router.post("/delete-accountinfo", deleteAccountInfo);
-export default router;
+export default router;F

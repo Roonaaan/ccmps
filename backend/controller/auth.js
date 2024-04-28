@@ -707,6 +707,108 @@ export const employeeID = async (req, res) => { // Auto Employee ID
     }
 };
 
+// Employee Promotion
+// Read
+export const readPromotionInfo = async (req, res) => {
+    try {
+        const client = await pool.connect();
+        const result = await client.query(`
+        SELECT 
+        p.employee_id, 
+        p.firstname, 
+        p.lastname, 
+        p.email, 
+        r.position,
+        (SELECT COUNT(result) FROM tblroadmap WHERE email = p.email AND position = r.position AND result = 'correct') AS score,
+        (SELECT COUNT(question) FROM tblroadmap WHERE email = p.email AND position = r.position) AS total_questions
+    FROM 
+        tblprofile p
+    JOIN 
+        tblroadmap r ON p.employee_id = p.employee_id
+    GROUP BY 
+        p.employee_id, p.firstname, p.lastname, p.email, r.position;
+        `);
+        const employees = result.rows;
+        client.release();
+        res.status(200).json(employees);
+    } catch (err) {
+        console.error('Error executing query', err);
+        res.status(500).send('Internal Server Error');
+    }
+};
+// Promotion
+export const getUserPromotionInfo = async (req, res) => {
+    const employeeId = req.params.editEmployeeId;
+
+    try {
+        // Fetch user profile data and calculate score
+        const query = `
+        SELECT 
+            p.employee_id,
+            p.firstname,
+            p.lastname,
+            p.job_position,
+            p.job_selected,
+            p.image,
+            p.current_phase, 
+            ROUND(CAST(SUM(CASE WHEN r.result = 'correct' THEN 1 ELSE 0 END) AS NUMERIC) / COUNT(r.question) * 100, 2) AS score
+        FROM 
+            tblprofile p
+        INNER JOIN 
+            tblroadmap r ON p.employee_id = p.employee_id
+        WHERE 
+            p.employee_id = $1
+        GROUP BY 
+            p.employee_id, p.firstname, p.lastname, p.job_position, p.job_selected, p.image, p.current_phase;
+        `;
+        const result = await pool.query(query, [employeeId]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const userData = result.rows[0];
+        const score = parseFloat(userData.score);
+
+        // Determine promotion eligibility
+        const promotionStatus = score >= 80 ? "Eligible for Promotion" : "Not Eligible for Promotion";
+
+        res.status(200).json({ userData, promotionStatus });
+    } catch (error) {
+        console.error("Error fetching user promotion info:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+export const promoteUser = async (req, res) => {
+    try {
+        // Retrieve the employee_id from the request parameters
+        const employeeId = req.params.editEmployeeId;
+        console.log('Employee ID:', employeeId); // Log the employeeId to check its value
+
+        // Fetch the job_selected and current_phase from tblprofile based on employee_id
+        const profileQuery = `SELECT job_selected, current_phase FROM tblprofile WHERE employee_id = $1`;
+        const profileResult = await pool.query(profileQuery, [employeeId]);
+
+        if (profileResult.rows.length === 0) {
+            // Handle case where no rows are returned for the given employee_id
+            return res.status(404).json({ error: "Employee not found." });
+        }
+
+        const { job_selected, current_phase } = profileResult.rows[0];
+
+        // Update job_position with job_selected and delete job_selected and current_phase
+        const updateQuery = `UPDATE tblprofile SET job_position = $1, job_selected = NULL, current_phase = NULL WHERE employee_id = $2`;
+        await pool.query(updateQuery, [job_selected, employeeId]);
+
+        res.status(200).json({ message: "User promoted successfully." });
+    } catch (error) {
+        console.error("Error promoting user:", error);
+        res.status(500).json({ error: "An error occurred while promoting the user." });
+    }
+};
+
+
 // Employee Basic Info CRUD
 // Create
 export const addBasicInfo = async (req, res) => {
@@ -953,6 +1055,245 @@ export const deleteBasicInfo = async (req, res) => {
             } else {
                 res.status(200).json({ message: 'Employee deleted successfully, but associated account not found' });
             }
+        } else {
+            res.status(404).json({ error: 'Employee not found' });
+        }
+    } catch (error) {
+        console.error('Error deleting employee:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+// Employee Education History CRUD
+// Read
+export const readEduHistory = async (req, res) => {
+    try {
+        const client = await pool.connect();
+        const result = await client.query(`
+        SELECT 
+        p.employee_id, 
+        p.firstname, 
+        p.lastname,
+        e.school,
+        e.year_graduated,
+        e.grade_level,
+        e.degree_course
+    FROM 
+        tblprofile p
+    JOIN 
+        tbleducbackground e ON p.employee_id = e.employee_id;
+        `);
+        const employees = result.rows;
+        client.release();
+        res.status(200).json(employees);
+    } catch (err) {
+        console.error('Error executing query', err);
+        res.status(500).send('Internal Server Error');
+    }
+};
+// Update
+export const editEduHistory = async (req, res) => {
+    try {
+        const { employee_id, school, yearGraduated, gradeLevel, degree } = req.body;
+
+        // Update the employee information in the database
+        const query = `
+            UPDATE tbleducbackground
+            SET 
+                school = $1,
+                year_graduated = $2,
+                grade_level = $3,
+                degree_course = $4
+            WHERE employee_id = $5
+        `;
+
+        const values = [school, yearGraduated, gradeLevel, degree, employee_id]; // Include employee_id
+        await pool.query(query, values);
+
+        res.status(200).json({ message: "Employee information updated successfully." });
+    } catch (error) {
+        console.error("Error updating employee information:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+// Autofill Edit Panel
+export const getEduHistoryById = async (req, res) => {
+    try {
+        const employeeId = req.params.editEmployeeId; // Assuming the employee ID is sent as a route parameter
+        // Construct the SQL query to select employee data based on employee ID
+        const query = {
+            text: `SELECT 
+             school,
+             year_graduated,
+             grade_level,
+             degree_course
+        FROM tbleducbackground WHERE employee_id = $1`,
+            values: [employeeId],
+        };
+        // Execute the SQL query
+        const result = await pool.query(query);
+        // Check if any row was found
+        if (result.rows.length > 0) {
+            const employeeData = result.rows[0];
+            // Send the employee data as JSON response
+            res.status(200).json(employeeData);
+        } else {
+            // If no employee with the specified ID is found, send a 404 error
+            res.status(404).json({ error: 'Employee not found' });
+        }
+    } catch (error) {
+        console.error('Error fetching employee data:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+// Delete
+export const deleteEduHistory = async (req, res) => {
+    const employeeId = req.body.employeeId; // Retrieve employee ID from request body
+
+    if (!employeeId) {
+        return res.status(400).json({ error: 'Employee ID not provided in the request body' });
+    }
+
+    try {
+        // Construct the SQL query to delete the row with the specified employee ID
+        const query = {
+            text: `
+                UPDATE tbleducbackground
+                SET school = NULL, year_graduated = NULL, grade_level = NULL, degree_course = NULL
+                WHERE employee_id = $1
+            `,
+            values: [employeeId],
+        };
+
+        // Execute the SQL query
+        const result = await pool.query(query);
+
+        // Check if any row was affected
+        if (result.rowCount > 0) {
+            res.status(200).json({ message: 'Employee deleted successfully' });
+        } else {
+            res.status(404).json({ error: 'Employee not found' });
+        }
+    } catch (error) {
+        console.error('Error deleting employee:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+// Employee Job History CRUD
+// Read
+export const readJobHistory = async (req, res) => {
+    try {
+        const client = await pool.connect();
+        const result = await client.query(`
+        SELECT 
+        p.employee_id, 
+        p.firstname, 
+        p.lastname,
+        w.company,
+        w.job_title,
+        w.skills,
+        w.company_address,
+        w.start_date,
+        w.end_date
+    FROM 
+        tblprofile p
+    JOIN 
+        tblworkhistory w ON p.employee_id = w.employee_id;
+
+        `);
+        const employees = result.rows;
+        client.release();
+        res.status(200).json(employees);
+    } catch (err) {
+        console.error('Error executing query', err);
+        res.status(500).send('Internal Server Error');
+    }
+};
+// Update
+export const editJobHistory = async (req, res) => {
+    try {
+        const { employee_id, company, jobTitle, skills, companyAddress, startDate, endDate } = req.body;
+
+        // Update the employee information in the database
+        const query = `
+            UPDATE tblworkhistory
+            SET 
+                company = $1,
+                job_title = $2,
+                skills = $3,
+                company_address = $4,
+                start_date = $5,
+                end_date = $6
+            WHERE employee_id = $7
+        `;
+
+        const values = [company, jobTitle, skills, companyAddress, startDate, endDate, employee_id]; // Include employee_id
+        await pool.query(query, values);
+
+        res.status(200).json({ message: "Employee information updated successfully." });
+    } catch (error) {
+        console.error("Error updating employee information:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+// Autofill Edit Panel
+export const getJobHistoryById = async (req, res) => {
+    try {
+        const employeeId = req.params.editEmployeeId; // Assuming the employee ID is sent as a route parameter
+        // Construct the SQL query to select employee data based on employee ID
+        const query = {
+            text: `SELECT 
+             company,
+             job_title,
+             skills,
+             company_address,
+             start_date,
+             end_date
+        FROM tblworkhistory WHERE employee_id = $1`,
+            values: [employeeId],
+        };
+        // Execute the SQL query
+        const result = await pool.query(query);
+        // Check if any row was found
+        if (result.rows.length > 0) {
+            const employeeData = result.rows[0];
+            // Send the employee data as JSON response
+            res.status(200).json(employeeData);
+        } else {
+            // If no employee with the specified ID is found, send a 404 error
+            res.status(404).json({ error: 'Employee not found' });
+        }
+    } catch (error) {
+        console.error('Error fetching employee data:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+// Delete
+export const deleteJobHistory = async (req, res) => {
+    const employeeId = req.body.employeeId; // Retrieve employee ID from request body
+
+    if (!employeeId) {
+        return res.status(400).json({ error: 'Employee ID not provided in the request body' });
+    }
+
+    try {
+        // Construct the SQL query to delete the row with the specified employee ID
+        const query = {
+            text: `
+                UPDATE tblworkhistory 
+                SET company = NULL, job_title = NULL, skills = NULL, company_address = NULL, start_date = NULL, end_date = NULL
+                WHERE employee_id = $1
+            `,
+            values: [employeeId],
+        };
+
+        // Execute the SQL query
+        const result = await pool.query(query);
+
+        // Check if any row was affected
+        if (result.rowCount > 0) {
+            res.status(200).json({ message: 'Employee deleted successfully' });
         } else {
             res.status(404).json({ error: 'Employee not found' });
         }

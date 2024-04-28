@@ -7,9 +7,10 @@ import 'react-toastify/dist/ReactToastify.css';
 
 function edit({ onClose }) {
     const [formData, setFormData] = useState({
-        jobPosition: '',
-        jobLevel: 'Entry-Level/Junior',
-        skills: '',
+        school: '',
+        yearGraduated: '',
+        gradeLevel: 'Junior High School',
+        degree: '',
     });
 
     useEffect(() => {
@@ -19,13 +20,14 @@ function edit({ onClose }) {
     const fetchEmployeeData = async () => {
         try {
             const employeeId = sessionStorage.getItem('editEmployeeId');
-            const response = await axios.get(`https://ccmps-server-node.vercel.app/api/auth/get-jobinfo/${employeeId}`);
+            const response = await axios.get(`https://ccmps-server-node.vercel.app/api/auth/get-educhistory/${employeeId}`);
             const employeeData = response.data;
 
             setFormData({
-                jobPosition: employeeData.job_position,
-                jobLevel: employeeData.job_level,
-                skills: employeeData.skills,
+                school: employeeData.school,
+                yearGraduated: employeeData.year_graduated,
+                gradeLevel: employeeData.gradeLevel,
+                degree: employeeData.degree_course,
             });
         } catch (error) {
             console.error('Error fetching employee data:', error);
@@ -41,7 +43,7 @@ function edit({ onClose }) {
         event.preventDefault();
         try {
             const employeeId = sessionStorage.getItem('editEmployeeId');
-            await axios.post('https://ccmps-server-node.vercel.app/api/auth/edit-jobinfo', { employee_id: employeeId, ...formData });
+            await axios.post('https://ccmps-server-node.vercel.app/api/auth/edit-educhistory', { employee_id: employeeId, ...formData });
             onClose(); // Close the modal after successful submission
             toast.success('Successfully Changed');
         } catch (error) {
@@ -57,18 +59,21 @@ function edit({ onClose }) {
                     <h2>Edit Employee</h2>
                     <span className='close' onClick={onClose} >&times;</span>
                     <form onSubmit={handleSubmit}>
-                        <label htmlFor='jobPosition'>Job Position:</label>
-                        <input type='text' id='jobPosition' name='jobPosition' value={formData.jobPosition} onChange={handleChange} />
+                        <label htmlFor='school'>School:</label>
+                        <input type='text' id='school' name='school' value={formData.school} onChange={handleChange} />
 
-                        <label htmlFor='jobLevel'>Job Level:</label>
-                        <select id='jobLevel' name='jobLevel' value={formData.jobLevel} onChange={handleChange}>
-                            <option value='Entry-Level/Junior'>Entry-Level/Junior</option>
-                            <option value='Mid-Level/Intermediate'>Mid-Level/Intermediate</option>
-                            <option value='Senior Level'>Senior Level</option>
-                            <option value='Executive/Leadership Level'>Executive/Leadership Level</option>
+                        <label htmlFor='yearGraduated'>Year Graduated:</label>
+                        <input type='number' id='yearGraduated' name='yearGraduated' value={formData.yearGraduated} onChange={handleChange} />
+
+                        <label htmlFor='gradeLevel'>Grade Level:</label>
+                        <select id='gradeLevel' name='gradeLevel' value={formData.gradeLevel} onChange={handleChange}>
+                            <option value='Junior High School'>Junior High School</option>
+                            <option value='Senior High School'>Senior High School</option>
+                            <option value='College Graduate 2 Year Course'>College Graduate 2 Year Course</option>
+                            <option value='College Graduate 4 Year Course'>College Graduate 4 Year Course</option>
                         </select>
-                        <label htmlFor='skills'>Skills:</label>
-                        <textarea id='skills' name='skills' row='5' value={formData.skills} onChange={handleChange} />
+                        <label htmlFor='degree'>Degree/Course:</label>
+                        <input type='text' id='degree' name='degree' value={formData.degree} onChange={handleChange} />
                         <div className='savingbutton'>
                             <button className='save'>Save</button>
                             <button className='cancel' onClick={onClose}>Cancel</button>

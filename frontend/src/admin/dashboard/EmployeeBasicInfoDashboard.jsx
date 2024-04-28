@@ -4,6 +4,9 @@ import axios from 'axios';
 // Assets
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2';
 
 import Add from './employeebasicinfo_crud/add';
 import Edit from './employeebasicinfo_crud/edit';
@@ -39,7 +42,7 @@ function EmployeeBasicInfoDashboard() {
       console.error('Error fetching employees:', error);
     }
   };
-  
+
   // Function to convert ArrayBuffer to base64
   function arrayBufferToBase64(buffer) {
     let binary = '';
@@ -60,16 +63,25 @@ function EmployeeBasicInfoDashboard() {
   };
 
   const handleDelete = async (employeeId) => {
-    const confirmed = window.confirm('Are you sure you want to delete this employee?');
-    if (confirmed) {
-      try {
-        await axios.post('https://ccmps-server-node.vercel.app/api/auth/delete-basicinfo', { employeeId }); // Send employee ID in the request body
-        // Refresh the employee list after deletion
-        fetchEmployees();
-      } catch (error) {
-        console.error('Error deleting employee:', error);
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will not be able to recover this employee data!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axios.post('https://ccmps-server-node.vercel.app/api/auth/delete-basicinfo', { employeeId });
+          fetchEmployees();
+          toast.success('Successfully Deleted');
+        } catch (error) {
+          console.error('Error deleting employee:', error);
+        }
       }
-    }
+    });
   };
 
   const formatDate = (dateString) => {
@@ -86,6 +98,7 @@ function EmployeeBasicInfoDashboard() {
 
   return (
     <>
+      <ToastContainer />
       <div className='employee-dashboard-main-frame'>
         <div className='employee-table'>
           <div className='header-box'>

@@ -7,8 +7,11 @@ import 'react-toastify/dist/ReactToastify.css';
 
 function edit({ onClose }) {
     const [formData, setFormData] = useState({
-        jobPosition: '',
-        jobLevel: 'Entry-Level/Junior',
+        company: '',
+        jobTitle: '',
+        companyAddress: '',
+        startDate: '',
+        endDate: '',
         skills: '',
     });
 
@@ -19,13 +22,16 @@ function edit({ onClose }) {
     const fetchEmployeeData = async () => {
         try {
             const employeeId = sessionStorage.getItem('editEmployeeId');
-            const response = await axios.get(`https://ccmps-server-node.vercel.app/api/auth/get-jobinfo/${employeeId}`);
+            const response = await axios.get(`https://ccmps-server-node.vercel.app/api/auth/get-jobhistory/${employeeId}`);
             const employeeData = response.data;
 
             setFormData({
-                jobPosition: employeeData.job_position,
-                jobLevel: employeeData.job_level,
+                company: employeeData.company,
+                jobTitle: employeeData.job_title,
                 skills: employeeData.skills,
+                companyAddress: employeeData.company_address,
+                startDate: employeeData.start_date,
+                endDate: employeeData.end_date,
             });
         } catch (error) {
             console.error('Error fetching employee data:', error);
@@ -41,7 +47,7 @@ function edit({ onClose }) {
         event.preventDefault();
         try {
             const employeeId = sessionStorage.getItem('editEmployeeId');
-            await axios.post('https://ccmps-server-node.vercel.app/api/auth/edit-jobinfo', { employee_id: employeeId, ...formData });
+            await axios.post('https://ccmps-server-node.vercel.app/api/auth/edit-jobhistory', { employee_id: employeeId, ...formData });
             onClose(); // Close the modal after successful submission
             toast.success('Successfully Changed');
         } catch (error) {
@@ -57,18 +63,24 @@ function edit({ onClose }) {
                     <h2>Edit Employee</h2>
                     <span className='close' onClick={onClose} >&times;</span>
                     <form onSubmit={handleSubmit}>
-                        <label htmlFor='jobPosition'>Job Position:</label>
-                        <input type='text' id='jobPosition' name='jobPosition' value={formData.jobPosition} onChange={handleChange} />
+                        <label htmlFor='company'>Company:</label>
+                        <input type='text' id='company' name='company' value={formData.company} onChange={handleChange} />
 
-                        <label htmlFor='jobLevel'>Job Level:</label>
-                        <select id='jobLevel' name='jobLevel' value={formData.jobLevel} onChange={handleChange}>
-                            <option value='Entry-Level/Junior'>Entry-Level/Junior</option>
-                            <option value='Mid-Level/Intermediate'>Mid-Level/Intermediate</option>
-                            <option value='Senior Level'>Senior Level</option>
-                            <option value='Executive/Leadership Level'>Executive/Leadership Level</option>
-                        </select>
+                        <label htmlFor='jobTitle'>Job Title:</label>
+                        <input type='text' id='jobTitle' name='jobTitle' value={formData.jobTitle} onChange={handleChange} />
+
                         <label htmlFor='skills'>Skills:</label>
                         <textarea id='skills' name='skills' row='5' value={formData.skills} onChange={handleChange} />
+
+                        <label htmlFor='companyAddress'>Company Address:</label>
+                        <input type='text' id='companyAddress' name='companyAddress' value={formData.companyAddress} onChange={handleChange} />
+
+                        <label htmlFor='startDate'>Start Date:</label>
+                        <input type='date' id='startDate' name='startDate' value={formData.startDate} onChange={handleChange} />
+
+                        <label htmlFor='endDate'>End Date:</label>
+                        <input type='date' id='endDate' name='endDate' value={formData.endDate} onChange={handleChange} />
+
                         <div className='savingbutton'>
                             <button className='save'>Save</button>
                             <button className='cancel' onClick={onClose}>Cancel</button>

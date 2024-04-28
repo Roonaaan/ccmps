@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,14 +7,14 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Swal from 'sweetalert2';
 
-import Edit from './employeejobinfo_crud/edit';
+import Edit from './employeejobhistory_crud/edit';
 
-function EmployeeJobInfoDashboard() {
+function EmployeeJobHistory() {
     const [employees, setEmployees] = useState([]);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     useEffect(() => {
-        const storedEmployees = sessionStorage.getItem('jobinfo');
+        const storedEmployees = sessionStorage.getItem('jobhistory');
         if (storedEmployees) {
             // If employees exist in session storage, use them directly
             setEmployees(JSON.parse(storedEmployees));
@@ -26,12 +26,12 @@ function EmployeeJobInfoDashboard() {
 
     const fetchEmployees = async () => {
         try {
-            const response = await axios.get('https://ccmps-server-node.vercel.app/api/auth/read-jobinfo');
+            const response = await axios.get('https://ccmps-server-node.vercel.app/api/auth/read-jobhistory');
             const fetchedEmployees = response.data.map(employee => ({
                 ...employee,
             }));
             // Store fetched employees in session storage
-            sessionStorage.setItem('jobinfo', JSON.stringify(fetchedEmployees));
+            sessionStorage.setItem('jobhistory', JSON.stringify(fetchedEmployees));
             setEmployees(fetchedEmployees);
         } catch (error) {
             console.error('Error fetching employees:', error);
@@ -49,6 +49,11 @@ function EmployeeJobInfoDashboard() {
         }
     }, [employees]);
 
+    const formatDate = (dateString) => {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return new Date(dateString).toLocaleDateString(undefined, options);
+    };
+
     const handleDelete = async (employeeId) => {
         Swal.fire({
             title: 'Are you sure?',
@@ -61,7 +66,7 @@ function EmployeeJobInfoDashboard() {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    await axios.post('https://ccmps-server-node.vercel.app/api/auth/delete-jobinfo', { employeeId });
+                    await axios.post('https://ccmps-server-node.vercel.app/api/auth/delete-jobhistory', { employeeId });
                     fetchEmployees();
                     toast.success('Successfully Deleted');
                 } catch (error) {
@@ -77,28 +82,30 @@ function EmployeeJobInfoDashboard() {
             <div className='employee-dashboard-main-frame'>
                 <div className='employee-table'>
                     <div className='header-box'>
-                        <h1>Employee Job Information</h1>
+                        <h1>Employee Job History</h1>
                     </div>
                     <div>
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Employee ID</th>
                                     <th>Full Name</th>
-                                    <th>Job Position</th>
-                                    <th>Job Level</th>
+                                    <th>Job Title</th>
+                                    <th>Company</th>
+                                    <th>Company Address</th>
                                     <th>Skills</th>
-                                    <th>Action</th>
+                                    <th>Start and End Date</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {employees.map(employee => (
                                     <tr key={employee.employee_id}>
-                                        <td>{employee.employee_id}</td>
                                         <td>{`${employee.firstname} ${employee.lastname}`}</td>
-                                        <td>{employee.job_position}</td>
-                                        <td>{employee.job_level}</td>
+                                        <td>{employee.job_title}</td>
+                                        <td>{employee.company}</td>
+                                        <td>{employee.company_address}</td>
                                         <td>{employee.skills}</td>
+                                        <td>{`${employee.start_date ? formatDate(employee.start_date) : ''} - ${employee.end_date ? formatDate(employee.end_date) : ''}`}</td>
                                         <td>
                                             <div className="employee-table-button">
                                                 <button className='employee-table-edit-button' onClick={() => toggleEditModal(employee.employee_id)}> <FontAwesomeIcon icon={faEdit} /> </button>
@@ -114,7 +121,7 @@ function EmployeeJobInfoDashboard() {
             </div>
             {isEditModalOpen && <Edit onClose={() => setIsEditModalOpen(false)} />}
         </>
-    )
+    );
 }
 
-export default EmployeeJobInfoDashboard
+export default EmployeeJobHistory;
