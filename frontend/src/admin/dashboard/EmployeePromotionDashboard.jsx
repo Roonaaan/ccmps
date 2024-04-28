@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStairs } from '@fortawesome/free-solid-svg-icons';
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import PromotionReview from './employeepromotion_review/promotionreview';
+
 function EmployeePromotionDashboard() {
   const [employees, setEmployees] = useState([]);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isPromotionModalOpen, setIsPromotionModalOpen] = useState(false);
 
   useEffect(() => {
     const storedEmployees = sessionStorage.getItem('promotioninfo');
@@ -20,6 +22,11 @@ function EmployeePromotionDashboard() {
       fetchEmployees();
     }
   }, []);
+
+  const togglePromotionModal = (employeeId) => {
+    sessionStorage.setItem('editEmployeeId', employeeId);
+    setIsPromotionModalOpen(!isPromotionModalOpen);
+};
 
   const fetchEmployees = async () => {
     try {
@@ -71,7 +78,7 @@ function EmployeePromotionDashboard() {
                     <td>{`${employee.score} / ${employee.total_questions}`}</td>
                     <td>
                       <div className="employee-table-button">
-                        <button className='employee-table-edit-button'> <FontAwesomeIcon icon={faStairs} /> </button>
+                        <button className='employee-table-edit-button' onClick={() => togglePromotionModal(employee.employee_id)}> <FontAwesomeIcon icon={faMagnifyingGlass} /> </button>
                       </div>
                     </td>
                   </tr>
@@ -81,6 +88,7 @@ function EmployeePromotionDashboard() {
           </div>
         </div>
       </div>
+      {isPromotionModalOpen && <PromotionReview onClose={() => setIsPromotionModalOpen(false)} />}
     </>
   )
 }
