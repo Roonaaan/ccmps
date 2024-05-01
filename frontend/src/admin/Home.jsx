@@ -13,7 +13,8 @@ import {
   faUserTie,
   faAddressBook,
   faGraduationCap,
-  faBriefcase
+  faBriefcase,
+  faAngleDown
 } from "@fortawesome/free-solid-svg-icons";
 
 // Import your other dashboard components here

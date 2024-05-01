@@ -154,7 +154,7 @@ const Home = () => {
           <div className="underline" />
           <div className="footerText">
             <p className="footerTextCopyright">
-              Copyright &#169; CareerCompass. All Rights Reserved
+              Copyright &#169; 2024 CareerCompass. All Rights Reserved
             </p>
           </div>
         </div>

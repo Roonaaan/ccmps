@@ -72,6 +72,7 @@ function edit({ onClose }) {
                             <option value='College Graduate 2 Year Course'>College Graduate 2 Year Course</option>
                             <option value='College Graduate 4 Year Course'>College Graduate 4 Year Course</option>
                         </select>
+                        
                         <label htmlFor='degree'>Degree/Course:</label>
                         <input type='text' id='degree' name='degree' value={formData.degree} onChange={handleChange}/>
                         <div className='savingbutton'>

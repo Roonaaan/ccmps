@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // Assets
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrash, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Swal from 'sweetalert2';
@@ -13,8 +13,10 @@ import Edit from './employeebasicinfo_crud/edit';
 
 function EmployeeBasicInfoDashboard() {
   const [employees, setEmployees] = useState([]);
+  const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const storedEmployees = sessionStorage.getItem('basicinfo');
@@ -96,6 +98,13 @@ function EmployeeBasicInfoDashboard() {
     }
   }, [employees]);
 
+  const handleSearch = () => {
+    const filtered = employees.filter(employee =>
+      `${employee.firstname} ${employee.lastname}`.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredEmployees(filtered);
+  };
+
   return (
     <>
       <ToastContainer />
@@ -103,6 +112,17 @@ function EmployeeBasicInfoDashboard() {
         <div className='employee-table'>
           <div className='header-box'>
             <h1>Employee Basic Information</h1>
+          </div>
+          <div className="header-box-functions">
+            <div className="search-bar">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search by name..."
+              />
+              <button onClick={handleSearch}><FontAwesomeIcon icon={faSearch} /></button>
+            </div>
             <button className='employee-table-add-button' onClick={toggleAddModal}> <FontAwesomeIcon icon={faPlusCircle} /> Add </button>
           </div>
           <div>
@@ -124,7 +144,7 @@ function EmployeeBasicInfoDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {employees.map(employee => (
+                {(searchQuery.length > 0 ? filteredEmployees : employees).map(employee => (
                   <tr key={employee.employee_id}>
                     <td>{employee.employee_id}</td>
                     <td><img src={employee.image} alt="Employee" style={{ width: '50px', height: '50px' }} /></td>

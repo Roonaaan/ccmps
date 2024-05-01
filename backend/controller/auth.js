@@ -1065,6 +1065,46 @@ export const deleteBasicInfo = async (req, res) => {
 };
 
 // Employee Education History CRUD
+// Create
+export const addEduHistory = async (req, res) => {
+    try {
+        const {
+            employeeId,
+            school,
+            yearGraduated,
+            gradeLevel,
+            degree
+        } = req.body;
+
+        // Connect to the database
+        const client = await pool.connect();
+        await client.query(`
+            INSERT INTO tbleducbackground (
+                employee_id,
+                school,
+                year_graduated,
+                grade_level,
+                degree_course
+            ) VALUES (
+                $1, $2, $3, $4, $5
+            )
+        `, [
+            employeeId,
+            school,
+            yearGraduated,
+            gradeLevel,
+            degree
+        ]);
+
+        client.release();
+
+        // Send success response
+        res.status(201).json({ message: 'Education history added successfully' });
+    } catch (error) {
+        console.error('Error adding education history:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
 // Read
 export const readEduHistory = async (req, res) => {
     try {
@@ -1181,6 +1221,52 @@ export const deleteEduHistory = async (req, res) => {
 };
 
 // Employee Job History CRUD
+// Create
+export const addJobHistory = async (req, res) => {
+    try {
+        const {
+            employeeId,
+            jobTitle,
+            company,
+            companyAddress,
+            skills,
+            startDate,
+            endDate
+        } = req.body;
+
+        // Connect to the database
+        const client = await pool.connect();
+        await client.query(`
+            INSERT INTO tblworkhistory (
+                employee_id,
+                company,
+                job_title,
+                skills,
+                company_address,
+                start_date,
+                end_date
+            ) VALUES (
+                $1, $2, $3, $4, $5, $6, $7
+            )
+        `, [
+            employeeId,
+            jobTitle,
+            company,
+            companyAddress,
+            skills,
+            startDate,
+            endDate
+        ]);
+
+        client.release();
+
+        // Send success response
+        res.status(201).json({ message: 'Job history added successfully' });
+    } catch (error) {
+        console.error('Error adding Job history:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
 // Read
 export const readJobHistory = async (req, res) => {
     try {

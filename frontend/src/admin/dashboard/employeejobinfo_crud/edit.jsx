@@ -67,8 +67,10 @@ function edit({ onClose }) {
               <option value='Senior Level'>Senior Level</option>
               <option value='Executive/Leadership Level'>Executive/Leadership Level</option>
             </select>
+
             <label htmlFor='skills'>Skills:</label>
             <textarea id='skills' name='skills' row='5' value={formData.skills} onChange={handleChange} />
+            
             <div className='savingbutton'>
               <button className='save'>Save</button>
               <button className='cancel' onClick={onClose}>Cancel</button>
