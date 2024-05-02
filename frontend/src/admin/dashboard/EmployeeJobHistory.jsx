@@ -2,16 +2,20 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrash, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Swal from 'sweetalert2';
 
+import Add from './employeejobhistory_crud/add';
 import Edit from './employeejobhistory_crud/edit';
 
 function EmployeeJobHistory() {
     const [employees, setEmployees] = useState([]);
+    const [filteredEmployees, setFilteredEmployees] = useState([]);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         const storedEmployees = sessionStorage.getItem('jobhistory');
@@ -36,6 +40,10 @@ function EmployeeJobHistory() {
         } catch (error) {
             console.error('Error fetching employees:', error);
         }
+    };
+
+    const toggleAddModal = () => {
+        setIsAddModalOpen(!isAddModalOpen);
     };
 
     const toggleEditModal = (employeeId) => {
@@ -76,6 +84,13 @@ function EmployeeJobHistory() {
         });
     };
 
+    const handleSearch = () => {
+        const filtered = employees.filter(employee =>
+            `${employee.firstname} ${employee.lastname}`.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredEmployees(filtered);
+    };
+
     return (
         <>
             <ToastContainer />
@@ -83,6 +98,18 @@ function EmployeeJobHistory() {
                 <div className='employee-table'>
                     <div className='header-box'>
                         <h1>Employee Job History</h1>
+                    </div>
+                    <div className="header-box-functions">
+                        <div className="search-bar">
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Search by name..."
+                            />
+                            <button onClick={handleSearch}><FontAwesomeIcon icon={faSearch} /></button>
+                        </div>
+                        <button className='employee-table-add-button' onClick={toggleAddModal}> <FontAwesomeIcon icon={faPlusCircle} /> Add </button>
                     </div>
                     <div>
                         <table>
@@ -98,7 +125,7 @@ function EmployeeJobHistory() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {employees.map(employee => (
+                                {(searchQuery.length > 0 ? filteredEmployees : employees).map(employee => (
                                     <tr key={employee.employee_id}>
                                         <td>{`${employee.firstname} ${employee.lastname}`}</td>
                                         <td>{employee.job_title}</td>
@@ -119,6 +146,7 @@ function EmployeeJobHistory() {
                     </div>
                 </div>
             </div>
+            {isAddModalOpen && <Add onClose={() => setIsAddModalOpen(false)} />}
             {isEditModalOpen && <Edit onClose={() => setIsEditModalOpen(false)} />}
         </>
     );

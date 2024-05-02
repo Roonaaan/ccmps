@@ -1,20 +1,20 @@
 import express from "express";
 import {
         login, sendEmail, getUserProfile, getUserDetails,
-        sendResetEmail, resendResetEmail, getAssessment, getUserJob, 
+        sendResetEmail, resendResetEmail, getAssessment, getUserJob,
         saveJob, maxPhaseNumber, getQuestions, getAnswerStored,
         retrieveAnswer, savePhaseNumber, getPhaseNumber, adminLogin,
         employeeID, addBasicInfo, readBasicInfo, deleteBasicInfo,
         editBasicInfo, readJobInfo, readAccountInfo, getBasicInfoById,
         editJobInfo, getJobInfoById, deleteJobInfo, deleteAccountInfo,
-        getAccountInfoById, editAccountInfo, readPromotionInfo, readEduHistory,
-        editEduHistory, getEduHistoryById, deleteEduHistory, readJobHistory,
-        editJobHistory, getJobHistoryById, deleteJobHistory, getUserPromotionInfo,
-        promoteUser
+        getAccountInfoById, editAccountInfo, readPromotionInfo, addEduHistory,
+        readEduHistory, editEduHistory, getEduHistoryById, deleteEduHistory,
+        readJobHistory, addJobHistory, editJobHistory, getJobHistoryById,
+        deleteJobHistory, getUserPromotionInfo, promoteUser, getAdminProfile
 } from "../controller/auth.js";
 
 const router = express.Router();
- 
+
 // User Side Routes
 // Route for user login
 router.post("/login", login);
@@ -65,6 +65,9 @@ router.get("/get-phase", getPhaseNumber);
 // Route for admin login
 router.post("/admin-login", adminLogin);
 
+// Route for fetching admin profile
+router.get("/admin-profile", getAdminProfile);
+
 // Route for Auto Employee ID
 router.get("/employeeid", employeeID);
 
@@ -87,6 +90,8 @@ router.get("/get-basicinfo/:editEmployeeId", getBasicInfoById);
 router.post("/delete-basicinfo", deleteBasicInfo);
 
 // Employee Education History Route
+// Create
+router.post("/add-educhistory", addEduHistory);
 // Read
 router.get("/read-educhistory", readEduHistory);
 // Update
@@ -96,6 +101,8 @@ router.get("/get-educhistory/:editEmployeeId", getEduHistoryById);
 router.post("/delete-educhistory", deleteEduHistory);
 
 // Employee Job History Route
+// Create
+router.post("/add-jobhistory", addJobHistory);
 // Read
 router.get("/read-jobhistory", readJobHistory);
 // Update
@@ -121,4 +128,4 @@ router.post("/edit-accountinfo", editAccountInfo);
 router.get("/get-accountinfo/:editEmployeeId", getAccountInfoById);
 // Delete
 router.post("/delete-accountinfo", deleteAccountInfo);
-export default router;F
+export default router;

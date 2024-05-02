@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrash, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Swal from 'sweetalert2';
@@ -12,6 +12,8 @@ import Edit from './employeejobinfo_crud/edit';
 function EmployeeJobInfoDashboard() {
     const [employees, setEmployees] = useState([]);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [filteredEmployees, setFilteredEmployees] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         const storedEmployees = sessionStorage.getItem('jobinfo');
@@ -71,6 +73,13 @@ function EmployeeJobInfoDashboard() {
         });
     };
 
+    const handleSearch = () => {
+        const filtered = employees.filter(employee =>
+            `${employee.firstname} ${employee.lastname}`.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredEmployees(filtered);
+    };
+
     return (
         <>
             <ToastContainer />
@@ -78,6 +87,17 @@ function EmployeeJobInfoDashboard() {
                 <div className='employee-table'>
                     <div className='header-box'>
                         <h1>Employee Job Information</h1>
+                    </div>
+                    <div className="header-box-functions">
+                        <div className="search-bar">
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Search by name..."
+                            />
+                            <button onClick={handleSearch}><FontAwesomeIcon icon={faSearch} /></button>
+                        </div>
                     </div>
                     <div>
                         <table>
@@ -92,7 +112,7 @@ function EmployeeJobInfoDashboard() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {employees.map(employee => (
+                                {(searchQuery.length > 0 ? filteredEmployees : employees).map(employee => (
                                     <tr key={employee.employee_id}>
                                         <td>{employee.employee_id}</td>
                                         <td>{`${employee.firstname} ${employee.lastname}`}</td>

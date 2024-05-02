@@ -2,14 +2,39 @@
     display: flex;
     width: auto;
     flex-direction: row;
-    height: 100vh;
+    height: 92.5vh;
+}
+
+.admin-navbar {
+    display: flex;
+    align-items: row;
+    background-color: #f7f8f9;
+    justify-content: space-between;
+    width: auto;
+}
+
+.career-compass-logo {
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+    padding: 15px;
+    width: auto;
+
+}
+
+.admin-profile-info {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    gap: 10px;
+    cursor: pointer;
 }
 
 .dashboard {
     height: auto;
     width: 255px;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     background-color: #f7f8f9;
 }
 
@@ -18,13 +43,6 @@
     flex-direction: column;
 }
 
-.career-compass-logo {
-    display: flex;
-    align-items: flex-start;
-    position: relative;
-    padding: 25px;
-    width: auto;
-}
 
 .career-compass-image {
     width: 200px;
@@ -87,10 +105,10 @@
 }
 
 .dashboard-content ul li {
-    padding: 0px 20px;
-    margin: 0px 10px;
+    padding: 0px 40px 0px 12px;
+    margin: 0px 2px;
     width: auto;
-
+    font-size: 14px;
 }
 
 .dashboard-content ul li:last-child {
