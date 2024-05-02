@@ -37,7 +37,7 @@ const Home = () => {
   const [userRole, setUserRole] = useState('');
   const [userName, setUserName] = useState('');
   const [userImage, setUserImage] = useState('');
-  
+
   useEffect(() => {
     const role = sessionStorage.getItem('role');
     setUserRole(role);
@@ -98,36 +98,54 @@ const Home = () => {
             className={selectedItem === 1 ? "clicked" : ""}
             onClick={() => handleClick(1)}
           >
+            <span className="icons">
+              <FontAwesomeIcon icon={faChartBar} className="fa-icon" />
+            </span>
             Home
           </li>
           <li
             className={selectedItem === 3 ? "clicked" : ""}
             onClick={() => handleClick(3)}
           >
+            <span className="icons">
+              <FontAwesomeIcon icon={faUser} className="fa-icon" />
+            </span>
             Employee Basic Info
           </li>
           <li
             className={selectedItem === 6 ? "clicked" : ""}
             onClick={() => handleClick(6)}
           >
+            <span className="icons">
+              <FontAwesomeIcon icon={faGraduationCap} className="fa-icon" />
+            </span>
             Employee Edu History
           </li>
           <li
             className={selectedItem === 7 ? "clicked" : ""}
             onClick={() => handleClick(7)}
           >
+            <span className="icons">
+              <FontAwesomeIcon icon={faBriefcase} className="fa-icon" />
+            </span>
             Employee Job History
           </li>
           <li
             className={selectedItem === 4 ? "clicked" : ""}
             onClick={() => handleClick(4)}
           >
+            <span className="icons">
+              <FontAwesomeIcon icon={faUserTie} className="fa-icon" />
+            </span>
             Employee Job Info
           </li>
           <li
             className={selectedItem === 5 ? "clicked" : ""}
             onClick={() => handleClick(5)}
           >
+            <span className="icons">
+              <FontAwesomeIcon icon={faAddressBook} className="fa-icon" />
+            </span>
             Employee Account Info
           </li>
         </>
@@ -141,48 +159,72 @@ const Home = () => {
             className={selectedItem === 1 ? "clicked" : ""}
             onClick={() => handleClick(1)}
           >
+            <span className="icons">
+              <FontAwesomeIcon icon={faChartBar} className="fa-icon" />
+            </span>
             Home
           </li>
           <li
             className={selectedItem === 0 ? "clicked" : ""}
             onClick={() => handleClick(0)}
           >
+            <span className="icons">
+              <FontAwesomeIcon icon={faThumbsUp} className="fa-icon" />
+            </span>
             Employee Approval
           </li>
           <li
             className={selectedItem === 2 ? "clicked" : ""}
             onClick={() => handleClick(2)}
           >
+            <span className="icons">
+              <FontAwesomeIcon icon={faChartLine} className="fa-icon" />
+            </span>
             Employee Promotion
           </li>
           <li
             className={selectedItem === 3 ? "clicked" : ""}
             onClick={() => handleClick(3)}
           >
+            <span className="icons">
+              <FontAwesomeIcon icon={faUser} className="fa-icon" />
+            </span>
             Employee Basic Info
           </li>
           <li
             className={selectedItem === 6 ? "clicked" : ""}
             onClick={() => handleClick(6)}
           >
+            <span className="icons">
+              <FontAwesomeIcon icon={faGraduationCap} className="fa-icon" />
+            </span>
             Employee Edu History
           </li>
           <li
             className={selectedItem === 7 ? "clicked" : ""}
             onClick={() => handleClick(7)}
           >
+            <span className="icons">
+              <FontAwesomeIcon icon={faBriefcase} className="fa-icon" />
+            </span>
             Employee Job History
           </li>
           <li
             className={selectedItem === 4 ? "clicked" : ""}
             onClick={() => handleClick(4)}
           >
+            <span className="icons">
+              <FontAwesomeIcon icon={faUserTie} className="fa-icon" />
+            </span>
             Employee Job Info
           </li>
           <li
             className={selectedItem === 5 ? "clicked" : ""}
             onClick={() => handleClick(5)}
           >
+            <span className="icons">
+              <FontAwesomeIcon icon={faAddressBook} className="fa-icon" />
+            </span>
             Employee Account Info
           </li>
         </>
