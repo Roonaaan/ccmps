@@ -5,6 +5,8 @@ import './styles/recommend.css';
 // Images
 import logo from "../../assets/homepage/final-topright-logo.png";
 import defaultImg from "../../assets/signed-in/defaultImg.jpg";
+import { RotatingLines } from 'react-loader-spinner'
+
 
 const Recommend = () => {
     const [userImage, setUserImage] = useState('');
@@ -17,6 +19,7 @@ const Recommend = () => {
     });
     const [recommendedJobs, setRecommendedJobs] = useState([]);
     const [selectedJob, setSelectedJob] = useState(null);
+    const [loading, setLoading] = useState(true); // Initialize loading state as true
     const navigate = useNavigate();
 
     // User Page Connection
@@ -52,8 +55,10 @@ const Recommend = () => {
                 const data = await response.json();
                 console.log('Fetched recommendations:', data); // Log the fetched data
                 setRecommendedJobs(data);
+                setLoading(false);
             } catch (error) {
                 console.error('Error fetching recommendations:', error);
+                setLoading(false);
             }
         };
 
@@ -129,7 +134,7 @@ const Recommend = () => {
         if (selectedJob !== null) {
             const selectedJobTitle = recommendedJobs[selectedJob].title; // Get the title of the selected job
             const userEmail = sessionStorage.getItem('user');
-    
+
             try {
                 const response = await fetch(`http://localhost:8800/api/auth/save-job?job=${encodeURIComponent(selectedJobTitle)}&email=${userEmail}`, {
                     method: 'POST',
@@ -137,9 +142,9 @@ const Recommend = () => {
                         'Content-Type': 'application/json'
                     }
                 });
-    
+
                 const data = await response.json();
-    
+
                 if (response.ok) {
                     // Proceed to Roadmap if job selection saved successfully
                     navigate('/Roadmap', { state: { selectedJob, recommendedJobs } });
@@ -185,19 +190,33 @@ const Recommend = () => {
                             <p> Top 3 recommended job roles for you based on your profile </p>
                         </div>
                         <div className="recommendJobContainerSelection">
-                            {recommendedJobs.map((job, index) => (
-                                <div
-                                    key={index}
-                                    className={`recommendJobContainerPanel ${selectedJob === index ? 'selected' : ''}`}
-                                    onClick={() => {
-                                        handleJobClick(job, index); // Pass the entire job object and its index
-                                        toggleDescription(`job${index + 1}`);
-                                    }}
-                                >
-                                    <p className='job-title'>{job.title}</p>
-                                    {showDescriptions[`job${index + 1}`] && <p className="job-description">{job.description}</p>}
-                                </div>
-                            ))}
+                            {loading ? ( // Render loader if loading state is true
+                                <RotatingLines
+                                visible={true}
+                                height="300"
+                                width="300"
+                                color="grey"
+                                strokeWidth="5"
+                                animationDuration="0.75"
+                                ariaLabel="rotating-lines-loading"
+                                wrapperStyle={{}}
+                                wrapperClass=""
+                                />
+                            ) : (
+                                recommendedJobs.map((job, index) => (
+                                    <div
+                                        key={index}
+                                        className={`recommendJobContainerPanel ${selectedJob === index ? 'selected' : ''}`}
+                                        onClick={() => {
+                                            handleJobClick(job, index); // Pass the entire job object and its index
+                                            toggleDescription(`job${index + 1}`);
+                                        }}
+                                    >
+                                        <p className='job-title'>{job.title}</p>
+                                        {showDescriptions[`job${index + 1}`] && <p className="job-description">{job.description}</p>}
+                                    </div>
+                                ))
+                            )}
                         </div>
                         <div className="recommendJobContainerButton">
                             <button className='recommendJobContainerProceed' onClick={handleProceed}> PROCEED </button>
