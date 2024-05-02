@@ -10,7 +10,7 @@ import {
         getAccountInfoById, editAccountInfo, readPromotionInfo, addEduHistory, 
         readEduHistory, editEduHistory, getEduHistoryById, deleteEduHistory, 
         readJobHistory, addJobHistory, editJobHistory, getJobHistoryById, 
-        deleteJobHistory, getUserPromotionInfo, promoteUser
+        deleteJobHistory, getUserPromotionInfo, promoteUser, getAdminProfile
 } from "../controller/auth.js";
 
 const router = express.Router();
@@ -64,6 +64,9 @@ router.get("/get-phase", getPhaseNumber);
 // Admin Side Routes
 // Route for admin login
 router.post("/admin-login", adminLogin);
+ 
+// Route for fetching admin profile
+router.get("/admin-profile", getAdminProfile);
 
 // Route for Auto Employee ID
 router.get("/employeeid", employeeID);

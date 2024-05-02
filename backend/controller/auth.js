@@ -648,20 +648,20 @@ export const adminLogin = async (req, res) => {
         const result = await client.query("SELECT * FROM tblaccount WHERE account_email = $1", [req.body.email]);
 
         if (result.rows.length === 0) {
-            return res.status(401).json("Admin not found!");
+            return res.status(401).json("User not found!");
         }
 
-        const adminUser = result.rows[0];
+        const user = result.rows[0];
 
-        // Check if the user's role is 'Admin'
-        if (adminUser.role !== 'Admin') {
-            return res.status(403).json("You are not authorized to login as an admin!");
+        // Check if the user's role is one of the HR roles
+        if (!['HR Coordinator', 'HR Manager'].includes(user.role)) {
+            return res.status(403).json("You are not authorized to login as an HR user!");
         }
 
-        const hashedPassword = adminUser.account_password;
+        const hashedPassword = user.account_password;
 
         if (!hashedPassword) {
-            return res.status(400).json("Password not set for this admin!");
+            return res.status(400).json("Password not set for this user!");
         }
 
         const isPasswordValid = bcrypt.compareSync(req.body.password, hashedPassword);
@@ -670,8 +670,8 @@ export const adminLogin = async (req, res) => {
             return res.status(401).json("Incorrect email or password!");
         }
 
-        // If password is valid, proceed with login
-        res.status(200).json(adminUser);
+        // If password is valid, return user with role
+        res.status(200).json({ ...user, role: user.role });
     } catch (error) {
         console.error(error); // Log the actual error message
         res.status(500).json({ error: "Internal server error" }); // Send a generic error message
@@ -679,6 +679,54 @@ export const adminLogin = async (req, res) => {
         if (client) {
             await client.release();
         }
+    }
+};
+
+// Fetch Admin Profile
+export const getAdminProfile = async (req, res) => {
+    const userEmail = req.query.email; // Retrieve user email from query parameters
+
+    try {
+        const client = await pool.connect();
+
+        try {
+            // Prepared statement to prevent SQL injection
+            const query = `
+                SELECT 
+                    tp.firstname,
+                    ta.role,
+                    tp.image 
+                FROM 
+                    tblprofile tp 
+                    INNER JOIN tblaccount ta ON tp.email = ta.account_email
+                WHERE 
+                    tp.email = $1`;
+            const result = await client.query(query, [userEmail]);
+
+            if (result.rowCount === 0) {
+                return res.status(404).json({ success: false, message: 'User profile not found' });
+            }
+
+            // Extract user data
+            const { firstname, role, image } = result.rows[0];
+
+            const userData = {
+                firstName: firstname,
+                role: role,
+                // Include the image data in the response
+                image: image ? Buffer.from(image).toString('base64') : null
+            };
+
+            res.status(200).json({ success: true, userData });
+        } catch (error) {
+            console.error('Error retrieving user profile:', error);
+            res.status(500).json({ success: false, message: 'An error occurred while retrieving user profile' });
+        } finally {
+            await client.release();
+        }
+    } catch (error) {
+        console.error('An unexpected error occurred:', error);
+        res.status(500).json({ success: false, message: 'An error occurred' });
     }
 };
 

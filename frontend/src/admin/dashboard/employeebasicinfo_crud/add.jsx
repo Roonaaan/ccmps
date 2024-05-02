@@ -105,7 +105,8 @@ function Add({ onClose }) {
                             <label htmlFor='role'>Role</label>
                             <select type="text" id='role' name='role' value={formData.role} onChange={handleChange} >
                                 <option value='Employee'>Employee</option>
-                                <option value='Admin'>Admin</option>
+                                <option value='HR Coordinator'>HR Coordinator</option>
+                                <option value='HR Manager'>HR Manager</option>
                             </select>
 
                             <label htmlFor='image'>Upload Image:</label>
@@ -139,7 +140,7 @@ function Add({ onClose }) {
                             <input type='text' id='province' name='province' value={formData.province} onChange={handleChange} />
 
                             <label htmlFor='postalCode'>Postal Code:</label>
-                            <input type='text' id='postalCode' name='postalCode' value={formData.postalCode} onChange={handleChange} />
+                            <input type='number' id='postalCode' name='postalCode' value={formData.postalCode} onChange={handleChange} />
 
                             <label htmlFor='gender'>Gender:</label>
                             <select id='gender' name='gender' value={formData.gender} onChange={handleChange}>

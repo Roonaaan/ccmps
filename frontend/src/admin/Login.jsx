@@ -25,7 +25,9 @@ function Login() {
                 const errorData = await response.json();
                 setErrorMessage(errorData.message || 'Failed to login');
             } else {
+                const userData = await response.json();
                 sessionStorage.setItem('email', email);
+                sessionStorage.setItem('role', userData.role); // Store role in session storage
                 // Redirect to welcome page after successful login
                 navigate('/Admin/Welcome');
             }
