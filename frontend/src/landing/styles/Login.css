@@ -180,6 +180,8 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-evenly;
+    gap:7em;
+    
 }
 
 .remember-me {
@@ -188,10 +190,14 @@
     font-size: 18px;
 }
 
+.remember-me-text {
+    font-size: 16px;
+}
+
 .forgot-password {
     margin-top: 20px;
-    color: #000;
-    font-size: 18px;
+    color: rgb(126, 126, 253);
+    font-size: 16px;
     cursor: pointer;
 }
 
@@ -248,6 +254,19 @@
     font-size: 19px;
     font-weight: 700;
     cursor: pointer;
+    transition: ease 0.3s;
+}
+
+
+.submit:hover {
+    background-color: white;
+    color: #33658A;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  
+}
+
+.submit:active {
+    opacity: 80%;
 }
 
 .no-account {
@@ -259,10 +278,17 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    font-size: 14px;
+
 }
 
 .footer a {
     margin: 0 10px;
+    color: gray;
+}
+
+.footer a:hover {
+    color: #33658A;
 }
 
 /* Media Queries */
