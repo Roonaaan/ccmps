@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import _ from 'lodash';
-
+import { TailSpin } from 'react-loader-spinner'
 
 // ROADMAP CSS
 import "./styles/style.css";
@@ -76,7 +76,7 @@ const Roadmap = () => {
       try {
         // Retrieve job position from session storage
         const selectedJobTitle = sessionStorage.getItem('selectedJobTitle');
-        
+
         if (!selectedJobTitle) {
           console.error("No selected job title found in session storage");
           return;
