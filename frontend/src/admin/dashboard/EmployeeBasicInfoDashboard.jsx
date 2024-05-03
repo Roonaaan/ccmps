@@ -146,11 +146,11 @@ function EmployeeBasicInfoDashboard() {
               <FontAwesomeIcon icon={faPlusCircle} /> Add{" "}
             </button>
           </div>
-          <div className="profile-card-parent">
-            <div className="profile-card-container">
+          <div className="employee-profile-card-parent">
+            <div className="employee-profile-card-container">
               {(searchQuery.length > 0 ? filteredEmployees : employees).map(
                 (employee) => (
-                  <div className="profile-card">
+                  <div className="employee-profile-card">
                     <div className="employee-table-button">
                       <button
                         className="employee-table-edit-button"
