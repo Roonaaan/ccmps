@@ -10,7 +10,7 @@ import {
         getAccountInfoById, editAccountInfo, readPromotionInfo, addEduHistory, 
         readEduHistory, editEduHistory, getEduHistoryById, deleteEduHistory, 
         readJobHistory, addJobHistory, editJobHistory, getJobHistoryById, 
-        deleteJobHistory, getUserPromotionInfo, promoteUser, getAdminProfile, getCourse
+        deleteJobHistory, getUserPromotionInfo, promoteUser, getAdminProfile, getCourse, readEmployeeProfile
 } from "../controller/auth.js";
 
 const router = express.Router();
@@ -81,7 +81,7 @@ router.get("/read-promotioninfo", readPromotionInfo);
 router.get("/get-userpromotioninfo/:editEmployeeId", getUserPromotionInfo);
 router.post("/promoteuser/:editEmployeeId", promoteUser);
 
-// Employee Basic Info CRUD Routes
+// Employee Dashboard Info CRUD Routes
 // Create
 router.post("/add-basicinfo", addBasicInfo);
 // Read
@@ -91,6 +91,10 @@ router.post("/edit-basicinfo", editBasicInfo);
 router.get("/get-basicinfo/:editEmployeeId", getBasicInfoById);
 // Delete
 router.post("/delete-basicinfo", deleteBasicInfo);
+
+// Employee Profile Route
+// Read
+router.get("/read-employeeprofile/:editEmployeeId", readEmployeeProfile);
 
 // Employee Education History Route
 // Create
