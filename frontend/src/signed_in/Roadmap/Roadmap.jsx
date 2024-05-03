@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import _ from 'lodash';
-import { TailSpin } from 'react-loader-spinner'
+
 
 // ROADMAP CSS
 import "./styles/style.css";
@@ -22,7 +22,7 @@ const Roadmap = () => {
   const [maxPhase, setMaxPhase] = useState(1); // Default max phase 
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
+  
 
   // Video Player and QA
   const [videoUrl, setVideoUrl] = useState(""); // New state to store video URL
