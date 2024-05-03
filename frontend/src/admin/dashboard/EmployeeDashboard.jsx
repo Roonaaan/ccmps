@@ -4,10 +4,11 @@ import axios from "axios";
 // Assets
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faEdit,
+  faPencil,
   faTrash,
   faPlusCircle,
   faSearch,
+  faEllipsisV
 } from "@fortawesome/free-solid-svg-icons";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -15,12 +16,15 @@ import Swal from "sweetalert2";
 
 import Add from "./employeebasicinfo_crud/add";
 import Edit from "./employeebasicinfo_crud/edit";
+import EmployeeProfile from "./EmployeeProfile";
 
-function EmployeeBasicInfoDashboard() {
+function EmployeeDashboard() {
   const [employees, setEmployees] = useState([]);
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [showMenu, setShowMenu] = useState(Array(employees.length).fill(false));
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
@@ -68,6 +72,11 @@ function EmployeeBasicInfoDashboard() {
     setIsAddModalOpen(!isAddModalOpen);
   };
 
+  const toggleProfileModal = (employeeId) => {
+    sessionStorage.setItem("editEmployeeId", employeeId);
+    setIsProfileModalOpen(!isProfileModalOpen);
+  };
+
   const toggleEditModal = (employeeId) => {
     sessionStorage.setItem("editEmployeeId", employeeId);
     setIsEditModalOpen(!isEditModalOpen);
@@ -97,11 +106,6 @@ function EmployeeBasicInfoDashboard() {
     });
   };
 
-  const formatDate = (dateString) => {
-    const options = { year: "numeric", month: "long", day: "numeric" };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
-
   // Check if employees are empty and fetch them if so
   useEffect(() => {
     if (employees.length === 0) {
@@ -118,13 +122,19 @@ function EmployeeBasicInfoDashboard() {
     setFilteredEmployees(filtered);
   };
 
+  const toggleMenu = (index) => {
+    const updatedMenu = [...showMenu];
+    updatedMenu[index] = !updatedMenu[index];
+    setShowMenu(updatedMenu);
+  };
+
   return (
     <>
       <ToastContainer />
       <div className="employee-dashboard-main-frame">
         <div className="employee-table">
           <div className="header-box">
-            <h1>Employee Basic Information</h1>
+            <h1>Employee</h1>
           </div>
           <div className="header-box-functions">
             <div className="search-bar">
@@ -149,88 +159,52 @@ function EmployeeBasicInfoDashboard() {
           <div className="employee-profile-card-parent">
             <div className="employee-profile-card-container">
               {(searchQuery.length > 0 ? filteredEmployees : employees).map(
-                (employee) => (
-                  <div className="employee-profile-card">
+                (employee, index) => (
+                  <div className="employee-profile-card" key={index}>
                     <div className="employee-table-button">
                       <button
-                        className="employee-table-edit-button"
-                        onClick={() => toggleEditModal(employee.employee_id)}
+                        className="employee-table-ellipsis-button"
+                        onClick={() => toggleMenu(index)}
                       >
                         {" "}
-                        <FontAwesomeIcon icon={faEdit} />{" "}
-                      </button>
-                      <button
-                        className="employee-table-delete-button"
-                        onClick={() => handleDelete(employee.employee_id)}
-                      >
-                        {" "}
-                        <FontAwesomeIcon icon={faTrash} />{" "}
+                        <FontAwesomeIcon icon={faEllipsisV} />{" "}
                       </button>
                     </div>
+                    {showMenu[index] && (
+                      <div className="dropdown-menu">
+                        <a onClick={() => {
+                          toggleEditModal(employee.employee_id);
+                          toggleMenu(index); // Close the dropdown menu
+                        }}>
+                          <FontAwesomeIcon icon={faPencil} />
+                          Edit</a>
+                        <a onClick={handleDelete}>
+                          <FontAwesomeIcon icon={faTrash} />
+                          Delete</a>
+                      </div>
+                    )}
                     <div className="image">
-                    <img
-                      src={employee.image}
-                      alt="Employee"
-                      style={{ width: "70px", height: "70px",  }}
-                    />
+                      <img
+                        src={employee.image}
+                        alt="Employee"
+                        style={{ width: "70px", height: "70px", }}
+                        onClick={() => toggleProfileModal(employee.employee_id)}
+                      />
                     </div>
                     <a>{`${employee.firstname} ${employee.lastname}`}</a>
-                    <div className="company-role-text">Company Role</div>
+                    <div className="company-role-text">{employee.job_position}</div>
                   </div>
                 )
               )}
             </div>
-
-            {/* 
-            <table>
-              <thead>
-                <tr>
-                  <th>Employee ID</th>
-                  <th>Image</th>
-                  <th>Full Name</th>
-                  <th>Age</th>
-                  <th>Email</th>
-                  <th>Phone Number</th>
-                  <th>Address</th>
-                  <th>Gender</th>
-                  <th>Birthday</th>
-                  <th>Nationality</th>
-                  <th>Civil Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(searchQuery.length > 0 ? filteredEmployees : employees).map(employee => (
-                  <tr key={employee.employee_id}>
-                    <td>{employee.employee_id}</td>
-                    <td><img src={employee.image} alt="Employee" style={{ width: '50px', height: '50px' }} /></td>
-                    <td>{`${employee.firstname} ${employee.lastname}`}</td>
-                    <td>{employee.age}</td>
-                    <td>{employee.email}</td>
-                    <td>{employee.phone_number}</td>
-                    <td>{`${employee.home_address}, ${employee.city}, District ${employee.district}, ${employee.postal_code}, ${employee.province}`}</td>
-                    <td>{employee.gender}</td>
-                    <td>{employee.birthday ? formatDate(employee.birthday) : ''}</td>
-                    <td>{employee.nationality}</td>
-                    <td>{employee.civil_status}</td>
-                    <td>
-                      <div className="employee-table-button">
-                        <button className='employee-table-edit-button' onClick={() => toggleEditModal(employee.employee_id)}> <FontAwesomeIcon icon={faEdit} /> </button>
-                        <button className='employee-table-delete-button' onClick={() => handleDelete(employee.employee_id)}> <FontAwesomeIcon icon={faTrash} /> </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            */}
           </div>
         </div>
       </div>
       {isAddModalOpen && <Add onClose={() => setIsAddModalOpen(false)} />}
       {isEditModalOpen && <Edit onClose={() => setIsEditModalOpen(false)} />}
+      {isProfileModalOpen && <EmployeeProfile onClose={() => setIsProfileModalOpen(false)} />}
     </>
   );
 }
 
-export default EmployeeBasicInfoDashboard;
+export default EmployeeDashboard;

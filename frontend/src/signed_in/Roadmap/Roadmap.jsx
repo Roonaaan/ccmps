@@ -9,7 +9,7 @@ import "./styles/style.css";
 import logo from "../../assets/homepage/final-topright-logo.png";
 import defaultImg from "../../assets/signed-in/defaultImg.jpg";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleDown, faAngleUp, faCheckCircle, faTimesCircle, faAnglesDown, faAnglesUp } from '@fortawesome/free-solid-svg-icons';
+import { faAngleDown, faAngleUp, faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 
 const Roadmap = () => {
   const [userImage, setUserImage] = useState("");
@@ -550,7 +550,7 @@ const Roadmap = () => {
         <section className="coursesSection">
           <h2 onClick={toggleCourseDropdown} style={{ cursor: 'pointer' }}>
             Related Online Courses with Certificates
-            {isOpen ? <faAnglesUp className="arrow" /> : <faAnglesDown className="arrow" />}
+            {isOpen ? <FontAwesomeIcon icon={faAngleUp} className="arrow" /> : <FontAwesomeIcon icon={faAngleDown} className="arrow" />}
           </h2>
           {/* Render fetched courses */}
           {isOpen && courses.length > 0 && (

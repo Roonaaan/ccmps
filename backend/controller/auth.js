@@ -885,7 +885,7 @@ export const promoteUser = async (req, res) => {
 };
 
 
-// Employee Basic Info CRUD
+// Employee Dashboard Info CRUD
 // Create
 export const addBasicInfo = async (req, res) => {
     try {
@@ -1010,7 +1010,8 @@ export const readBasicInfo = async (req, res) => {
                 gender, 
                 birthday, 
                 nationality, 
-                civil_status 
+                civil_status,
+                job_position 
             FROM tblprofile
         `);
         const employees = result.rows;
@@ -1139,6 +1140,44 @@ export const deleteBasicInfo = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+// Employee Profile Read
+export const readEmployeeProfile = async (req, res) => {
+    try {
+        const employeeId = req.params.editEmployeeId;
+
+        if (!employeeId) {
+            return res.status(400).json({ error: 'Invalid employeeId' });
+        }
+
+        // Start a client session
+        const client = await pool.connect();
+
+        // Execute separate queries for tblprofile, tbleducbackground, and tblworkhistory
+        const profileQuery = 'SELECT * FROM tblprofile WHERE employee_id = $1';
+        const educBackgroundQuery = 'SELECT * FROM tbleducbackground WHERE employee_id = $1';
+        const workHistoryQuery = 'SELECT * FROM tblworkhistory WHERE employee_id = $1';
+
+        const profileResult = await client.query(profileQuery, [employeeId]);
+        const educBackgroundResult = await client.query(educBackgroundQuery, [employeeId]);
+        const workHistoryResult = await client.query(workHistoryQuery, [employeeId]);
+
+        // Release the client session
+        client.release();
+
+        // Combine the results and send the response with the fetched data
+        const responseData = {
+            profile: profileResult.rows[0],
+            educBackground: educBackgroundResult.rows,
+            workHistory: workHistoryResult.rows
+        };
+
+        res.status(200).json(responseData);
+    } catch (error) {
+        console.error('Error fetching employee profile:', error); // Log the error for debugging
+        res.status(500).json({ error: error.message }); // Send the actual error message to the client
+    }
+}
 
 // Employee Education History CRUD
 // Create
