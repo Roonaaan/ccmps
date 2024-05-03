@@ -56,7 +56,8 @@
 }
 
 .recommendJobContainerPanel.selected {
-    border-color: #86BBD8;
+    border-color: #33658A;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
 }
 
 .job-description {
@@ -98,11 +99,28 @@
 
 .recommendJobContainerPanel:hover .job-description {
     transform: translateY(0);
+    
 }
 
 .recommendJobContainerButton {
     display: flex;
     margin-top: 30px;
+}
+
+.recommendJobLabels {
+    display: flex;
+    flex-direction: row;
+    gap: 210px;
+    margin-top: 20px;
+    font-weight: bold;
+    font-size: 16px;
+    
+}
+
+.mostRecommended {
+    color: #27374D;
+    opacity: 100%;
+    font-size: 18px;
 }
 
 .recommendJobContainerProceed {

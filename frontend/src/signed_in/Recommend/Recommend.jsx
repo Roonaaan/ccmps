@@ -193,9 +193,9 @@ const Recommend = () => {
                             {loading ? ( // Render loader if loading state is true
                                 <RotatingLines
                                 visible={true}
-                                height="300"
-                                width="300"
-                                color="grey"
+                                height="50"
+                                width="50"
+                                color="#003153"
                                 strokeWidth="5"
                                 animationDuration="0.75"
                                 ariaLabel="rotating-lines-loading"
@@ -217,6 +217,11 @@ const Recommend = () => {
                                     </div>
                                 ))
                             )}
+                        </div>
+                        <div className='recommendJobLabels'>
+                           <p>SUGGESTION 1</p> 
+                           <p className='mostRecommended'>MOST RECOMMENDED</p>
+                           <p>SUGGESTION 2</p>
                         </div>
                         <div className="recommendJobContainerButton">
                             <button className='recommendJobContainerProceed' onClick={handleProceed}> PROCEED </button>
