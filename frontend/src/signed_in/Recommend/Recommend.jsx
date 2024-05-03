@@ -5,7 +5,7 @@ import './styles/recommend.css';
 // Images
 import logo from "../../assets/homepage/final-topright-logo.png";
 import defaultImg from "../../assets/signed-in/defaultImg.jpg";
-import { RotatingLines } from 'react-loader-spinner'
+import { TailSpin } from 'react-loader-spinner'
 
 
 const Recommend = () => {
@@ -191,16 +191,15 @@ const Recommend = () => {
                         </div>
                         <div className="recommendJobContainerSelection">
                             {loading ? ( // Render loader if loading state is true
-                                <RotatingLines
-                                visible={true}
-                                height="50"
-                                width="50"
-                                color="#003153"
-                                strokeWidth="5"
-                                animationDuration="0.75"
-                                ariaLabel="rotating-lines-loading"
-                                wrapperStyle={{}}
-                                wrapperClass=""
+                                <TailSpin
+                                    visible={true}
+                                    height="100"
+                                    width="100"
+                                    color="#27374D"
+                                    ariaLabel="tail-spin-loading"
+                                    radius="1"
+                                    wrapperStyle={{}}
+                                    wrapperClass=""
                                 />
                             ) : (
                                 recommendedJobs.map((job, index) => (
@@ -218,11 +217,13 @@ const Recommend = () => {
                                 ))
                             )}
                         </div>
+                        {/*
                         <div className='recommendJobLabels'>
                            <p>SUGGESTION 1</p> 
                            <p className='mostRecommended'>MOST RECOMMENDED</p>
                            <p>SUGGESTION 2</p>
                         </div>
+                        */}
                         <div className="recommendJobContainerButton">
                             <button className='recommendJobContainerProceed' onClick={handleProceed}> PROCEED </button>
                         </div>

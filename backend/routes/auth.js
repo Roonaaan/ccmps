@@ -10,7 +10,7 @@ import {
         getAccountInfoById, editAccountInfo, readPromotionInfo, addEduHistory, 
         readEduHistory, editEduHistory, getEduHistoryById, deleteEduHistory, 
         readJobHistory, addJobHistory, editJobHistory, getJobHistoryById, 
-        deleteJobHistory, getUserPromotionInfo, promoteUser, getAdminProfile
+        deleteJobHistory, getUserPromotionInfo, promoteUser, getAdminProfile, getCourse
 } from "../controller/auth.js";
 
 const router = express.Router();
@@ -45,6 +45,9 @@ router.get("/max-phase", maxPhaseNumber);
 
 // Route for Video Assesment
 router.get("/assessments", getAssessment);
+
+// Route for Courses
+router.get("/courses", getCourse);
 
 // Route for Q&A Assesment (question)
 router.get("/questions", getQuestions);

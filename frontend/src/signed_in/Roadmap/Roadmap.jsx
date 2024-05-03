@@ -8,8 +8,7 @@ import "./styles/style.css";
 import logo from "../../assets/homepage/final-topright-logo.png";
 import defaultImg from "../../assets/signed-in/defaultImg.jpg";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
-import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import { faAngleDown, faAngleUp, faCheckCircle, faTimesCircle, faAnglesDown, faAnglesUp } from '@fortawesome/free-solid-svg-icons';
 
 const Roadmap = () => {
   const [userImage, setUserImage] = useState("");
@@ -19,12 +18,14 @@ const Roadmap = () => {
   const [recommendedJobs, setRecommendJobs] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const [phase, setPhase] = useState(1); // Track current phase
-  const [maxPhase, setMaxPhase] = useState(1); // Default max phase number
+  const [maxPhase, setMaxPhase] = useState(1); // Default max phase 
+  const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
   // Video Player and QA
   const [videoUrl, setVideoUrl] = useState(""); // New state to store video URL
   const [questions, setQuestions] = useState([]);
+  const [courses, setCourses] = useState([]);
 
   // Phase auto set to 1
   useEffect(() => {
@@ -149,6 +150,45 @@ const Roadmap = () => {
 
     fetchVideoUrl();
   }, [phase]);
+
+  // Courses
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        // Retrieve selected job title from session storage
+        const selectedJobTitle = sessionStorage.getItem('selectedJobTitle');
+
+        if (!selectedJobTitle) {
+          console.error("No selected job title found in session storage");
+          return;
+        }
+
+        // Fetch courses with selected job title as query parameter
+        const response = await fetch(`http://localhost:8800/api/auth/courses?job=${encodeURIComponent(selectedJobTitle)}`);
+        const data = await response.json();
+
+        if (response.ok) {
+          // Check if courses exist before setting state
+          if (data.courses && data.courses.length > 0) {
+            setCourses(data.courses);
+          } else {
+            console.log(`No courses found for job title ${selectedJobTitle}`);
+            setCourses([]); // Reset courses if no courses found
+          }
+        } else {
+          console.error("Failed to fetch courses");
+        }
+      } catch (error) {
+        console.error("An error occurred while fetching courses:", error);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
+  const toggleCourseDropdown = () => {
+    setIsOpen(!isOpen);
+  };
 
   // Q&A Connection (Question)
   useEffect(() => {
@@ -504,6 +544,25 @@ const Roadmap = () => {
           {videoUrl && renderVideo()}
           {/* Render assessment questions */}
           {questions && renderAssessments()}
+        </section>
+        <section className="coursesSection">
+          <h2 onClick={toggleCourseDropdown} style={{ cursor: 'pointer' }}>
+            Related Online Courses with Certificates
+            {isOpen ? <faAnglesUp className="arrow" /> : <faAnglesDown className="arrow" />}
+          </h2>
+          {/* Render fetched courses */}
+          {isOpen && courses.length > 0 && (
+            <ul>
+              {courses.map((course, index) => (
+                <li key={index}>
+                  <a href={course.link}>{course.description}</a>
+                </li>
+              ))}
+            </ul>
+          )}
+          {isOpen && courses.length === 0 && (
+            <p>No courses found.</p>
+          )}
         </section>
       </div>
 
