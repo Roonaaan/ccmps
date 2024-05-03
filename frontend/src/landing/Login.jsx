@@ -92,7 +92,7 @@ export const Login = ({ onClose }) => {
                             <img src={Logo} alt='Logo' className='logo' />
                         </div>
                         <div className='loginHeader'>
-                            <div className='text'> Welcome </div>
+                            <div className='text'> WELCOME </div>
                         </div>
                         <div className='loginHeaderText'> Please fill your detail to log in your account. </div>
                         <div className={`inputs ${emailError || passwordError || errorMsg ? 'shakeError' : ''}`}>
@@ -144,7 +144,7 @@ export const Login = ({ onClose }) => {
                                     checked={isRememberMeChecked}
                                     onChange={(e) => setIsRememberMeChecked(e.target.checked)}
                                 />
-                                <label htmlFor='remember-me'> Remember me </label>
+                                <label htmlFor='remember-me' className='remember-me-text'> Remember me </label>
                             </div>
                             <div className='forgot-password' onClick={handleForgotPassClick}>Forgot Password? </div>
                         </div>
@@ -158,13 +158,13 @@ export const Login = ({ onClose }) => {
                                     loginSubmit();
                                 }}
                                 onKeyDown={handleKeydown}
-                            >Log In
+                            >LOG IN
                             </button>
                         </div>
                         <div className='footer'>
-                            <a href=''> Terms of use </a>
+                            <a href=''> TERMS OF USE </a>
                             |
-                            <a href=''> Privacy Policy </a>
+                            <a href=''> PRIVACY POLICY </a>
                         </div>
                     </div>
                 </div>
