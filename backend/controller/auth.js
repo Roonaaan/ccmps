@@ -527,6 +527,33 @@ export const getQuestions = async (req, res) => {
     }
 };
 
+// Related Courses
+export const getCourse = async (req, res) => {
+    try {
+        // Retrieve the job title from the query parameters
+        const selectedJobTitle = req.query.job;
+
+        if (!selectedJobTitle) {
+            return res.status(400).json({ error: 'No job title provided' });
+        }
+
+        // Query the database for courses based on the job title
+        const client = await pool.connect();
+        const result = await client.query('SELECT description, link FROM tblcourse WHERE position = $1', [selectedJobTitle]);
+        client.release();
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Courses not found for the selected job title' });
+        }
+
+        const courses = result.rows;
+        res.json({ courses });
+    } catch (error) {
+        console.error('Error fetching courses:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
 // Store Answer
 export const getAnswerStored = async (req, res) => {
     try {
@@ -636,6 +663,7 @@ export const getPhaseNumber = async (req, res) => {
         res.status(500).json({ message: "Internal server error." });
     }
 };
+
 // Select Jobs
 
 // Admin Side

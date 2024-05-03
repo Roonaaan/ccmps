@@ -5,6 +5,8 @@ import './styles/recommend.css';
 // Images
 import logo from "../../assets/homepage/final-topright-logo.png";
 import defaultImg from "../../assets/signed-in/defaultImg.jpg";
+import { TailSpin } from 'react-loader-spinner'
+
 
 const Recommend = () => {
     const [userImage, setUserImage] = useState('');
@@ -17,6 +19,7 @@ const Recommend = () => {
     });
     const [recommendedJobs, setRecommendedJobs] = useState([]);
     const [selectedJob, setSelectedJob] = useState(null);
+    const [loading, setLoading] = useState(true); // Initialize loading state as true
     const navigate = useNavigate();
 
     // User Page Connection
@@ -52,8 +55,10 @@ const Recommend = () => {
                 const data = await response.json();
                 console.log('Fetched recommendations:', data); // Log the fetched data
                 setRecommendedJobs(data);
+                setLoading(false);
             } catch (error) {
                 console.error('Error fetching recommendations:', error);
+                setLoading(false);
             }
         };
 
@@ -185,20 +190,40 @@ const Recommend = () => {
                             <p> Top 3 recommended job roles for you based on your profile </p>
                         </div>
                         <div className="recommendJobContainerSelection">
-                            {recommendedJobs.map((job, index) => (
-                                <div
-                                    key={index}
-                                    className={`recommendJobContainerPanel ${selectedJob === index ? 'selected' : ''}`}
-                                    onClick={() => {
-                                        handleJobClick(job, index); // Pass the entire job object and its index
-                                        toggleDescription(`job${index + 1}`);
-                                    }}
-                                >
-                                    <p className='job-title'>{job.title}</p>
-                                    {showDescriptions[`job${index + 1}`] && <p className="job-description">{job.description}</p>}
-                                </div>
-                            ))}
+                            {loading ? ( // Render loader if loading state is true
+                                <TailSpin
+                                    visible={true}
+                                    height="100"
+                                    width="100"
+                                    color="#27374D"
+                                    ariaLabel="tail-spin-loading"
+                                    radius="1"
+                                    wrapperStyle={{}}
+                                    wrapperClass=""
+                                />
+                            ) : (
+                                recommendedJobs.map((job, index) => (
+                                    <div
+                                        key={index}
+                                        className={`recommendJobContainerPanel ${selectedJob === index ? 'selected' : ''}`}
+                                        onClick={() => {
+                                            handleJobClick(job, index); // Pass the entire job object and its index
+                                            toggleDescription(`job${index + 1}`);
+                                        }}
+                                    >
+                                        <p className='job-title'>{job.title}</p>
+                                        {showDescriptions[`job${index + 1}`] && <p className="job-description">{job.description}</p>}
+                                    </div>
+                                ))
+                            )}
                         </div>
+                        {/*
+                        <div className='recommendJobLabels'>
+                           <p>SUGGESTION 1</p> 
+                           <p className='mostRecommended'>MOST RECOMMENDED</p>
+                           <p>SUGGESTION 2</p>
+                        </div>
+                        */}
                         <div className="recommendJobContainerButton">
                             <button className='recommendJobContainerProceed' onClick={handleProceed}> PROCEED </button>
                         </div>
