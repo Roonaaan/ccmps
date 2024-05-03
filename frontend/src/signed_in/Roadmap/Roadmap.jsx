@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import _ from 'lodash';
 
+
 // ROADMAP CSS
 import "./styles/style.css";
 
@@ -21,6 +22,7 @@ const Roadmap = () => {
   const [maxPhase, setMaxPhase] = useState(1); // Default max phase 
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   // Video Player and QA
   const [videoUrl, setVideoUrl] = useState(""); // New state to store video URL
@@ -74,7 +76,7 @@ const Roadmap = () => {
       try {
         // Retrieve job position from session storage
         const selectedJobTitle = sessionStorage.getItem('selectedJobTitle');
-
+        
         if (!selectedJobTitle) {
           console.error("No selected job title found in session storage");
           return;
