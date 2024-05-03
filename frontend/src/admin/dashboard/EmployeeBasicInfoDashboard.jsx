@@ -1,25 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 // Assets
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import Swal from 'sweetalert2';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faEdit,
+  faTrash,
+  faPlusCircle,
+  faSearch,
+} from "@fortawesome/free-solid-svg-icons";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2";
 
-import Add from './employeebasicinfo_crud/add';
-import Edit from './employeebasicinfo_crud/edit';
+import Add from "./employeebasicinfo_crud/add";
+import Edit from "./employeebasicinfo_crud/edit";
 
 function EmployeeBasicInfoDashboard() {
   const [employees, setEmployees] = useState([]);
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    const storedEmployees = sessionStorage.getItem('basicinfo');
+    const storedEmployees = sessionStorage.getItem("basicinfo");
     if (storedEmployees) {
       // If employees exist in session storage, use them directly
       setEmployees(JSON.parse(storedEmployees));
@@ -31,23 +36,27 @@ function EmployeeBasicInfoDashboard() {
 
   const fetchEmployees = async () => {
     try {
-      const response = await axios.get('http://localhost:8800/api/auth/read-basicinfo');
-      const fetchedEmployees = response.data.map(employee => ({
+      const response = await axios.get(
+        "http://localhost:8800/api/auth/read-basicinfo"
+      );
+      const fetchedEmployees = response.data.map((employee) => ({
         ...employee,
         // Convert Buffer image data to base64 string for image display
-        image: `data:image/jpeg;base64,${arrayBufferToBase64(employee.image.data)}`
+        image: `data:image/jpeg;base64,${arrayBufferToBase64(
+          employee.image.data
+        )}`,
       }));
       // Store fetched employees in session storage
-      sessionStorage.setItem('basicinfo', JSON.stringify(fetchedEmployees));
+      sessionStorage.setItem("basicinfo", JSON.stringify(fetchedEmployees));
       setEmployees(fetchedEmployees);
     } catch (error) {
-      console.error('Error fetching employees:', error);
+      console.error("Error fetching employees:", error);
     }
   };
 
   // Function to convert ArrayBuffer to base64
   function arrayBufferToBase64(buffer) {
-    let binary = '';
+    let binary = "";
     const bytes = new Uint8Array(buffer);
     for (let i = 0; i < bytes.length; i++) {
       binary += String.fromCharCode(bytes[i]);
@@ -60,34 +69,36 @@ function EmployeeBasicInfoDashboard() {
   };
 
   const toggleEditModal = (employeeId) => {
-    sessionStorage.setItem('editEmployeeId', employeeId);
+    sessionStorage.setItem("editEmployeeId", employeeId);
     setIsEditModalOpen(!isEditModalOpen);
   };
 
   const handleDelete = async (employeeId) => {
     Swal.fire({
-      title: 'Are you sure?',
-      text: 'You will not be able to recover this employee data!',
-      icon: 'warning',
+      title: "Are you sure?",
+      text: "You will not be able to recover this employee data!",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.post('http://localhost:8800/api/auth/delete-basicinfo', { employeeId });
+          await axios.post("http://localhost:8800/api/auth/delete-basicinfo", {
+            employeeId,
+          });
           fetchEmployees();
-          toast.success('Successfully Deleted');
+          toast.success("Successfully Deleted");
         } catch (error) {
-          console.error('Error deleting employee:', error);
+          console.error("Error deleting employee:", error);
         }
       }
     });
   };
 
   const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
@@ -99,8 +110,10 @@ function EmployeeBasicInfoDashboard() {
   }, [employees]);
 
   const handleSearch = () => {
-    const filtered = employees.filter(employee =>
-      `${employee.firstname} ${employee.lastname}`.toLowerCase().includes(searchQuery.toLowerCase())
+    const filtered = employees.filter((employee) =>
+      `${employee.firstname} ${employee.lastname}`
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase())
     );
     setFilteredEmployees(filtered);
   };
@@ -108,9 +121,9 @@ function EmployeeBasicInfoDashboard() {
   return (
     <>
       <ToastContainer />
-      <div className='employee-dashboard-main-frame'>
-        <div className='employee-table'>
-          <div className='header-box'>
+      <div className="employee-dashboard-main-frame">
+        <div className="employee-table">
+          <div className="header-box">
             <h1>Employee Basic Information</h1>
           </div>
           <div className="header-box-functions">
@@ -121,11 +134,54 @@ function EmployeeBasicInfoDashboard() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by name..."
               />
-              <button onClick={handleSearch}><FontAwesomeIcon icon={faSearch} /></button>
+              <button onClick={handleSearch}>
+                <FontAwesomeIcon icon={faSearch} />
+              </button>
             </div>
-            <button className='employee-table-add-button' onClick={toggleAddModal}> <FontAwesomeIcon icon={faPlusCircle} /> Add </button>
+            <button
+              className="employee-table-add-button"
+              onClick={toggleAddModal}
+            >
+              {" "}
+              <FontAwesomeIcon icon={faPlusCircle} /> Add{" "}
+            </button>
           </div>
-          <div>
+          <div className="profile-card-parent">
+            <div className="profile-card-container">
+              {(searchQuery.length > 0 ? filteredEmployees : employees).map(
+                (employee) => (
+                  <div className="profile-card">
+                    <div className="employee-table-button">
+                      <button
+                        className="employee-table-edit-button"
+                        onClick={() => toggleEditModal(employee.employee_id)}
+                      >
+                        {" "}
+                        <FontAwesomeIcon icon={faEdit} />{" "}
+                      </button>
+                      <button
+                        className="employee-table-delete-button"
+                        onClick={() => handleDelete(employee.employee_id)}
+                      >
+                        {" "}
+                        <FontAwesomeIcon icon={faTrash} />{" "}
+                      </button>
+                    </div>
+                    <div className="image">
+                    <img
+                      src={employee.image}
+                      alt="Employee"
+                      style={{ width: "70px", height: "70px",  }}
+                    />
+                    </div>
+                    <a>{`${employee.firstname} ${employee.lastname}`}</a>
+                    <div className="company-role-text">Company Role</div>
+                  </div>
+                )
+              )}
+            </div>
+
+            {/* 
             <table>
               <thead>
                 <tr>
@@ -167,6 +223,7 @@ function EmployeeBasicInfoDashboard() {
                 ))}
               </tbody>
             </table>
+            */}
           </div>
         </div>
       </div>

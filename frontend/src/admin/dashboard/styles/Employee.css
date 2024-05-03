@@ -23,7 +23,6 @@
   flex-direction: row;
   align-items: center;
   gap: 1em;
-  
 }
 
 .header-box-functions {
@@ -50,11 +49,11 @@ table {
   margin-bottom: 20px;
 }
 
-th, td {
+th,
+td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
-
 }
 
 td input {
@@ -68,7 +67,10 @@ th {
 .employee-table-button {
   display: flex;
   flex-direction: row;
-  justify-content: space-evenly;
+  justify-content: flex-end;
+  align-items: end;
+  gap: 1em;
+  padding: 8px;
 }
 
 .employee-table-edit-button {
@@ -91,4 +93,49 @@ th {
   border: none;
   cursor: pointer;
   border-radius: 3px;
+}
+
+.profile-card-parent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.profile-card-container {
+  display: flex;
+  position: relative;
+  justify-content: flex-start;
+  width: 98%;
+  height: 98%;
+}
+
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 300px;
+  height: 150px;
+  border: 1px solid gray;
+  justify-content: center;
+}
+
+.profile-card a{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.company-role-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
