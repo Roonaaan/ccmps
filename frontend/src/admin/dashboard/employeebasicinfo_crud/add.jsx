@@ -88,7 +88,7 @@ function Add({ onClose }) {
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = () => {
-                const base64String = reader.result.split(',')[1];
+                const base64String = reader.result.split(',')[1];s
                 resolve(base64String);
             };
             reader.onerror = (error) => {

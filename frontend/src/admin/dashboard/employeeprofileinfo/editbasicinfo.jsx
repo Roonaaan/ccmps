@@ -88,10 +88,32 @@ function editbasicinfo({ onClose }) {
     }
   };
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData({ ...formData, [name]: value });
+  const handleChange = async (e) => {
+    const { name, value } = e.target;
+    if (name === 'image') {
+      const file = e.target.files[0];
+      const base64String = await convertFileToBase64(file);
+      setFormData({ ...formData, [name]: base64String });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
+
+  const convertFileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const base64String = reader.result.split(',')[1];
+        resolve(base64String);
+      };
+      reader.onerror = (error) => {
+        reject(error);
+      };
+    });
+  };
+
+
   return (
     <>
       <div className="employee-modal-overlay">
@@ -103,7 +125,7 @@ function editbasicinfo({ onClose }) {
               <img src={formData.image} alt="image" style={{ width: '50px', height: '50px' }} />
               <div className="employee-image-upload">
                 <label htmlFor='image'>Upload Image:</label>
-                <input type='file' id='image' name='image' accept='image/*' onChange={handleImageChange} />
+                <input type='file' id='image' name='image' accept='image/*' onChange={handleChange} />
               </div>
             </div>
 

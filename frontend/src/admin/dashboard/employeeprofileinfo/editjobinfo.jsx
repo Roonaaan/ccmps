@@ -35,7 +35,7 @@ function editjobinfo({ onClose }) {
   };
 
   const handleDelete = (index) => {
-    const updatedJobInfo = [...joqbInfo];
+    const updatedJobInfo = [...jobInfo];
     updatedJobInfo.splice(index, 1);
     setJobInfo(updatedJobInfo);
   };

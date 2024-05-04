@@ -1026,6 +1026,7 @@ export const readBasicInfo = async (req, res) => {
 export const editBasicInfo = async (req, res) => {
     try {
         const { employee_id, image, firstName, lastName, email, phoneNumber, role } = req.body;
+        const encodedImage = Buffer.from(image, 'base64');
 
         // Update the employee information in the tblprofile table
         const profileQuery = `
@@ -1038,7 +1039,7 @@ export const editBasicInfo = async (req, res) => {
                 phone_number = $5
             WHERE employee_id = $6
         `;
-        const profileValues = [image, firstName, lastName, email, phoneNumber, employee_id];
+        const profileValues = [encodedImage, firstName, lastName, email, phoneNumber, employee_id];
         await pool.query(profileQuery, profileValues);
 
         // Update the employee information in the tblaccount table
@@ -1198,6 +1199,7 @@ export const readEmployeeProfile = async (req, res) => {
 export const editProfileBasicInfo = async (req, res) => {
     try {
         const { employee_id, image, firstName, lastName, email, phoneNumber, birthday, homeAddress, district, city, province, postalCode, gender, jobPosition } = req.body;
+        const encodedImage = Buffer.from(image, 'base64');
 
         // Update the employee information in the tblprofile table
         const profileQuery = `
@@ -1218,7 +1220,7 @@ export const editProfileBasicInfo = async (req, res) => {
                 job_position = $13
             WHERE employee_id = $14
         `;
-        const profileValues = [image, firstName, lastName, email, phoneNumber, birthday, homeAddress, district, city, province, postalCode, gender, jobPosition, employee_id];
+        const profileValues = [encodedImage, firstName, lastName, email, phoneNumber, birthday, homeAddress, district, city, province, postalCode, gender, jobPosition, employee_id];
         await pool.query(profileQuery, profileValues);
 
         // Update the account_email in tblaccount table based on the email in tblprofile

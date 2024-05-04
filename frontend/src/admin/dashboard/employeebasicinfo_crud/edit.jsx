@@ -66,9 +66,15 @@ function edit({ onClose }) {
         }
     };
 
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-        setFormData({ ...formData, [name]: value });
+    const handleChange = async (e) => {
+        const { name, value } = e.target;
+        if (name === 'image') {
+            const file = e.target.files[0];
+            const base64String = await convertFileToBase64(file);
+            setFormData({ ...formData, [name]: base64String });
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
     };
 
     const handleSubmit = async (event) => {
@@ -82,6 +88,20 @@ function edit({ onClose }) {
             console.error('Error editing employee information:', error);
             // Handle error
         }
+    };
+
+    const convertFileToBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                const base64String = reader.result.split(',')[1];
+                resolve(base64String);
+            };
+            reader.onerror = (error) => {
+                reject(error);
+            };
+        });
     };
 
     return (
