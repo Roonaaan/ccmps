@@ -189,6 +189,13 @@ const Recommend = () => {
                         <div className="recommendJobContainerSubtitle">
                             <p> Top 3 recommended job roles for you based on your profile </p>
                         </div>
+                        <div className="jobPercentageContainer">
+                            {recommendedJobs.map((job, index) => (
+                                <div key={index} className="jobPercentage">
+                                    <p>{index < 3 ? `${job.percentage}% Match` : ''}</p>
+                                </div>
+                            ))}
+                        </div>
                         <div className="recommendJobContainerSelection">
                             {loading ? ( // Render loader if loading state is true
                                 <TailSpin
@@ -211,12 +218,19 @@ const Recommend = () => {
                                             toggleDescription(`job${index + 1}`);
                                         }}
                                     >
-                                        <p className='job-title'>{job.title}</p>
-                                        {showDescriptions[`job${index + 1}`] && <p className="job-description">{job.description}</p>}
+                                        <div>
+                                            <p className='job-title'>{job.title}</p>
+                                        </div>
+                                        {showDescriptions[`job${index + 1}`] && (
+                                            <div>
+                                                <p className="job-description">{job.description}</p>
+                                            </div>
+                                        )}
                                     </div>
                                 ))
                             )}
                         </div>
+
                         {/*
                         <div className='recommendJobLabels'>
                            <p>SUGGESTION 1</p> 
