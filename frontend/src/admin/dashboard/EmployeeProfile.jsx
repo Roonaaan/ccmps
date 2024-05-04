@@ -9,8 +9,10 @@ import { faPencil } from '@fortawesome/free-solid-svg-icons';
 
 import EditBasicInfo from './employeeprofileinfo/editbasicinfo';
 import EditPersonalInfo from './employeeprofileinfo/editpersonalinfo';
+{/*
 import EditEduInfo from './employeeprofileinfo/editeduinfo';
 import EditJobInfo from './employeeprofileinfo/editjobinfo';
+*/}
 
 function EmployeeProfile({ onClose }) {
   const [employeeData, setEmployeeData] = useState(null);
