@@ -77,14 +77,38 @@ def recommend_jobs_with_priority(user_position, user_level, user_work_history, u
         if job_level == user_level:
             matched_jobs_filtered.append(job_index)
 
+    # Calculate breakdown percentages
+    total_weight = 0.4 + 0.3 + 0.2 + 0.1
+    skill_weight = 0.4 / total_weight
+    current_job_weight = 0.3 / total_weight
+    previous_job_weight = 0.2 / total_weight
+    education_weight = 0.1 / total_weight
+
     # Get top N matched jobs
     top_matched_jobs = matched_jobs_sorted[:top_n]
 
-    # Extract job titles and descriptions for the top matched jobs
-    recommended_jobs = [
-        {"title": df_roles.iloc[job]['position'], "description": df_roles.iloc[job]['description']}
-        for job in top_matched_jobs
-    ]
+    # Calculate percentage breakdown for each job
+    recommended_jobs = []
+    for job in top_matched_jobs:
+        skill_similarity = cosine_similarity(tfidf_matrix_roles[job], user_profile_vector)[0][0]
+        current_job_similarity = sum(cosine_similarity(tfidf_matrix_roles[job], tfidf_vectorizer_roles.transform([text]))[0][0] for text in user_work_history['skills']) / len(user_work_history)
+        previous_job_similarity = 0
+        if len(user_work_history) > 1:
+            previous_job_similarity = sum(cosine_similarity(tfidf_matrix_roles[job], tfidf_vectorizer_roles.transform([text]))[0][0] for text in user_work_history.iloc[:-1]['skills']) / (len(user_work_history) - 1)
+        education_similarity = cosine_similarity(tfidf_matrix_roles[job], tfidf_vectorizer_roles.transform([user_degree_course]))[0][0]
+
+        total_similarity = skill_weight * skill_similarity + current_job_weight * current_job_similarity + previous_job_weight * previous_job_similarity + education_weight * education_similarity
+
+        recommended_jobs.append({
+            "title": df_roles.iloc[job]['position'],
+            "description": df_roles.iloc[job]['description'],
+            "percentage": round(total_similarity * 100, 2)
+        })
+
+    # Normalize percentages to sum up to 100%
+    total_percentage = sum(job['percentage'] for job in recommended_jobs)
+    for job in recommended_jobs:
+        job['percentage'] = round(job['percentage'] / total_percentage * 100, 2)
 
     return recommended_jobs
 

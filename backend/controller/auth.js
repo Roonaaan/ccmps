@@ -885,7 +885,7 @@ export const promoteUser = async (req, res) => {
 };
 
 
-// Employee Basic Info CRUD
+// Employee Dashboard Info CRUD
 // Create
 export const addBasicInfo = async (req, res) => {
     try {
@@ -893,20 +893,21 @@ export const addBasicInfo = async (req, res) => {
             image,
             firstName,
             lastName,
-            age,
             email,
             phoneNumber,
-            homeAddress,
-            district,
-            city,
-            province,
-            postalCode,
             gender,
             birthday,
-            nationality,
-            civilStatus,
-            role
+            role,
+            accountPasswordPlain,
+            jobPosition
         } = req.body;
+
+        // Calculate age based on the provided birthday
+        const dob = new Date(birthday);
+        const today = new Date();
+        const age = today.getFullYear() - dob.getFullYear();
+        const isBirthdayPassed = today.getMonth() > dob.getMonth() || (today.getMonth() === dob.getMonth() && today.getDate() >= dob.getDate());
+        const finalAge = isBirthdayPassed ? age : age - 1;
 
         // Connect to the database
         const client = await pool.connect();
@@ -921,61 +922,60 @@ export const addBasicInfo = async (req, res) => {
 
         // Insert employee data with the fetched employee ID
         await client.query(`
-        INSERT INTO tblprofile (
-          employee_id,
-          image,
-          firstname,
-          lastname,
-          age,
-          email,
-          phone_number,
-          home_address,
-          district,
-          city,
-          province,
-          postal_code,
-          gender,
-          birthday,
-          nationality,
-          civil_status
-        ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16
-        )
-      `, [
+            INSERT INTO tblprofile (
+                employee_id,
+                image,
+                firstname,
+                lastname,
+                email,
+                age,
+                phone_number,
+                gender,
+                birthday,
+                job_position
+            ) VALUES (
+                $1, $2, $3, $4, $5, $6, $7, $8, $9,10
+            )
+        `, [
             nextId,
             encodedImage,
             firstName,
             lastName,
-            age,
             email,
+            finalAge,
             phoneNumber,
-            homeAddress,
-            district,
-            city,
-            province,
-            postalCode,
             gender,
             birthday,
-            nationality,
-            civilStatus
+            jobPosition
         ]);
+
+        // Generate a salt for password hashing
+        const saltRounds = 10;
+        const salt = await bcrypt.genSalt(saltRounds);
+
+        // Hash the plain password
+        const hashedPassword = await bcrypt.hash(accountPasswordPlain, salt);
 
         // Insert data into tblaccount
         await client.query(`
-        INSERT INTO tblaccount (
-          employee_id,
-          firstname,
-          lastname,
-          account_email,
-          role
-        ) VALUES (
-          $1, $2, $3, $4, $5
-        )
-      `, [
+            INSERT INTO tblaccount (
+                employee_id,
+                firstname,
+                lastname,
+                account_email,
+                account_password,
+                account_password_plain,
+                role
+            ) VALUES (
+                $1, $2, $3, $4, $5, $6, $7
+            )
+        `, [
             nextId,
             firstName,
             lastName,
-            email,
+            email, // Use the email from tblprofile
+            hashedPassword,
+            accountPasswordPlain,
             role
         ]);
 
@@ -1010,7 +1010,8 @@ export const readBasicInfo = async (req, res) => {
                 gender, 
                 birthday, 
                 nationality, 
-                civil_status 
+                civil_status,
+                job_position 
             FROM tblprofile
         `);
         const employees = result.rows;
@@ -1101,14 +1102,14 @@ export const getBasicInfoById = async (req, res) => {
 };
 // Delete
 export const deleteBasicInfo = async (req, res) => {
-    const employeeId = req.body.employeeId; // Retrieve employee ID from request body
+    const employeeId = req.params.editEmployeeId; // Retrieve employee ID from URL parameters
 
     if (!employeeId) {
-        return res.status(400).json({ error: 'Employee ID not provided in the request body' });
+        return res.status(400).json({ error: 'Employee ID not provided in the URL parameters' });
     }
 
     try {
-        // Construct the SQL query to delete the row with the specified employee ID
+        // Construct the SQL queries to delete rows with the specified employee ID
         const queryProfile = {
             text: 'DELETE FROM tblprofile WHERE employee_id = $1',
             values: [employeeId],
@@ -1119,15 +1120,32 @@ export const deleteBasicInfo = async (req, res) => {
             values: [employeeId],
         };
 
+        const queryEducation = {
+            text: 'DELETE FROM tbleducbackground WHERE employee_id = $1',
+            values: [employeeId],
+        };
+
+        const queryWorkHistory = {
+            text: 'DELETE FROM tblworkhistory WHERE employee_id = $1',
+            values: [employeeId],
+        };
+
         // Execute the SQL queries
         const resultProfile = await pool.query(queryProfile);
         const resultAccount = await pool.query(queryAccount);
+        const resultEducation = await pool.query(queryEducation);
+        const resultWorkHistory = await pool.query(queryWorkHistory);
 
         // Check if any row was affected in tblprofile
         if (resultProfile.rowCount > 0) {
             // Check if any row was affected in tblaccount
             if (resultAccount.rowCount > 0) {
-                res.status(200).json({ message: 'Employee and associated account deleted successfully' });
+                // Check if any row was affected in tbleducbackground
+                if (resultEducation.rowCount > 0 || resultWorkHistory.rowCount > 0) {
+                    res.status(200).json({ message: 'Employee, associated account, education, and work history deleted successfully' });
+                } else {
+                    res.status(200).json({ message: 'Employee and associated account deleted successfully, but education and work history not found' });
+                }
             } else {
                 res.status(200).json({ message: 'Employee deleted successfully, but associated account not found' });
             }
@@ -1139,6 +1157,44 @@ export const deleteBasicInfo = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+// Employee Profile Read
+export const readEmployeeProfile = async (req, res) => {
+    try {
+        const employeeId = req.params.editEmployeeId;
+
+        if (!employeeId) {
+            return res.status(400).json({ error: 'Invalid employeeId' });
+        }
+
+        // Start a client session
+        const client = await pool.connect();
+
+        // Execute separate queries for tblprofile, tbleducbackground, and tblworkhistory
+        const profileQuery = 'SELECT * FROM tblprofile WHERE employee_id = $1';
+        const educBackgroundQuery = 'SELECT * FROM tbleducbackground WHERE employee_id = $1';
+        const workHistoryQuery = 'SELECT * FROM tblworkhistory WHERE employee_id = $1';
+
+        const profileResult = await client.query(profileQuery, [employeeId]);
+        const educBackgroundResult = await client.query(educBackgroundQuery, [employeeId]);
+        const workHistoryResult = await client.query(workHistoryQuery, [employeeId]);
+
+        // Release the client session
+        client.release();
+
+        // Combine the results and send the response with the fetched data
+        const responseData = {
+            profile: profileResult.rows[0],
+            educBackground: educBackgroundResult.rows,
+            workHistory: workHistoryResult.rows
+        };
+
+        res.status(200).json(responseData);
+    } catch (error) {
+        console.error('Error fetching employee profile:', error); // Log the error for debugging
+        res.status(500).json({ error: error.message }); // Send the actual error message to the client
+    }
+}
 
 // Employee Education History CRUD
 // Create

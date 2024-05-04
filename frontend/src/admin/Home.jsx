@@ -25,11 +25,7 @@ import Swal from 'sweetalert2';
 import HomeDashboard from "./dashboard/HomeDashboard";
 import PromotionDashboard from "./dashboard/EmployeePromotionDashboard";
 import ApprovalDashboard from "./dashboard/EmployeeApproval";
-import BasicInfoDashboard from "./dashboard/EmployeeBasicInfoDashboard";
-import JobInfoDashboard from "./dashboard/EmployeeJobInfoDashboard";
-import AccountInfoDashboard from "./dashboard/EmployeeAccountInfo";
-import EduchistoryInfoDashboard from "./dashboard/EmployeeEducationHistory";
-import JobhistoryInfoDashboard from "./dashboard/EmployeeJobHistory";
+import EmployeeDashboard from "./dashboard/EmployeeDashboard";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -77,15 +73,7 @@ const Home = () => {
       case 2:
         return <PromotionDashboard />;
       case 3:
-        return <BasicInfoDashboard />;
-      case 4:
-        return <JobInfoDashboard />;
-      case 5:
-        return <AccountInfoDashboard />;
-      case 6:
-        return <EduchistoryInfoDashboard />;
-      case 7:
-        return <JobhistoryInfoDashboard />;
+        return <EmployeeDashboard />;
       default:
         return null;
     }
@@ -111,43 +99,7 @@ const Home = () => {
             <span className="icons">
               <FontAwesomeIcon icon={faUser} className="fa-icon" />
             </span>
-            Employee Basic Info
-          </li>
-          <li
-            className={selectedItem === 6 ? "clicked" : ""}
-            onClick={() => handleClick(6)}
-          >
-            <span className="icons">
-              <FontAwesomeIcon icon={faGraduationCap} className="fa-icon" />
-            </span>
-            Employee Edu History
-          </li>
-          <li
-            className={selectedItem === 7 ? "clicked" : ""}
-            onClick={() => handleClick(7)}
-          >
-            <span className="icons">
-              <FontAwesomeIcon icon={faBriefcase} className="fa-icon" />
-            </span>
-            Employee Job History
-          </li>
-          <li
-            className={selectedItem === 4 ? "clicked" : ""}
-            onClick={() => handleClick(4)}
-          >
-            <span className="icons">
-              <FontAwesomeIcon icon={faUserTie} className="fa-icon" />
-            </span>
-            Employee Job Info
-          </li>
-          <li
-            className={selectedItem === 5 ? "clicked" : ""}
-            onClick={() => handleClick(5)}
-          >
-            <span className="icons">
-              <FontAwesomeIcon icon={faAddressBook} className="fa-icon" />
-            </span>
-            Employee Account Info
+            All Employees
           </li>
         </>
       );
@@ -190,43 +142,7 @@ const Home = () => {
             <span className="icons">
               <FontAwesomeIcon icon={faUser} className="fa-icon" />
             </span>
-            Employee Basic Info
-          </li>
-          <li
-            className={selectedItem === 6 ? "clicked" : ""}
-            onClick={() => handleClick(6)}
-          >
-            <span className="icons">
-              <FontAwesomeIcon icon={faGraduationCap} className="fa-icon" />
-            </span>
-            Employee Edu History
-          </li>
-          <li
-            className={selectedItem === 7 ? "clicked" : ""}
-            onClick={() => handleClick(7)}
-          >
-            <span className="icons">
-              <FontAwesomeIcon icon={faBriefcase} className="fa-icon" />
-            </span>
-            Employee Job History
-          </li>
-          <li
-            className={selectedItem === 4 ? "clicked" : ""}
-            onClick={() => handleClick(4)}
-          >
-            <span className="icons">
-              <FontAwesomeIcon icon={faUserTie} className="fa-icon" />
-            </span>
-            Employee Job Info
-          </li>
-          <li
-            className={selectedItem === 5 ? "clicked" : ""}
-            onClick={() => handleClick(5)}
-          >
-            <span className="icons">
-              <FontAwesomeIcon icon={faAddressBook} className="fa-icon" />
-            </span>
-            Employee Account Info
+            All Employees
           </li>
         </>
       );

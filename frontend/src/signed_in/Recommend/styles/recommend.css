@@ -95,7 +95,7 @@
     color: black;
     font-size: 24px;
     font-weight: 500;
-
+    text-align: center;
 }
 
 .recommendJobContainerPanel:hover .job-description {

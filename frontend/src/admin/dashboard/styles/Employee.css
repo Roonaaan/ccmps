@@ -1,7 +1,7 @@
 .employee-dashboard-main-frame {
     display: flex;
     justify-content: flex-start;
-    height: 100vh;
+    height: 92.5vh;
     width: 100%;
 }
 
@@ -9,7 +9,6 @@
     display: flex;
     flex-direction: column;
     position: relative;
-    width: auto;
     height: auto;
     margin: 0px 20px;
     width: 100%;
@@ -23,14 +22,12 @@
     flex-direction: row;
     align-items: center;
     gap: 1em;
-
 }
 
 .header-box-functions {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin: 10px;
 }
 
 .employee-table-add-button {
@@ -68,27 +65,266 @@ th {
 .employee-table-button {
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
+    justify-content: flex-end;
+    align-items: end;
+    gap: 1em;
+    padding: 8px;
 }
 
-.employee-table-edit-button {
-    background-color: lightskyblue;
-    color: white;
+.employee-table-ellipsis-button {
     width: 20px;
     height: 20px;
-    font-size: 15px;
+    font-size: 20px;
     border: none;
     cursor: pointer;
     border-radius: 3px;
+    background-color: transparent;
 }
 
-.employee-table-delete-button {
-    background-color: red;
-    color: white;
-    width: 20px;
-    height: 20px;
-    font-size: 15px;
-    border: none;
+.employee-profile-card-parent {
+    display: flex;
+    position: relative;
+}
+
+.employee-profile-card-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    justify-content: flex-start;
+    gap: 15px;
+}
+
+.employee-profile-card {
+    display: flex;
+    flex-direction: column;
+    width: 280px;
+    height: auto;
+    border: 1px solid gray;
+    border-radius: 10px;
+    justify-content: center;
+    position: relative;
+}
+
+.employee-profile-card a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2px;
+}
+
+.company-role-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 18px;
+    color: gray;
+}
+
+.image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
     cursor: pointer;
-    border-radius: 3px;
+}
+
+.image img {
+    display: flex;
+    border-radius: 50%;
+}
+
+.dropdown-menu {
+    position: absolute;
+    background-color: #fff;
+    min-width: 120px;
+    border: 1px solid rgb(196, 194, 194);
+    z-index: 1;
+    right: 0;
+    margin: 0 10px 40px 0;
+}
+
+.dropdown-menu a {
+    display: block;
+    width: 100%;
+    padding: 5px;
+    text-align: left;
+    border: none;
+    background-color: transparent;
+    font-weight: 400;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+/* Employee Profile */
+.employee-profile-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Semi-transparent black overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.employee-profile-modal {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    margin: auto;
+    width: 1000px;
+    height: 700px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    gap: 10px;
+}
+
+.employee-profile-modal h2 {
+    margin-top: 0;
+}
+
+.employee-profile-basicinfo-card {
+    display: flex;
+    align-items: center;
+    border: 1px solid gray;
+}
+
+.employee-profile-basicinfo-card-body-row {
+    display: flex;
+    width: auto;
+    gap: 20px;
+    flex-direction: row;
+}
+
+.employee-profile-basicinfo-image {
+    margin: 15px 0 0 5px;
+}
+
+.employee-profile-basicinfo-image img {
+    height: 150;
+    width: 150px;
+    border: 1px solid black;
+    border-radius: 50%;
+}
+
+.employee-profile-basicinfo-basic {
+    margin: 15px 0 0 5px;
+}
+
+.employee-profile-basicinfo-basic h1,
+h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.employee-profile-basicinfo-basic p {
+    color: gray;
+    font-size: 15px;
+    margin-bottom: 5px;
+}
+
+.employee-profile-basicinfo-other {
+    width: 400px;
+    margin: 15px 0 0 5px;
+}
+
+.basic-info-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    width: 30%;
+}
+
+.basic-info-text {
+    font-size: 15px;
+    margin-bottom: 5px;
+    width: 100%;
+}
+
+.employee-profile-basicinfo-edit-button {
+    margin: 15px 0 0 120px;
+}
+
+.employee-profile-basicinfo-edit-button button {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.employee-profile-personalinfo-card {
+    border: 1px solid gray;
+}
+
+.employee-profile-personalinfo-card h1 {
+    font-size: 15px;
+    margin: 10px 0 0 10px;
+}
+
+.employee-profile-personals-card-body {
+    margin: 10px 0 0 10px;
+}
+
+.employee-profile-personals-card-body-row {
+    display: flex;
+    width: auto;
+    gap: 20px;
+    flex-direction: row;
+}
+
+.employee-profile-personals-other {
+    width: auto;
+    margin: 15px 0 5px 0;
+}
+
+.employee-profile-personals-edit-button {
+    margin: 15px 15px 0 0;
+    float: right;
+}
+
+.employee-profile-personals-edit-button button {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.personal-info-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    width: 20%;
+}
+
+.personal-info-text {
+    font-size: 15px;
+    margin-bottom: 5px;
+    width: 100%;
+}
+
+.employee-profile-history-card-body {
+    display: flex;
+    justify-content: space-between;
+}
+
+.employee-profile-workhistory-card-body,
+.employee-profile-eduhistory-card-body {
+    border: 1px solid gray;
+    width: 470px;
+    padding: 10px;
+}
+
+.employee-profile-eduhistory-edit-button,
+.employee-profile-workhistory-edit-button {
+    margin: 0 5px 35px 0;
+    float: right;
+}
+
+.employee-profile-eduhistory-edit-button button,
+.employee-profile-workhistory-edit-button button {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
 }
