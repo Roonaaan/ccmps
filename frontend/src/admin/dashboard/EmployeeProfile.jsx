@@ -125,25 +125,30 @@ function EmployeeProfile({ onClose }) {
             </div>
             <div className="employee-profile-personalinfo-card">
               <div className="employee-profile-personals-edit-button">
+              <h1> Additional Information: </h1>
                 <button onClick={() => toggleEditPersonalInfoModal(employeeData.profile.employee_id)}><FontAwesomeIcon icon={faPencil} /></button>
               </div>
-              <h1> Additional Information: </h1>
+              
               <div className="employee-profile-personals-card-body">
                 <div className="employee-profile-personals-card-body-row">
                   <div className="employee-profile-personals-other">
                     <ul className='personal-info'>
-                      <li>
-                        <div className="personal-info-title">Nationality: </div>
-                        <div className="personal-info-text"> {employeeData.profile.nationality} </div>
-                      </li>
-                      <li>
-                        <div className="personal-info-title">Civil Status: </div>
-                        <div className="personal-info-text"> {employeeData.profile.civil_status} </div>
-                      </li>
-                      <li>
-                        <div className="personal-info-title">Current Job Skills: </div>
-                        <div className="personal-info-text"> {employeeData.profile.skills} </div>
-                      </li>
+                      <div className='additional-information-tab'>
+                        <div className='add-info-content'>
+                        <p className="personal-info-title">Nationality: </p>
+                        <p className="personal-info-text"> {employeeData.profile.nationality} </p>
+                        </div>
+                      
+                        <div className='add-info-content'>
+                        <p className="personal-info-title">Civil Status: </p>
+                        <p className="personal-info-text"> {employeeData.profile.civil_status} </p>
+                        </div>
+                      
+                        <div className='add-info-content'>
+                        <p className="personal-info-title">Current Job Skills: </p>
+                        <p className="personal-info-text"> {employeeData.profile.skills} </p>
+                        </div>
+                      </div>
                     </ul>
                   </div>
                 </div>

@@ -11,7 +11,7 @@
   position: relative;
   height: auto;
   margin: 0px 20px;
-  width: 100%;
+  width: fit-content;
 }
 
 .header-box {
@@ -190,6 +190,8 @@ th {
   display: flex;
   align-items: center;
   border: 1px solid gray;
+  justify-content: center;
+  padding: 20px 40px;
 }
 
 .employee-profile-basicinfo-card-body-row {
@@ -197,28 +199,34 @@ th {
   width: auto;
   gap: 20px;
   flex-direction: row;
+  justify-content: center;
 }
 
 .employee-profile-basicinfo-image {
-  margin: 15px 0 0 5px;
+  
 }
 
 .employee-profile-basicinfo-image img {
-  height: 150;
-  width: 150px;
-  border: 1px solid black;
+  height: 100;
+  width: 120px;
   border-radius: 50%;
 }
 
 .employee-profile-basicinfo-basic {
-  margin: 15px 0 0 5px;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  padding: 8px 0px;
+  margin-left: 40px;
+  
 }
 
 .employee-profile-basicinfo-basic h1,
 h2 {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 600;
-  margin-bottom: 5px;
+  text-align: left;
+
 }
 
 .employee-profile-basicinfo-basic p {
@@ -229,19 +237,21 @@ h2 {
 
 .employee-profile-basicinfo-other {
   width: 400px;
-  margin: 15px 0 0 5px;
+  margin-left: 30px;
+}
+
+.basic-info{
+  
 }
 
 .basic-info-title {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 600;
-  margin-bottom: 5px;
   width: 30%;
 }
 
 .basic-info-text {
   font-size: 15px;
-  margin-bottom: 5px;
   width: 100%;
 }
 
@@ -257,13 +267,18 @@ h2 {
 
 .employee-profile-personalinfo-card {
   border: 1px solid gray;
+  display: flex;
+  flex-direction: column;
+  
+
+  
 }
 
 .employee-profile-personalinfo-card h1 {
   display: flex;
   font-size: 18px;
   font-weight: 700;
-  margin: 10px 0 0 10px;
+  
 }
 
 .employee-profile-personals-card-body {
@@ -275,16 +290,21 @@ h2 {
   width: auto;
   gap: 20px;
   flex-direction: row;
+  padding: 20px 10px;
+  flex-wrap: wrap;
+  height: fit-content;
 }
 
 .employee-profile-personals-other {
-  width: auto;
+  width: 100%;
   margin: 15px 0 5px 0;
 }
 
 .employee-profile-personals-edit-button {
-  margin: 15px 15px 0 0;
-  float: right;
+  display: flex;
+  gap: 1em;
+  margin: 20px;
+  justify-content: space-between;
 }
 
 .employee-profile-personals-edit-button button {
@@ -293,17 +313,22 @@ h2 {
   cursor: pointer;
 }
 
+.personal-info {
+  display: flex;
+  width: 95%;
+}
+
 .personal-info-title {
   font-size: 15px;
   font-weight: 600;
   margin-bottom: 5px;
-  width: 20%;
+  width: 150px;
 }
 
 .personal-info-text {
   font-size: 15px;
   margin-bottom: 5px;
-  width: 100%;
+  width: 500px;
 }
 
 .employee-profile-history-card-body {
@@ -315,7 +340,7 @@ h2 {
 .employee-profile-eduhistory-card-body {
   border: 1px solid gray;
   width: 470px;
-  padding: 10px;
+  padding: 20px;
 }
 
 .employee-profile-eduhistory-edit-button,
@@ -329,4 +354,27 @@ h2 {
   border: none;
   background-color: transparent;
   cursor: pointer;
+}
+
+.c {
+  display: flex;
+  text-align: left;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.additional-information-tab {
+  display: flex;
+  gap: 1em;
+  justify-content: center;
+  align-items: flex-start;
+  text-align: left;
+  flex-direction: column;
+  flex-wrap: wrap;
+  
+}
+
+.add-info-content {
+  display: flex;
+  gap: 1em;
 }
