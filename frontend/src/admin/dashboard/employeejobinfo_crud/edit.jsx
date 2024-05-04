@@ -34,7 +34,7 @@ function edit({ onClose }) {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({ ...formData, [name]: value });sssssssaaaaa
   };
 
   const handleSubmit = async (event) => {

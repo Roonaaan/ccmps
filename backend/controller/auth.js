@@ -922,20 +922,20 @@ export const addBasicInfo = async (req, res) => {
 
         // Insert employee data with the fetched employee ID
         await client.query(`
-            INSERT INTO tblprofile (
-                employee_id,
-                image,
-                firstname,
-                lastname,
-                email,
-                age,
-                phone_number,
-                gender,
-                birthday,
-                job_position
-            ) VALUES (
-                $1, $2, $3, $4, $5, $6, $7, $8, $9,10
-            )
+        INSERT INTO tblprofile (
+            employee_id,
+            image,
+            firstname,
+            lastname,
+            email,
+            age,
+            phone_number,
+            gender,
+            birthday,
+            job_position
+        ) VALUES (
+            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
+        )
         `, [
             nextId,
             encodedImage,
@@ -945,7 +945,8 @@ export const addBasicInfo = async (req, res) => {
             finalAge,
             phoneNumber,
             gender,
-            birthday
+            birthday,
+            jobPosition
         ]);
 
         // Generate a salt for password hashing
@@ -1024,32 +1025,34 @@ export const readBasicInfo = async (req, res) => {
 // Update
 export const editBasicInfo = async (req, res) => {
     try {
-        const { employee_id, image, firstName, lastName, age, email, phoneNumber, homeAddress, district, city, province, postalCode, gender, birthday, nationality, civilStatus } = req.body;
+        const { employee_id, image, firstName, lastName, email, phoneNumber, role } = req.body;
 
-        // Update the employee information in the database
-        const query = `
+        // Update the employee information in the tblprofile table
+        const profileQuery = `
             UPDATE tblprofile 
             SET 
                 image = $1,
                 firstname = $2,
                 lastname = $3,
-                age = $4,
-                email = $5,
-                phone_number = $6,
-                home_address = $7,
-                district = $8,
-                city = $9,
-                province = $10,
-                postal_code = $11,
-                gender = $12,
-                birthday = $13,
-                nationality = $14,
-                civil_status = $15
-            WHERE employee_id = $16
+                email = $4,
+                phone_number = $5
+            WHERE employee_id = $6
         `;
+        const profileValues = [image, firstName, lastName, email, phoneNumber, employee_id];
+        await pool.query(profileQuery, profileValues);
 
-        const values = [image, firstName, lastName, age, email, phoneNumber, homeAddress, district, city, province, postalCode, gender, birthday, nationality, civilStatus, employee_id];
-        await pool.query(query, values);
+        // Update the employee information in the tblaccount table
+        const accountQuery = `
+            UPDATE tblaccount 
+            SET 
+                firstname = $1,
+                lastname = $2,
+                account_email = $3,
+                role = $4
+            WHERE employee_id = $5
+        `;
+        const accountValues = [firstName, lastName, email, role, employee_id];
+        await pool.query(accountQuery, accountValues);
 
         res.status(200).json({ message: "Employee information updated successfully." });
     } catch (error) {
@@ -1064,23 +1067,19 @@ export const getBasicInfoById = async (req, res) => {
         // Construct the SQL query to select employee data based on employee ID
         const query = {
             text: `SELECT 
-            employee_id, 
-            image, 
-            firstname, 
-            lastname, 
-            age, 
-            email, 
-            phone_number, 
-            home_address, 
-            district, 
-            city, 
-            province, 
-            postal_code, 
-            gender, 
-            birthday, 
-            nationality, 
-            civil_status 
-        FROM tblprofile WHERE employee_id = $1`,
+                        p.employee_id, 
+                        p.image, 
+                        p.firstname, 
+                        p.lastname, 
+                        p.email, 
+                        p.phone_number, 
+                        p.birthday, 
+                        p.job_position,
+                        a.account_email,
+                        a.role
+                    FROM tblprofile p
+                    JOIN tblaccount a ON p.employee_id = a.employee_id
+                    WHERE p.employee_id = $1`,
             values: [employeeId],
         };
         // Execute the SQL query

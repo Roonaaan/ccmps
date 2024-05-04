@@ -7,6 +7,11 @@ import 'react-toastify/dist/ReactToastify.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
 
+import EditBasicInfo from './employeeprofileinfo/editbasicinfo';
+import EditPersonalInfo from './employeeprofileinfo/editpersonalinfo';
+import EditJobInfo from './employeeprofileinfo/editjobinfo';
+import EditEduInfo from './employeeprofileinfo/editeduinfo';
+
 function EmployeeProfile({ onClose }) {
   const [employeeData, setEmployeeData] = useState(null);
 

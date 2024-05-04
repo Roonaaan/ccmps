@@ -17,7 +17,6 @@ function Add({ onClose }) {
         birthday: '',
         role: 'Employee',
         jobPosition: '',
-
     });
 
     useEffect(() => {
@@ -64,7 +63,7 @@ function Add({ onClose }) {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(formData) // Include jobPosition in formData
             });
 
             if (response.ok) {

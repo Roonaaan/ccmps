@@ -181,10 +181,11 @@ function EmployeeDashboard() {
                       <div className="dropdown-menu">
                         <a onClick={() => {
                           toggleEditModal(employee.employee_id);
-                          toggleMenu(index); // Close the dropdown menu
+                          toggleMenu(index, employee.employee_id); // Pass the employeeId to toggleMenu
                         }}>
                           <FontAwesomeIcon icon={faPencil} />
-                          Edit</a>
+                          Edit
+                        </a>
                         <a onClick={handleDelete}>
                           <FontAwesomeIcon icon={faTrash} />
                           Delete
