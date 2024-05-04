@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 
@@ -8,8 +7,17 @@ import 'react-toastify/dist/ReactToastify.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
 
+import EditBasicInfo from './employeeprofileinfo/editbasicinfo';
+import EditPersonalInfo from './employeeprofileinfo/editpersonalinfo';
+import EditEduInfo from './employeeprofileinfo/editeduinfo';
+import EditJobInfo from './employeeprofileinfo/editjobinfo';
+
 function EmployeeProfile({ onClose }) {
     const [employeeData, setEmployeeData] = useState(null);
+    const [isEditBasicInfoModalOpen, setIsEditBasicInfoModalOpen] = useState(false);
+    const [isEditPersonalInfoModalOpen, setIsEditPersonalInfoModalOpen] = useState(false);
+    const [isEditJobInfoModalOpen, setIsEditJobInfoModalOpen] = useState(false);
+    const [isEditEduInfoModalOpen, setIsEditEduInfoModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchEmployeeProfile = async () => {
@@ -30,6 +38,26 @@ function EmployeeProfile({ onClose }) {
 
         fetchEmployeeProfile();
     }, []);
+
+    const toggleEditBasicInfoModal = (employeeId) => {
+        sessionStorage.setItem("editEmployeeId", employeeId);
+        setIsEditBasicInfoModalOpen(!isEditBasicInfoModalOpen);
+    };
+
+    const toggleEditPersonalInfoModal = (employeeId) => {
+        sessionStorage.setItem("editEmployeeId", employeeId);
+        setIsEditPersonalInfoModalOpen(!isEditPersonalInfoModalOpen);
+    };
+
+    const toggleEditEduInfoModal = (employeeId) => {
+        sessionStorage.setItem("editEmployeeId", employeeId);
+        setIsEditEduInfoModalOpen(!isEditEduInfoModalOpen);
+    };
+
+    const toggleEditJobInfoModal = (employeeId) => {
+        sessionStorage.setItem("editEmployeeId", employeeId);
+        setIsEditJobInfoModalOpen(!isEditJobInfoModalOpen);
+    };
 
     function arrayBufferToBase64(buffer) {
         let binary = "";
@@ -88,32 +116,37 @@ function EmployeeProfile({ onClose }) {
                                         </ul>
                                     </div>
                                     <div className="employee-profile-basicinfo-edit-button">
-                                        <button><FontAwesomeIcon icon={faPencil} /></button>
+                                        <button onClick={() => toggleEditBasicInfoModal(employeeData.profile.employee_id)}><FontAwesomeIcon icon={faPencil} /></button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div className="employee-profile-personalinfo-card">
                             <div className="employee-profile-personals-edit-button">
-                                <button><FontAwesomeIcon icon={faPencil} /></button>
+                                <h1> Additional Information: </h1>
+                                <button onClick={() => toggleEditPersonalInfoModal(employeeData.profile.employee_id)}><FontAwesomeIcon icon={faPencil} /></button>
                             </div>
-                            <h1> Additional Information </h1>
+
                             <div className="employee-profile-personals-card-body">
                                 <div className="employee-profile-personals-card-body-row">
                                     <div className="employee-profile-personals-other">
                                         <ul className='personal-info'>
-                                            <li>
-                                                <div className="personal-info-title">Nationality: </div>
-                                                <div className="personal-info-text"> {employeeData.profile.nationality} </div>
-                                            </li>
-                                            <li>
-                                                <div className="personal-info-title">Civil Status: </div>
-                                                <div className="personal-info-text"> {employeeData.profile.civil_status} </div>
-                                            </li>
-                                            <li>
-                                                <div className="personal-info-title">Current Job Skills: </div>
-                                                <div className="personal-info-text"> {employeeData.profile.skills} </div>
-                                            </li>
+                                            <div className='additional-information-tab'>
+                                                <div className='add-info-content'>
+                                                    <p className="personal-info-title">Nationality: </p>
+                                                    <p className="personal-info-text"> {employeeData.profile.nationality} </p>
+                                                </div>
+
+                                                <div className='add-info-content'>
+                                                    <p className="personal-info-title">Civil Status: </p>
+                                                    <p className="personal-info-text"> {employeeData.profile.civil_status} </p>
+                                                </div>
+
+                                                <div className='add-info-content'>
+                                                    <p className="personal-info-title">Current Job Skills: </p>
+                                                    <p className="personal-info-text"> {employeeData.profile.skills} </p>
+                                                </div>
+                                            </div>
                                         </ul>
                                     </div>
                                 </div>
@@ -122,7 +155,7 @@ function EmployeeProfile({ onClose }) {
                         <div className="employee-profile-history-card-body">
                             <div className="employee-profile-workhistory-card-body">
                                 <div className="employee-profile-workhistory-edit-button">
-                                    <button><FontAwesomeIcon icon={faPencil} /></button>
+                                    <button onClick={() => toggleEditJobInfoModal(employeeData.profile.employee_id)}><FontAwesomeIcon icon={faPencil} /></button>
                                 </div>
                                 <h3>Work History:</h3>
                                 {employeeData.workHistory.map((history, index) => (
@@ -140,7 +173,7 @@ function EmployeeProfile({ onClose }) {
                             </div>
                             <div className="employee-profile-eduhistory-card-body">
                                 <div className="employee-profile-eduhistory-edit-button">
-                                    <button><FontAwesomeIcon icon={faPencil} /></button>
+                                    <button onClick={() => toggleEditEduInfoModal(employeeData.profile.employee_id)}><FontAwesomeIcon icon={faPencil} /></button>
                                 </div>
                                 <h3>Educational History:</h3>
                                 {employeeData.educBackground.map((history, index) => (
@@ -163,6 +196,10 @@ function EmployeeProfile({ onClose }) {
                     </div>
                 </div>
             )}
+            {isEditBasicInfoModalOpen && <EditBasicInfo onClose={() => setIsEditBasicInfoModalOpen(false)} />}
+            {isEditPersonalInfoModalOpen && <EditPersonalInfo onClose={() => setIsEditPersonalInfoModalOpen(false)} />}
+            {isEditJobInfoModalOpen && <EditJobInfo onClose={() => setIsEditJobInfoModalOpen(false)} />}
+            {isEditEduInfoModalOpen && <EditEduInfo onClose={() => setIsEditEduInfoModalOpen(false)} />}
         </>
     )
 }

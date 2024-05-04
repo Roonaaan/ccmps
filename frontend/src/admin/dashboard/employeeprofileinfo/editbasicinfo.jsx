@@ -5,8 +5,7 @@ import "../styles/EmployeeCrud.css";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-
-function edit({ onClose }) {
+function editbasicinfo({ onClose }) {
     const [formData, setFormData] = useState({
         image: '',
         firstName: '',
@@ -14,7 +13,12 @@ function edit({ onClose }) {
         email: '',
         phoneNumber: '',
         birthday: '',
-        role: 'Employee',
+        homeAddress: '',
+        district: '',
+        city: '',
+        province: '',
+        postalCode: '',
+        gender: '',
         jobPosition: '',
     });
 
@@ -28,7 +32,7 @@ function edit({ onClose }) {
     const fetchEmployeeData = async () => {
         try {
             const employeeId = sessionStorage.getItem('editEmployeeId');
-            const response = await axios.get(`https://ccmps-server-node.vercel.app/api/auth/get-basicinfo/${employeeId}`);
+            const response = await axios.get(`https://ccmps-server-node.vercel.app/api/auth/get-profilebasicinfo/${employeeId}`);
             const employeeData = response.data;
 
             setFormData({
@@ -38,11 +42,29 @@ function edit({ onClose }) {
                 email: employeeData.email,
                 phoneNumber: employeeData.phone_number,
                 birthday: employeeData.birthday,
-                role: employeeData.role,
+                homeAddress: employeeData.home_address,
+                district: employeeData.district,
+                city: employeeData.city,
+                province: employeeData.province,
+                postalCode: employeeData.postal_code,
+                gender: employeeData.gender,
                 jobPosition: employeeData.job_position,
             });
         } catch (error) {
             console.error('Error fetching employee data:', error);
+        }
+    };
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        try {
+            const employeeId = sessionStorage.getItem('editEmployeeId');
+            await axios.post('https://ccmps-server-node.vercel.app/api/auth/edit-profilebasicinfo', { employee_id: employeeId, ...formData });
+            onClose(); // Close the modal after successful submission
+            toast.success('Successfully Changed');
+        } catch (error) {
+            console.error('Error editing employee information:', error);
+            // Handle error
         }
     };
 
@@ -77,19 +99,6 @@ function edit({ onClose }) {
         }
     };
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        try {
-            const employeeId = sessionStorage.getItem('editEmployeeId');
-            await axios.post('https://ccmps-server-node.vercel.app/api/auth/edit-basicinfo', { employee_id: employeeId, ...formData });
-            onClose(); // Close the modal after successful submission
-            toast.success('Successfully Changed');
-        } catch (error) {
-            console.error('Error editing employee information:', error);
-            // Handle error
-        }
-    };
-
     const convertFileToBase64 = (file) => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -104,18 +113,19 @@ function edit({ onClose }) {
         });
     };
 
+
     return (
         <>
             <div className="employee-modal-overlay">
                 <div className="employee-modal">
-                    <h2>Edit Employee</h2>
+                    <h2>Edit Basic Information</h2>
                     <span className='close' onClick={onClose} >&times;</span>
                     <form onSubmit={handleSubmit}>
                         <div className="employee-image">
                             <img src={formData.image} alt="image" style={{ width: '50px', height: '50px' }} />
                             <div className="employee-image-upload">
                                 <label htmlFor='image'>Upload Image:</label>
-                                <input type='file' id='image' name='image' accept='image/*' onChange={handleImageChange} />
+                                <input type='file' id='image' name='image' accept='image/*' onChange={handleChange} />
                             </div>
                         </div>
 
@@ -125,18 +135,8 @@ function edit({ onClose }) {
                         <label htmlFor='lastName'>Last Name:</label>
                         <input type='text' id='lastName' name='lastName' value={formData.lastName} onChange={handleChange} />
 
-                        <label htmlFor='email'>Email:</label>
-                        <input type='email' id='email' name='email' value={formData.email} onChange={handleChange} />
-
-                        <label htmlFor='birthday'>Birthday:</label>
-                        <input type='date' id='birthday' name='birthday' value={formData.birthday} onChange={handleChange} max={new Date().toISOString().split('T')[0]} />
-
-                        <label htmlFor='role'>Role</label>
-                        <select type="text" id='role' name='role' value={formData.role} onChange={handleChange} >
-                            <option value='Employee'>Employee</option>
-                            <option value='HR Coordinator'>HR Coordinator</option>
-                            <option value='HR Manager'>HR Manager</option>
-                        </select>
+                        <label htmlFor='jobPosition'>Job Position:</label>
+                        <input type='text' id='jobPosition' name='jobPosition' value={formData.jobPosition} onChange={handleChange} />
 
                         <label htmlFor='phoneNumber'>Phone Number</label>
                         <input
@@ -150,8 +150,33 @@ function edit({ onClose }) {
                             required
                         />
 
-                        <label htmlFor='jobPosition'>Job Position:</label>
-                        <input type='text' id='jobPosition' name='jobPosition' value={formData.jobPosition} onChange={handleChange} />
+                        <label htmlFor='email'>Email:</label>
+                        <input type='email' id='email' name='email' value={formData.email} onChange={handleChange} />
+
+                        <label htmlFor='birthday'>Birthday:</label>
+                        <input type='date' id='birthday' name='birthday' value={formData.birthday} onChange={handleChange} max={new Date().toISOString().split('T')[0]} />
+
+                        <label htmlFor='homeAddress'>Home Address:</label>
+                        <input type='text' id='homeAddress' name='homeAddress' value={formData.homeAddress} onChange={handleChange} />
+
+                        <label htmlFor='district'>District:</label>
+                        <input type='number' id='district' name='district' value={formData.district} onChange={handleChange} />
+
+                        <label htmlFor='city'>City:</label>
+                        <input type='text' id='city' name='city' value={formData.city} onChange={handleChange} />
+
+                        <label htmlFor='province'>Province:</label>
+                        <input type='text' id='province' name='province' value={formData.province} onChange={handleChange} />
+
+                        <label htmlFor='postalCode'>Postal Code:</label>
+                        <input type='number' id='postalCode' name='postalCode' value={formData.postalCode} onChange={handleChange} />
+
+                        <label htmlFor='gender'>Gender</label>
+                        <select type="text" id='gender' name='gender' value={formData.gender} onChange={handleChange} >
+                            <option value='Male'>Male</option>
+                            <option value='Female'>Female</option>
+                        </select>
+
                         <div className='savingbutton'>
                             <button className='save'>Save</button>
                             <button className='cancel' onClick={onClose}>Cancel</button>
@@ -163,4 +188,4 @@ function edit({ onClose }) {
     )
 }
 
-export default edit
+export default editbasicinfo

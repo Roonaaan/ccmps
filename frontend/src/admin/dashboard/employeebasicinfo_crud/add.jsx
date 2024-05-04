@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 
 import "../styles/EmployeeCrud.css";
@@ -17,7 +18,6 @@ function Add({ onClose }) {
         birthday: '',
         role: 'Employee',
         jobPosition: '',
-
     });
 
     useEffect(() => {
@@ -64,7 +64,7 @@ function Add({ onClose }) {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(formData) // Include jobPosition in formData
             });
 
             if (response.ok) {
@@ -89,7 +89,7 @@ function Add({ onClose }) {
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = () => {
-                const base64String = reader.result.split(',')[1];
+                const base64String = reader.result.split(',')[1]; s
                 resolve(base64String);
             };
             reader.onerror = (error) => {

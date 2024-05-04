@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -133,7 +132,7 @@ const Home = () => {
             <span className="icons">
               <FontAwesomeIcon icon={faChartLine} className="fa-icon" />
             </span>
-            Employee Promotion
+            Employee Appraisal
           </li>
           <li
             className={selectedItem === 3 ? "clicked" : ""}

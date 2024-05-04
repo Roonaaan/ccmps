@@ -5,26 +5,29 @@ import "../styles/EmployeeCrud.css";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-function edit({ onClose }) {
+function editpersonalinfo({ onClose }) {
     const [formData, setFormData] = useState({
-        jobPosition: '',
-        jobLevel: 'Entry-Level/Junior',
-        skills: '',
+        nationality: '',
+        civilStatus: 'Single',
+        skills: ''
     });
 
     useEffect(() => {
-        fetchEmployeeData();
+        const employeeId = sessionStorage.getItem('editEmployeeId');
+        console.log('Employee ID:', employeeId); // Log the employeeId
+        fetchEmployeeData(employeeId);
     }, []);
+
 
     const fetchEmployeeData = async () => {
         try {
             const employeeId = sessionStorage.getItem('editEmployeeId');
-            const response = await axios.get(`https://ccmps-server-node.vercel.app/api/auth/get-jobinfo/${employeeId}`);
+            const response = await axios.get(`https://ccmps-server-node.vercel.app/api/auth/get-profilepersonalinfo/${employeeId}`);
             const employeeData = response.data;
 
             setFormData({
-                jobPosition: employeeData.job_position,
-                jobLevel: employeeData.job_level,
+                nationality: employeeData.nationality,
+                civilStatus: employeeData.civil_status,
                 skills: employeeData.skills,
             });
         } catch (error) {
@@ -32,16 +35,11 @@ function edit({ onClose }) {
         }
     };
 
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-        setFormData({ ...formData, [name]: value });
-    };
-
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
             const employeeId = sessionStorage.getItem('editEmployeeId');
-            await axios.post('https://ccmps-server-node.vercel.app/api/auth/edit-jobinfo', { employee_id: employeeId, ...formData });
+            await axios.post('https://ccmps-server-node.vercel.app/api/auth/edit-profilepersonalinfo', { employee_id: employeeId, ...formData });
             onClose(); // Close the modal after successful submission
             toast.success('Successfully Changed');
         } catch (error) {
@@ -50,22 +48,25 @@ function edit({ onClose }) {
         }
     };
 
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        setFormData({ ...formData, [name]: value });
+    };
     return (
         <>
             <div className="employee-modal-overlay">
                 <div className="employee-modal">
-                    <h2>Edit Employee</h2>
+                    <h2>Edit Additional Information</h2>
                     <span className='close' onClick={onClose} >&times;</span>
                     <form onSubmit={handleSubmit}>
-                        <label htmlFor='jobPosition'>Job Position:</label>
-                        <input type='text' id='jobPosition' name='jobPosition' value={formData.jobPosition} onChange={handleChange} />
+                        <label htmlFor='nationality'>Nationality:</label>
+                        <input type='text' id='nationality' name='nationality' value={formData.nationality} onChange={handleChange} />
 
-                        <label htmlFor='jobLevel'>Job Level:</label>
-                        <select id='jobLevel' name='jobLevel' value={formData.jobLevel} onChange={handleChange}>
-                            <option value='Entry-Level/Junior'>Entry-Level/Junior</option>
-                            <option value='Mid-Level/Intermediate'>Mid-Level/Intermediate</option>
-                            <option value='Senior Level'>Senior Level</option>
-                            <option value='Executive/Leadership Level'>Executive/Leadership Level</option>
+                        <label htmlFor='civilStatus'>Civil Status:</label>
+                        <select type="text" id='civilStatus' name='civilStatus' value={formData.civilStatus} onChange={handleChange} >
+                            <option value='Single'>Single</option>
+                            <option value='Married'>Married</option>
+                            <option value='Divorced'>Divorced</option>
                         </select>
 
                         <label htmlFor='skills'>Skills:</label>
@@ -82,4 +83,4 @@ function edit({ onClose }) {
     )
 }
 
-export default edit
+export default editpersonalinfo
