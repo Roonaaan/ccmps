@@ -1338,12 +1338,122 @@ export const getProfilePersonalInfoById = async (req, res) => {
 
 // Add Edu Info
 // Edit Edu Info
+export const editEduInfo = async (req, res) => {
+    try {
+        const { employee_id, school, yearGraduated, gradeLevel, degree } = req.body;
+
+        // Update the employee information in the tblprofile table
+        const profileQuery = `
+            UPDATE tbleducbackground
+            SET 
+                school = $1,
+                year_graduated = $2,
+                grade_level = $3,
+                degree_course = $4
+            WHERE employee_id = $5
+        `;
+        const profileValues = [school, yearGraduated, gradeLevel, degree, employee_id];
+        await pool.query(profileQuery, profileValues);
+
+        res.status(200).json({ message: "Employee information updated successfully." });
+    } catch (error) {
+        console.error("Error updating employee information:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
 // Edit Edu Info Autofill
+export const getEduInfoById = async (req, res) => {
+    try {
+        const employeeId = req.params.editEmployeeId; // Assuming the employee ID is sent as a route parameter
+        // Construct the SQL query to select all education history records for the employee
+        const query = {
+            text: `SELECT 
+             id,
+             school,
+             year_graduated,
+             grade_level,
+             degree_course
+        FROM tbleducbackground WHERE employee_id = $1`,
+            values: [employeeId],
+        };
+        // Execute the SQL query
+        const result = await pool.query(query);
+        // Check if any rows were found
+        if (result.rows.length > 0) {
+            const educationHistory = result.rows;
+            // Send the education history data as JSON response
+            res.status(200).json(educationHistory);
+        } else {
+            // If no education history records with the specified employee ID are found, send a 404 error
+            res.status(404).json({ error: 'Education history not found for the employee' });
+        }
+    } catch (error) {
+        console.error('Error fetching education history data:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
 // Delete Edu Info
 
 // Add Job Info
 // Edit Job Info
+export const editJobInfo = async (req, res) => {
+    try {
+        const { employee_id, company, jobTitle, skills, companyAddress, startDate, endDate } = req.body;
+
+        // Update the employee information in the tblprofile table
+        const profileQuery = `
+            UPDATE tblworkhistory
+            SET 
+            company = $1,
+            job_title = $2,
+            skills = $3,
+            company_address = $4,
+            start_date = $5,
+            end_date = $6
+            WHERE employee_id = $7
+        `;
+        const profileValues = [company, jobTitle, skills, companyAddress, startDate, endDate, employee_id];
+        await pool.query(profileQuery, profileValues);
+
+        res.status(200).json({ message: "Employee information updated successfully." });
+    } catch (error) {
+        console.error("Error updating employee information:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
 // Edit Job Info Autofill
+export const getJobInfoById = async (req, res) => {
+    try {
+        const employeeId = req.params.editEmployeeId; // Assuming the employee ID is sent as a route parameter
+        // Construct the SQL query to select all education history records for the employee
+        const query = {
+            text: `SELECT 
+             id,
+             company,
+             job_title,
+             skills,
+             company_address,
+             start_date,
+             end_date
+        FROM tblworkhistory WHERE employee_id = $1`,
+            values: [employeeId],
+        };
+        // Execute the SQL query
+        const result = await pool.query(query);
+        // Check if any rows were found
+        if (result.rows.length > 0) {
+            const jobHistory = result.rows;
+            // Send the job history data as JSON response
+            res.status(200).json(jobHistory);
+        } else {
+            // If no education history records with the specified employee ID are found, send a 404 error
+            res.status(404).json({ error: 'Job history not found for the employee' });
+        }
+    } catch (error) {
+        console.error('Error fetching job history data:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
 // Delete Job Info
 
 // Employee Education History CRUD
