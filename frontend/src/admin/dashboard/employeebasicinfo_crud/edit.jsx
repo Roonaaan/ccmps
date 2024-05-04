@@ -84,11 +84,6 @@ function edit({ onClose }) {
         }
     };
 
-    const generatePassword = () => {
-        const randomPassword = Math.random().toString(36).slice(-8); // Generate random password
-        setFormData({ ...formData, accountPasswordPlain: randomPassword }); // Update form data with plain password
-    };
-
     return (
         <>
             <div className="employee-modal-overlay">

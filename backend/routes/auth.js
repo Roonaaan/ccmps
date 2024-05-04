@@ -5,12 +5,9 @@ import {
         saveJob, maxPhaseNumber, getQuestions, getAnswerStored,
         retrieveAnswer, savePhaseNumber, getPhaseNumber, adminLogin,
         employeeID, addBasicInfo, readBasicInfo, deleteBasicInfo,
-        editBasicInfo, readJobInfo, readAccountInfo, getBasicInfoById,
-        editJobInfo, getJobInfoById, deleteJobInfo, deleteAccountInfo,
-        getAccountInfoById, editAccountInfo, readPromotionInfo, addEduHistory, 
-        readEduHistory, editEduHistory, getEduHistoryById, deleteEduHistory, 
-        readJobHistory, addJobHistory, editJobHistory, getJobHistoryById, 
-        deleteJobHistory, getUserPromotionInfo, promoteUser, getAdminProfile, getCourse, readEmployeeProfile
+        editBasicInfo,getBasicInfoById, readPromotionInfo, getUserPromotionInfo, 
+        promoteUser, getAdminProfile, getCourse, readEmployeeProfile, getProfileBasicInfoById, 
+        editProfileBasicInfo, getProfilePersonalInfoById, editProfilePersonalInfo 
 } from "../controller/auth.js";
 
 const router = express.Router();
@@ -95,7 +92,19 @@ router.delete("/delete-basicinfo/:editEmployeeId", deleteBasicInfo);
 // Employee Profile Route
 // Read
 router.get("/read-employeeprofile/:editEmployeeId", readEmployeeProfile);
+// Edit Basic Info
+router.post("/edit-profilebasicinfo", editProfileBasicInfo);
+// Edit Basic Info Autofill
+router.get("/get-profilebasicinfo/:editEmployeeId", getProfileBasicInfoById);
 
+// Edit Personal Info
+router.post("/edit-profilepersonalinfo", editProfilePersonalInfo);
+// Edit Personal Info Autofill
+router.get("/get-profilepersonalinfo/:editEmployeeId", getProfilePersonalInfoById);
+
+
+
+{/*
 // Employee Education History Route
 // Create
 router.post("/add-educhistory", addEduHistory);
@@ -122,11 +131,8 @@ router.post("/delete-jobhistory", deleteJobHistory);
 // Read
 router.get("/read-jobinfo", readJobInfo);
 // Update
-router.post("/edit-jobinfo", editJobInfo);
-router.get("/get-jobinfo/:editEmployeeId", getJobInfoById);
 // Delete
 router.post("/delete-jobinfo", deleteJobInfo);
-
 // Employee Account Info CRUD
 // Read
 router.get("/read-accountinfo", readAccountInfo);
@@ -135,4 +141,5 @@ router.post("/edit-accountinfo", editAccountInfo);
 router.get("/get-accountinfo/:editEmployeeId", getAccountInfoById);
 // Delete
 router.post("/delete-accountinfo", deleteAccountInfo);
+*/}
 export default router;

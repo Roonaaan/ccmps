@@ -260,7 +260,9 @@ h2 {
 }
 
 .employee-profile-personalinfo-card h1 {
-  font-size: 15px;
+  display: flex;
+  font-size: 18px;
+  font-weight: 700;
   margin: 10px 0 0 10px;
 }
 
