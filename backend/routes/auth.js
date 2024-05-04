@@ -90,7 +90,7 @@ router.get("/read-basicinfo", readBasicInfo);
 router.post("/edit-basicinfo", editBasicInfo);
 router.get("/get-basicinfo/:editEmployeeId", getBasicInfoById);
 // Delete
-router.post("/delete-basicinfo", deleteBasicInfo);
+router.delete("/delete-basicinfo/:editEmployeeId", deleteBasicInfo);
 
 // Employee Profile Route
 // Read

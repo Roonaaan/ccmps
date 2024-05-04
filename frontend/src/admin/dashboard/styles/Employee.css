@@ -28,7 +28,6 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 0 60px 10px 60px;
 }
 
 .employee-table-add-button {
@@ -85,7 +84,6 @@ th {
 .employee-profile-card-parent {
   display: flex;
   position: relative;
-  justify-content: center;
 }
 
 .employee-profile-card-container {

@@ -82,7 +82,14 @@ function EmployeeDashboard() {
     setIsEditModalOpen(!isEditModalOpen);
   };
 
-  const handleDelete = async (employeeId) => {
+  const handleDelete = async () => {
+    const employeeId = sessionStorage.getItem('editEmployeeId');
+
+    if (!employeeId) {
+      console.error('Employee ID not found in session storage');
+      return;
+    }
+
     Swal.fire({
       title: "Are you sure?",
       text: "You will not be able to recover this employee data!",
@@ -94,9 +101,8 @@ function EmployeeDashboard() {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.post("http://localhost:8800/api/auth/delete-basicinfo", {
-            employeeId,
-          });
+          // Use the employeeId from session storage and construct the URL accordingly
+          await axios.delete(`http://localhost:8800/api/auth/delete-basicinfo/${employeeId}`);
           fetchEmployees();
           toast.success("Successfully Deleted");
         } catch (error) {
@@ -122,10 +128,12 @@ function EmployeeDashboard() {
     setFilteredEmployees(filtered);
   };
 
-  const toggleMenu = (index) => {
+  const toggleMenu = (index, employeeId) => {
     const updatedMenu = [...showMenu];
     updatedMenu[index] = !updatedMenu[index];
     setShowMenu(updatedMenu);
+    // Store the employeeId in session storage
+    sessionStorage.setItem("editEmployeeId", employeeId);
   };
 
   return (
@@ -164,9 +172,8 @@ function EmployeeDashboard() {
                     <div className="employee-table-button">
                       <button
                         className="employee-table-ellipsis-button"
-                        onClick={() => toggleMenu(index)}
+                        onClick={() => toggleMenu(index, employee.employee_id)}
                       >
-                        {" "}
                         <FontAwesomeIcon icon={faEllipsisV} />{" "}
                       </button>
                     </div>
@@ -180,7 +187,8 @@ function EmployeeDashboard() {
                           Edit</a>
                         <a onClick={handleDelete}>
                           <FontAwesomeIcon icon={faTrash} />
-                          Delete</a>
+                          Delete
+                        </a>
                       </div>
                     )}
                     <div className="image">

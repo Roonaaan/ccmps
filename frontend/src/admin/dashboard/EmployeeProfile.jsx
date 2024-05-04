@@ -142,7 +142,6 @@ function EmployeeProfile({ onClose }) {
                   <button><FontAwesomeIcon icon={faPencil} /></button>
                 </div>
                 <h3>Educational History:</h3>
-
                 {employeeData.educBackground.map((history, index) => (
                   <div key={index}>
                     <div className='edu-history'>

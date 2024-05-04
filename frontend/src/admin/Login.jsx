@@ -38,24 +38,42 @@ function Login() {
     };
 
     return (
-        <body>
-        <div className='wrapper'>
-        
-            <form action=''>
-                <h1> Admin Login </h1>
-                <div className='input-box'>
-                    <input type='text' placeholder='Email' required />
+        <div className="adminContainer">
+            <div className="adminPanel">
+                <div className="adminLogoPanel">
+                    <img src={Logo} alt="Logo" className="adminLogo" />
                 </div>
-
-                <div className='input-box'>
-                    <input type='password' placeholder='Password' required />
+                <div className="adminLoginPanel">
+                    <div className="adminLoginPanelHeader">
+                        <h1>Admin Login</h1>
+                    </div>
+                    <div className="adminLoginPanelInputs">
+                        <div className="adminLoginPanelInput">
+                            <input
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                            <label htmlFor="email">Email Address</label>
+                        </div>
+                        <div className="adminLoginPanelInput">
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                            <label htmlFor="password">Password</label>
+                        </div>
+                    </div>
+                    <div className="adminLoginPanelLogin">
+                        <button className="adminLoginButton" onClick={handleLogin}>
+                            Log In
+                        </button>
+                        {errorMessage && <p className="errorMessage">{errorMessage}</p>}
+                    </div>
                 </div>
-
-                <button type='submit'>Login</button>
-                
-            </form>
+            </div>
         </div>
-        </body>
     );
 }
 

@@ -189,13 +189,7 @@ const Recommend = () => {
                         <div className="recommendJobContainerSubtitle">
                             <p> Top 3 recommended job roles for you based on your profile </p>
                         </div>
-                        <div className="jobPercentageContainer">
-                            {recommendedJobs.map((job, index) => (
-                                <div key={index} className="jobPercentage">
-                                    <p>{index < 3 ? `${job.percentage}% Match` : ''}</p>
-                                </div>
-                            ))}
-                        </div>
+
                         <div className="recommendJobContainerSelection">
                             {loading ? ( // Render loader if loading state is true
                                 <TailSpin
@@ -219,7 +213,7 @@ const Recommend = () => {
                                         }}
                                     >
                                         <div>
-                                            <p className='job-title'>{job.title}</p>
+                                            <p className='job-title'>{job.title} ({job.percentage}% )</p>
                                         </div>
                                         {showDescriptions[`job${index + 1}`] && (
                                             <div>
