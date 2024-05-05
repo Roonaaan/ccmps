@@ -80,6 +80,15 @@ function edit({ onClose }) {
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
+            // Check if age is below 18
+            const dob = new Date(formData.birthday);
+            const today = new Date();
+            const age = today.getFullYear() - dob.getFullYear();
+            if (age < 18) {
+                toast.error('Age must be 18 or above');
+                return;
+            }
+
             const employeeId = sessionStorage.getItem('editEmployeeId');
             await axios.post('https://ccmps-server-node.vercel.app/api/auth/edit-basicinfo', { employee_id: employeeId, ...formData });
             onClose(); // Close the modal after successful submission
@@ -115,7 +124,7 @@ function edit({ onClose }) {
                             <img src={formData.image} alt="image" style={{ width: '50px', height: '50px' }} />
                             <div className="employee-image-upload">
                                 <label htmlFor='image'>Upload Image:</label>
-                                <input type='file' id='image' name='image' accept='image/*' onChange={handleImageChange} />
+                                <input type='file' id='image' name='image' accept='image/*' onChange={handleChange} />
                             </div>
                         </div>
 
