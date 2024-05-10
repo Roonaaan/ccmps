@@ -307,6 +307,8 @@ export const getUserDetails = async (req, res) => {
                     p.CIVIL_STATUS,
                     p.JOB_POSITION,
                     p.JOB_LEVEL,
+                    p.SKILLS,
+                    p.STATUS,
                     w.COMPANY,
                     w.JOB_TITLE,
                     w.COMPANY_ADDRESS,
@@ -345,6 +347,8 @@ export const getUserDetails = async (req, res) => {
                 civilStatus: result.rows[0].civil_status,
                 jobPosition: result.rows[0].job_position,
                 jobLevel: result.rows[0].job_level,
+                skills: result.rows[0].skills,
+                status: result.rows[0].status,
                 employmentHistory: [],
                 educationalHistory: [],
             };

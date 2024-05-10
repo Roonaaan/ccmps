@@ -4,17 +4,20 @@ import axios from 'axios';
 import "./styles/Profile.css"
 
 // Images
-import logo from "../assets/homepage/final-topright-logo.png";
+import logo from "../assets/homepage/final-topright-logo-light.png";
 import defaultImg from "../assets/signed-in/defaultImg.jpg"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEnvelope, faPhone } from '@fortawesome/free-solid-svg-icons'
+import { faEnvelope, faPhone, faGears } from '@fortawesome/free-solid-svg-icons'
+import Swal from 'sweetalert2';
 
 const Profile = () => {
-
   const [userProfile, setUserProfile] = useState({ employmentHistory: [], educationalHistory: [] });
   const [userImage, setUserImage] = useState('');
   const [userName, setUserName] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showBasicInfo, setShowBasicInfo] = useState(true);
+  const [showEmployment, setShowEmployment] = useState(false);
+  const [showEducation, setShowEducation] = useState(false);
   const navigate = useNavigate();
 
 
@@ -68,8 +71,19 @@ const Profile = () => {
 
   // Logout User
   const handleLogout = () => {
-    sessionStorage.removeItem('user');
-    navigate('/');
+    Swal.fire({
+      title: 'Are you sure you want to log out?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, log out',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        sessionStorage.removeItem('user');
+        navigate('/');
+        Swal.fire('Logged Out!', 'You have been logged out.', 'success');
+      }
+    });
   }
 
   // Return to Home Page
@@ -86,18 +100,7 @@ const Profile = () => {
   const DropdownModal = ({ logoutHandler }) => {
     return (
       <div className="dropdown-modal">
-        <div className="profile-info">
-          <img
-            src={userImage || defaultImg}
-            alt='profile'
-            className='profileImg'
-          />
-          <p className='username'>{userName}</p>
-        </div>
-        <ul>
-          <li><button onClick={handleProfileClick}> My Profile </button></li>
-          <li><button onClick={logoutHandler}> Log Out </button></li>
-        </ul>
+        <li><button onClick={logoutHandler}> Log Out </button></li>
       </div>
     );
   };
@@ -105,6 +108,21 @@ const Profile = () => {
   const toggleDropdown = () => {
     setShowDropdown(!showDropdown);
   }
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "Active":
+        return "green";
+      case "Suspended":
+      case "Terminated":
+      case "Inactive":
+        return "red";
+      case "On Leave":
+        return "blue";
+      default:
+        return "black";
+    }
+  };
 
   return (
     <>
@@ -114,171 +132,163 @@ const Profile = () => {
             <div className="navLogoContainer">
               <img src={logo} alt="logo" className="navLogo" onClick={handleHomeClick} />
             </div>
-            <div className="navProfile">
-              <img
-                src={userImage || defaultImg}
-                alt="profile"
-                className="profileImg"
-                onClick={toggleDropdown}
-              />
+            <div className='homeNavProfile'>
+              <div className="homeNavProfileButton">
+                <button onClick={handleProfileClick}> My Profile </button>
+              </div>
+              <div className="homeNavProfileUser">
+                <img
+                  src={userImage || defaultImg}
+                  alt='profile'
+                  className='profileImg'
+                  onClick={toggleDropdown}
+                />
+                <p>{userName}</p>
+              </div>
             </div>
           </div>
         </header>
 
-        <div className="profileInner">
-          {/* Employee Profile */}
-          <div className="profileEmpContainer">
-            <div className="profileEmpImage">
-              <img src={userImage || defaultImg} alt='profile' /> {/* IMAGE */}
-            </div>
-            <div className="profileEmpNameContainer">
-              <div className="profileEmpNameDetails">
-                <h1> {userProfile.firstName} {userProfile.lastName} </h1> {/* FIRST AND LAST NAME */}
-              </div>
-              <div className="profileEmpNameDetails">
-                <p> {userProfile.jobPosition} </p> {/* JOB_POSITION */}
-              </div>
-              <div className="profileEmpNameDetails">
-                <p1> Employee # {userProfile.employeeId} </p1> {/* EMPLOYEE_ID */}
-              </div>
-            </div>
-            <div className="underline" />
-            <div className="profileEmpDetailContainer">
-              <div className="profileEmpDetail">
-                <p><FontAwesomeIcon icon={faEnvelope} /> {userProfile.email} </p> {/* EMAIL */}
-              </div>
-              <div className="profileEmpDetail">
-                <p><FontAwesomeIcon icon={faPhone} /> {userProfile.phoneNumber} </p> {/* PHONE_NUMBER */}
+        <div className="profileContainer">
+          <div className="profileInnerContainer">
+            <div className="profileInnerEmpPanel">
+              <div className="profileInnerEmpPanelDetails">
+                <div className="profileEmpImage">
+                  <img src={userImage || defaultImg} alt="profile" />
+                </div>
+                <div className="profileEmpNameDetails">
+                  <div className="profileEmpInfo">
+                    <h1> {userProfile.firstName} {userProfile.lastName} </h1>
+                  </div>
+                  <div className="profileEmpInfo">
+                    <ul className='empInfo'>
+                      <li>
+                        <div className="empInfo-title">Role </div>
+                        :
+                        <div className="empInfo-text"> {userProfile.jobPosition} </div>
+                      </li>
+                      <li>
+                        <div className="empInfo-title">Employee ID </div>
+                        :
+                        <div className="empInfo-text"> {userProfile.employeeId} </div>
+                      </li>
+                      <li>
+                        <div className="empInfo-title">Status </div>
+                        :
+                        <div className="empInfo-text" style={{ color: getStatusColor(userProfile.status) }}> {userProfile.status} </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          {/* Employee Background */}
-          <div className="profileEmpBackgroundContainer">
-            <div className="profileEmpBackgroundPersonalInfoContainer">
-              <label htmlFor="personalInfo"> Personal Information </label>
-              <div className="profileEmpBackgroundPersonalInfo">
-                <div className="profileEmpPersonalInfo">
-                  <p> Age: </p> {/* AGE */}
-                  <p1> {userProfile.age} </p1>
-                </div>
-                <div className="profileEmpPersonalInfo">
-                  <p> Birthday: </p> {/* BIRTHDAY */}
-                  <p1> {userProfile.birthday ? formatDate(userProfile.birthday) : ''} </p1>
-                </div>
-                <div className="profileEmpPersonalInfo">
-                  <p> Gender: </p> {/* GENDER */}
-                  <p1> {userProfile.gender} </p1>
-                </div>
-                <div className="profileEmpPersonalInfo">
-                  <p> Nationality: </p> {/* NATIONALITY */}
-                  <p1> {userProfile.nationality} </p1>
-                </div>
-                <div className="profileEmpPersonalInfo">
-                  <p> Civil Status: </p> {/* CIVIL_STATUS */}
-                  <p1> {userProfile.civilStatus} </p1>
-                </div>
+
+          <div className="profileInnerContainer">
+            <div className="profileInnerBackgroundPanel">
+              <div className="profileButtons">
+                <button className={showBasicInfo ? 'activeButton' : ''} onClick={() => { setShowBasicInfo(true); setShowEmployment(false); setShowEducation(false); }}>Basic User Info</button>
+                <button className={showEmployment ? 'activeButton' : ''} onClick={() => { setShowBasicInfo(false); setShowEmployment(true); setShowEducation(false); }}>Previous Work Employment</button>
+                <button className={showEducation ? 'activeButton' : ''} onClick={() => { setShowBasicInfo(false); setShowEmployment(false); setShowEducation(true); }}>Education Background</button>
               </div>
-            </div>
-            {/* Employee Address */}
-            <div className="profileEmpBackgroundAddressContainer">
-              <label htmlFor="Address"> Address </label>
-              <div className="profileEmpBackgroundAddress">
-                <div className="profileEmpAddress">
-                  <p> Home Address: </p> {/* HOME_ADDRESS */}
-                  <p1> {userProfile.homeAddress} </p1>
-                </div>
-                <div className="profileEmpAddress">
-                  <p> District: </p> {/* DISTRICT */}
-                  <p1> {userProfile.district} </p1>
-                </div>
-                <div className="profileEmpAddress">
-                  <p> City: </p> {/* CITY */}
-                  <p1> {userProfile.city} </p1>
-                </div>
-                <div className="profileEmpAddress">
-                  <p> Province: </p> {/* PROVINCE */}
-                  <p1> {userProfile.province} </p1>
-                </div>
-                <div className="profileEmpAddress">
-                  <p> Postal Code: </p> {/* POSTAL_CODE */}
-                  <p1> {userProfile.postalCode} </p1>
-                </div>
-              </div>
-            </div>
-            {/* Employment History */}
-            <div className="profileEmpBackgroundEmploymentHistoryContainer">
-              <label htmlFor="empHistory"> Employment History </label>
-              <div className="profileEmpBackgroundEmploymentHistory">
-                {userProfile.employmentHistory &&
-                  userProfile.employmentHistory
-                    .filter(
-                      (job, index, self) =>
-                        index ===
-                        self.findIndex(
-                          (j) =>
-                            j.company === job.company &&
-                            j.jobTitle === job.jobTitle &&
-                            j.companyAddress === job.companyAddress &&
-                            j.startDate === job.startDate &&
-                            j.endDate === job.endDate
-                        )
-                    )
-                    .map((job, index) => (
-                      <div className="profileEmpHistory" key={index}>
-                        <div>
-                          <p> Company: </p> {/* COMPANY */}
-                          <p1> {job.company} </p1>
-                        </div>
-                        <div>
-                          <p> Job Title: </p> {/* JOB_TITLE */}
-                          <p1> {job.jobTitle} </p1>
-                        </div>
-                        <div>
-                          <p> Address: </p> {/* COMPANY_ADDRESS */}
-                          <p1> {job.companyAddress} </p1>
-                        </div>
-                        <div>
-                          <p> Start Date: </p> {/* START_DATE */}
-                          <p1> {job.startDate ? formatDate(job.startDate) : ''} </p1>
-                        </div>
-                        <div>
-                          <p> End Date: </p> {/* END_DATE */}
-                          <p1> {job.endDate ? formatDate(job.endDate) : ''} </p1>
-                        </div>
+              <div className="profileButtonUnderline" />
+              <div className="profileInnerBackgroundPanelDetails">
+                {showBasicInfo && (
+                  <div className="profileBackgroundDetails">
+                    <div className="profileBackgroundBasic">
+                      <label htmlFor="info"> User Info </label>
+                      <div className="profileBackgroundBasicInfo">
+                        <ul className='basicInfo'>
+                          <li>
+                            <div className="basicInfo-title">Email </div>
+                            :
+                            <div className="basicInfo-text"> {userProfile.email} </div>
+                          </li>
+                          <li>
+                            <div className="basicInfo-title">Phone Number </div>
+                            :
+                            <div className="basicInfo-text"> {userProfile.phoneNumber} </div>
+                          </li>
+                          <li>
+                            <div className="basicInfo-title">Skills </div>
+                            :
+                            <div className="basicInfo-text"> {userProfile.skills} </div>
+                          </li>
+                        </ul>
+                        <div class="profileButtonUnderline"></div>
+                        <ul className='basicInfo'>
+                          <li>
+                            <div className="basicInfo-title">Age </div>
+                            :
+                            <div className="basicInfo-text"> {userProfile.age} </div>
+                          </li>
+                          <li>
+                            <div className="basicInfo-title">Gender </div>
+                            :
+                            <div className="basicInfo-text"> {userProfile.gender} </div>
+                          </li>
+                          <li>
+                            <div className="basicInfo-title">Nationality </div>
+                            :
+                            <div className="basicInfo-text"> {userProfile.nationality} </div>
+                          </li>
+                          <li>
+                            <div className="basicInfo-title">Civil Status </div>
+                            :
+                            <div className="basicInfo-text"> {userProfile.civilStatus} </div>
+                          </li>
+                          <li>
+                            <div className="basicInfo-title">Address </div>
+                            :
+                            <div className="basicInfo-text"> {userProfile.homeAddress} District {userProfile.district}, {userProfile.city}. {userProfile.postalCode} {userProfile.province}</div>
+                          </li>
+                        </ul>
                       </div>
-                    ))}
-              </div>
-            </div>
-            {/* Educational Background */}
-            <div className="profileEmpBackgroundEmploymentHistoryContainer">
-              <label htmlFor="eduHistory"> Educational Background </label>
-              <div className="profileEmpBackgroundEmploymentHistory">
-                {userProfile.educationalHistory &&
-                  userProfile.educationalHistory
-                    // Filter out duplicate educational background records based on the school name
-                    .filter(
-                      (eduItem, index, self) =>
-                        index ===
-                        self.findIndex(
-                          (t) => t.school === eduItem.school && t.yearGraduated === eduItem.yearGraduated
-                        )
-                    )
-                    .map((eduItem, index) => (
-                      <div className="profileEmpHistory" key={index}>
-                        <div>
-                          <p> Grade/Level: </p>
-                          <p1> {eduItem.gradeLevel} </p1>
-                        </div>
-                        <div>
-                          <p> School: </p>
-                          <p1> {eduItem.school} </p1>
-                        </div>
-                        <div>
-                          <p> Year Graduated: </p>
-                          <p1> {eduItem.yearGraduated} </p1>
-                        </div>
+                    </div>
+                  </div>
+                )}
+                {showEmployment && (
+                  <div className="profileBackgroundDetails">
+                    <div className="profileBackgroundJob">
+                      <label htmlFor="info">Previous Employment Info</label>
+                      <div className="profileJobCardParent">
+                        {userProfile.employmentHistory.map((job, index) => (
+                          <div key={index} className="profileJobCardContainer">
+                            <div className="profileJobCard">
+                              <h1>{job.company}</h1>
+                              <div className="profileCardContent">
+                                <ul className='jobInfo'>
+                                  <li>
+                                    <div className="jobInfo-title">Address</div>:
+                                    <div className="jobInfo-text">{job.companyAddress}</div>
+                                  </li>
+                                  <li>
+                                    <div className="jobInfo-title">Job Title</div>:
+                                    <div className="jobInfo-text">{job.jobTitle}</div>
+                                  </li>
+                                  <li>
+                                    <div className="jobInfo-title">Start Date</div>:
+                                    <div className="jobInfo-text">{new Date(job.startDate).toLocaleDateString()}</div>
+                                  </li>
+                                  <li>
+                                    <div className="jobInfo-title">End Date</div>:
+                                    <div className="jobInfo-text">{new Date(job.endDate).toLocaleDateString()}</div>
+                                  </li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    </div>
+                  </div>
+                )}
+                {showEducation && (
+                  <div className="profileBackgroundDetails">
+                    {/* Render education background here */}
+                    <p>Education Background</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>

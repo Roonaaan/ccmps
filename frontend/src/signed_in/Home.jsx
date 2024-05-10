@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
+
+// Assets
 import "./styles/Home.css"
 import { TailSpin } from 'react-loader-spinner'
-
-// Images
-import logo from "../assets/homepage/final-topright-logo.png";
+import Swal from 'sweetalert2';
+import logo from "../assets/homepage/final-topright-logo-light.png";
 import defaultImg from "../assets/signed-in/defaultImg.jpg"
 
 const Home = () => {
@@ -35,7 +36,7 @@ const Home = () => {
         }
       } catch (error) {
         console.error('An error occurred', error);
-        
+
       }
     };
 
@@ -86,25 +87,25 @@ const Home = () => {
 
   // Logout User
   const handleLogout = () => {
-    sessionStorage.removeItem('user');
-    navigate('/');
+    Swal.fire({
+      title: 'Are you sure you want to log out?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, log out',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        sessionStorage.removeItem('user');
+        navigate('/');
+        Swal.fire('Logged Out!', 'You have been logged out.', 'success');
+      }
+    });
   }
 
   const DropdownModal = ({ logoutHandler }) => {
     return (
       <div className="dropdown-modal">
-        <div className="profile-info">
-          <img
-            src={userImage || defaultImg} // if the image is not captured, it will revert to the default image
-            alt='profile'
-            className='profileImg'
-          />
-          <p className='username'>{userName}</p>
-        </div>
-        <ul>
-          <li><button onClick={handleProfileClick}> My Profile </button></li>
-          <li><button onClick={logoutHandler}> Log Out </button></li>
-        </ul>
+        <li><button onClick={logoutHandler}> Log Out </button></li>
       </div>
     );
   };
@@ -131,48 +132,52 @@ const Home = () => {
             <div className='navLogoContainer'>
               <img src={logo} alt="logo" className="navLogo" />
             </div>
-
-            <div className='navProfile'>
-              <img
-                src={userImage || defaultImg}
-                alt='profile'
-                className='profileImg'
-                onClick={toggleDropdown}
-              />
+            <div className='homeNavProfile'>
+              <div className="homeNavProfileButton">
+                <button onClick={handleProfileClick}> My Profile </button>
+              </div>
+              <div className="homeNavProfileUser">
+                <img
+                  src={userImage || defaultImg}
+                  alt='profile'
+                  className='profileImg'
+                />
+                <p onClick={toggleDropdown}>{userName}</p>
+              </div>
             </div>
           </div>
-          
+
         </header>
-        
+
         <section className='createRoadmap'>
           <div className='headerText'>
             <p className='welcomeText'> Welcome to CareerCompass </p>
             <p className='clickText'>{hasSelectedJob ? 'Continue on your progress' : 'Click to create your own roadmap!'}</p>
           </div>
-          
+
           <div className='buttonContainer'>
-          {loading ? ( // Render loader if loading state is true
-                                <TailSpin
-                                    visible={true}
-                                    height="100"
-                                    width="100"
-                                    color="#27374D"
-                                    ariaLabel="tail-spin-loading"
-                                    radius="1"
-                                    animationDuration={2000}
-                                    wrapperStyle={{}}
-                                    wrapperClass=""
-                                />
-                            ) : (
-            <button
-              className='createButton'
-              onClick={handleRoadmapClick}
-            >{hasSelectedJob ? 'CONTINUE PROGRESS' : 'CREATE ROADMAP'}
-            </button>
-)}
+            {loading ? ( // Render loader if loading state is true
+              <TailSpin
+                visible={true}
+                height="100"
+                width="100"
+                color="#27374D"
+                ariaLabel="tail-spin-loading"
+                radius="1"
+                animationDuration={2000}
+                wrapperStyle={{}}
+                wrapperClass=""
+              />
+            ) : (
+              <button
+                className='createButton'
+                onClick={handleRoadmapClick}
+              >{hasSelectedJob ? 'CONTINUE PROGRESS' : 'CREATE ROADMAP'}
+              </button>
+            )}
           </div>
         </section>
-   {showDropdown && <DropdownModal logoutHandler={handleLogout} />}
+        {showDropdown && <DropdownModal logoutHandler={handleLogout} />}
       </div>
 
     </>

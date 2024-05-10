@@ -202,10 +202,6 @@ th {
   justify-content: center;
 }
 
-.employee-profile-basicinfo-image {
-  
-}
-
 .employee-profile-basicinfo-image img {
   height: 100;
   width: 120px;
@@ -238,10 +234,6 @@ h2 {
 .employee-profile-basicinfo-other {
   width: 400px;
   margin-left: 30px;
-}
-
-.basic-info{
-  
 }
 
 .basic-info-title {

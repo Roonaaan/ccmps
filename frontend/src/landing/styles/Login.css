@@ -1,5 +1,5 @@
-/* Modals */
-.modal {
+/* login-modals */
+.login-modal {
     display: block;
     position: fixed;
     z-index: 1;
@@ -11,11 +11,11 @@
     background-color: rgba(0, 0, 0, 0.4);
 }
 
-.modal-content {
-    background-color: #fefefe;
+.login-modal-content {
+    background-color: #27374D;
     margin: 22px auto;
     padding: 20px;
-    border: 1px solid #888;
+    border: 2px solid #2F4858;
     border-radius: 18px;
     width: 90%;
     height: 90%;
@@ -28,7 +28,7 @@
 }
 
 .close {
-    color: #aaa;
+    color: #DDE6ED;
     position: absolute;
     top: 10px;
     right: 10px;
@@ -40,7 +40,7 @@
 
 .close:hover,
 .close:focus {
-    color: black;
+    color: #DDE6ED;
     text-decoration: none;
 }
 
@@ -49,7 +49,7 @@
 }
 
 /* Main Container */
-.modalContainer {
+.login-modalContainer {
     display: flex;
     flex-direction: column;
     margin: auto;
@@ -73,6 +73,7 @@
     justify-content: center;
     margin-top: 10px;
     text-align: center;
+    color: #DDE6ED;
 }
 
 .logo {
@@ -91,7 +92,7 @@
 }
 
 .text {
-    color: #2F4858;
+    color: #DDE6ED;
     font-size: 30px;
     font-weight: 700;
 }
@@ -110,11 +111,11 @@
 
 .shakeError .input {
     animation: shake 0.5s ease-in-out;
-    border-color: red;
+    border-color: #86BBD8;
 }
 
 .shakeError .input label {
-    color: red !important; 
+    color: #86BBD8 !important; 
 }
 
 @keyframes shake {
@@ -134,7 +135,7 @@
     background: transparent;
     border-radius: 10px;
     position: relative;
-    border: 1px solid #27374D;
+    border: 1px solid #DDE6ED;
 }
 
 .input input {
@@ -143,7 +144,7 @@
     background: none;
     border: none;
     outline: none;
-    color: black;
+    color: #DDE6ED;
     font-size: 19px;
     margin-left: 22px;
     padding: 1px;
@@ -154,9 +155,9 @@
     position: absolute;
     top: 0;
     left: 0;
-    translate: 20px 19px;
+    translate: 20px 23px;
     color: #999;
-    background-color: white;
+    background-color: #27374D;
     border: 2px solid transparent;
     pointer-events: none;
     transition: translate 250ms,
@@ -167,8 +168,8 @@
 
 .input:focus-within label,
 .input:not(:has(:placeholder-shown)) label {
-    translate: 20px -14px;
-    color: black;
+    translate: 20px -11px;
+    color: #DDE6ED;
 }
 
 .input ::placeholder {
@@ -186,12 +187,12 @@
 
 .remember-me {
     margin-top: 20px;
-    color: #000;
     font-size: 18px;
 }
 
 .remember-me-text {
     font-size: 16px;
+    color: #DDE6ED;
 }
 
 .forgot-password {
@@ -217,6 +218,7 @@
     padding: 20px;
     font-size: 25px;
     display: flex;
+    color: #DDE6ED;
 }
 
 .show-password-button {
@@ -230,7 +232,7 @@
     align-items: center;
     justify-content: center;
     margin-top: 15px;
-    color: red;
+    color: #86BBD8;
 }
 
 .submit-container {
@@ -240,7 +242,7 @@
     align-items: center;
 }
 
-.submit {
+.loginSubmit {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -284,95 +286,9 @@
 
 .footer a {
     margin: 0 10px;
-    color: gray;
+    color: #DDE6ED;
 }
 
 .footer a:hover {
     color: #33658A;
-}
-
-/* Media Queries */
-@media (max-width: 991px) {
-    .container {
-        width: 40%;
-    }
-
-    .input {
-        width: 100%;
-    }
-
-    .input input {
-        width: calc(100% - 44px);
-    }
-
-    .password {
-        justify-content: space-between;
-    }
-
-    .submit {
-        width: 180px;
-    }
-
-    .error-message {
-        padding-left: 0;
-    }
-}
-
-@media (max-width: 779px) {
-    .container {
-        width: 45%;
-    }
-
-    .input {
-        width: 100%;
-    }
-
-    .password {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .error-message {
-        font-size: 15px;
-    }
-}
-
-@media (max-width: 766px) {
-    .container {
-        width: 55%;
-    }
-
-    .input {
-        width: 100%;
-    }
-
-    .password {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .error-message {
-        font-size: 15px;
-    }
-}
-
-@media (max-width: 600px) {
-    .container {
-        width: 55%;
-    }
-}
-
-@media (max-width: 460px) {
-    .password {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .no-account {
-        font-size: 15px;
-    }
-
-    .footer a {
-        font-size: 15px
-    }
 }

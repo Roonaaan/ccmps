@@ -7,7 +7,7 @@ import ForgotPassModal from './forgot-password/Forgotpass'
 import './styles/Login.css';
 
 // Image and Icons
-import Logo from '../assets/login/logo-dark.png';
+import Logo from '../assets/login/logo-light.png';
 import { FaLock, FaLockOpen } from 'react-icons/fa';
 
 export const Login = ({ onClose }) => {
@@ -69,7 +69,7 @@ export const Login = ({ onClose }) => {
                 sessionStorage.setItem('user', email);
                 {/* sessionStorage.setItem('token', response.data.token); */}
                 setSuccessMsg('Welcome');
-                setSuccessMsg(<span style={{ color: 'green' }}> Welcome </span>);
+                setSuccessMsg(<span style={{ color: '#DDE6ED' }}> Welcome </span>);
                 setTimeout(() => {
                     navigate('/Welcome');
                 }, 1000);
@@ -84,10 +84,10 @@ export const Login = ({ onClose }) => {
 
     return (
         <>
-            <div className="modal">
-                <div className="modal-content">
+            <div className="login-modal">
+                <div className="login-modal-content">
                     <span className="close" onClick={onClose}>&times;</span>
-                    <div className="modalContainer">
+                    <div className="login-modalContainer">
                         <div className='loginHeader'>
                             <img src={Logo} alt='Logo' className='logo' />
                         </div>
@@ -152,7 +152,7 @@ export const Login = ({ onClose }) => {
                         {successMsg && <div className="loginErrorMsg">{successMsg}</div>}
                         <div className='submit-container'>
                             <button
-                                className='submit'
+                                className='loginSubmit'
                                 onClick={() => {
                                     handleValidation();
                                     loginSubmit();

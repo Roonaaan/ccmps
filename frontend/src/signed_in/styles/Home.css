@@ -1,5 +1,5 @@
 .parent {
-  background: url(/src/assets/signed-in/bg-rdmp.jpg);
+  background: url(/src/assets/signed-in/bg-rdmp.png);
   background-repeat: no-repeat;
   background-size: cover;
 }
@@ -11,8 +11,6 @@
   width: auto;
   min-height: 70px;
   gap: 40em;
-
-
 }
 
 .navBarInner {
@@ -38,11 +36,11 @@
   margin-bottom: 12px;
 }
 
-.navProfile {
+.homeNavProfile {
   display: flex;
   align-items: center;
   height: 100%;
-  gap: 10px;
+  gap: 50px;
 }
 
 .profileImg {
@@ -52,9 +50,24 @@
   cursor: pointer;
 }
 
-.username {
-  color: #27374D;
+.homeNavProfile p {
+  color: #DDE6ED;
   font-size: 16px;
+  cursor: pointer;
+}
+
+.homeNavProfileUser {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.homeNavProfileButton button {
+  border: none;
+  background-color: transparent;
+  color: #DDE6ED;
+  font-size: 16px;
+  cursor: pointer;
 }
 
 /* ---------------------------------------- */
@@ -65,12 +78,9 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 721px;
+  height: 90.2vh;
   width: auto;
   gap: 1em;
-
-
-
 }
 
 .headerText {
@@ -84,13 +94,13 @@
 .welcomeText {
   font-size: 45px;
   font-weight: bold;
-  color: #27374D;
+  color: #DDE6ED;
 }
 
 .clickText {
   font-size: 21px;
   font-weight: 500;
-  color: #27374D;
+  color: #DDE6ED;
 }
 
 .buttonContainer {
