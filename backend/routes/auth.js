@@ -1,8 +1,8 @@
 import express from "express";
 import {
-        login, sendEmail, getUserProfile, getUserDetails,
-        sendResetEmail, resendResetEmail, getAssessment, getUserJob, 
-        saveJob, maxPhaseNumber, getQuestions, storeAnswer, savePhaseNumber, getPhaseNumber, adminLogin,
+        login, sendEmail, sendResetEmail, getUserProfile, getUserDetails,
+         resendResetEmail, getAssessment, getUserJob, 
+        saveJob, maxPhaseNumber, getQuestions, retryCount, storeAnswer, answerResult, savePhaseNumber, getPhaseNumber, adminLogin,
         employeeID, addBasicInfo, readBasicInfo, deleteBasicInfo,
         editBasicInfo,getBasicInfoById, readPromotionInfo, getUserPromotionInfo, 
         promoteUser, getAdminProfile, getCourse, readEmployeeProfile, getProfileBasicInfoById, 
@@ -46,16 +46,17 @@ router.get("/assessments", getAssessment);
 // Route for Courses
 router.get("/courses", getCourse);
 
+// Route for storing retry count
+router.post("/retry-count", retryCount);
+
 // Route for Q&A Assesment (question)
 router.get("/questions", getQuestions);
 
 // Route for storing answer
 router.post("/store-answer", storeAnswer);
 
-{/*
-// Route for retrieving answer
-router.get("/retrieve-answers", retrieveAnswer);
-*/}
+// Route for total score percentage
+router.get("/results", answerResult);
 
 // Route for storing answer
 router.post("/save-phase", savePhaseNumber);

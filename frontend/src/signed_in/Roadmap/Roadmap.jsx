@@ -32,20 +32,41 @@ const Roadmap = () => {
     setPhase(1);
     sessionStorage.setItem('phase', '1');
   }, []);
-
+ 
+  // Confirm To Assessment Page and Storing Retry count
   const confirmAssessment = async () => {
-    const confirmPrompt = await Swal.fire({ // Use Swal.fire instead of just Swal
-      title: "Confirmation",
-      text: "The next one will be an examination. The assessment will take 20 minutes. Would you like to proceed?",
-      icon: "info",
-      showCancelButton: true, // Add this to show Cancel button
-      confirmButtonText: "Proceed", // Specify confirm button text
+    const confirmPrompt = await Swal.fire({
+        title: "Confirmation",
+        text: "The next one will be an examination. The assessment will take 20 minutes. Would you like to proceed?",
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonText: "Proceed",
     });
 
-    if (confirmPrompt.isConfirmed) { 
-      navigate('/Roadmap/Assessment');
+    if (confirmPrompt.isConfirmed) {
+        // Retrieve user email and job position from session storage
+        const userEmail = sessionStorage.getItem('user');
+        const selectedJobTitle = sessionStorage.getItem('selectedJobTitle');
+
+        // Check if user email and job position are available
+        if (!userEmail || !selectedJobTitle) {
+            console.error("User email or job position not found in session storage");
+            return;
+        }
+
+        // Make API call to update retry count
+        const response = await fetch(`http://localhost:8800/api/auth/retry-count?email=${userEmail}&job=${encodeURIComponent(selectedJobTitle)}`, {
+            method: 'POST',
+        });
+
+        // Check if the API call was successful
+        if (response.ok) {
+            navigate('/Roadmap/Assessment');
+        } else {
+            console.error("Failed to update retry count");
+        }
     }
-  };
+};
 
   // Next Button
   const handleNextClick = async () => {

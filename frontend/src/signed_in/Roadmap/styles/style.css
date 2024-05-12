@@ -424,7 +424,8 @@
 
  
 /***************************** Assessment.JSX *****************************/
-.assessmentContainer {
+.assessmentContainer,
+.resultContainer {
   display: flex;
   justify-content: center;
   width: auto;
@@ -466,7 +467,7 @@
 }
 
 .assessmentQuestion p {
-  font-size: 20px;
+  font-size: 15px;
   font-weight: 600;
   margin-bottom: 10px;
 }
@@ -474,7 +475,7 @@
 .assessmentChoices {
   display: flex;
   flex-direction: column;
-  font-size: 18px;
+  font-size: 13px;
 }
 
 .assessmentSubmitButton button {
@@ -490,4 +491,67 @@
     padding-right: 20px;
     border: 1px solid #27374D;
     border-radius: 10px;
+}
+
+/***************************** Result.JSX *****************************/
+.resultContainerInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.resultInnerContainer {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-direction: row;
+  width: 800px;
+  height: 400px;
+  border: 2px solid #27374D;
+  border-radius: 20px;
+  margin-top: 20px;
+}
+
+.resultInnerGraph {
+  width: 300px;
+}
+
+.resultBreakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px
+}
+
+.resultBreakdown li {
+  display: flex;
+  flex-direction: row;
+}
+
+.resultTitle {
+  width: 120px;
+  margin-right: 10px;
+  color: #27374D;
+}
+
+.resultText {
+  margin-left: 20px;
+  text-align: right;
+}
+
+.resultButtons {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  gap: 20px;
+}
+
+.resultButtons button {
+  padding: 5px;
+  border: none;
+  background-color: transparent;
+  border: 2px solid #27374D;
+  border-radius: 7px;
+  cursor: pointer;
 }

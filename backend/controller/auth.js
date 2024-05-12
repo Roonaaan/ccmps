@@ -559,6 +559,69 @@ export const getCourse = async (req, res) => {
     }
 };
 
+// Retry Count Update
+export const retryCount = async (req, res) => {
+    try {
+        // Retrieve user email and job position from query parameters
+        const userEmail = req.query.email;
+        const selectedJobTitle = req.query.job;
+
+        // Check if user email and job position are provided
+        if (!userEmail || !selectedJobTitle) {
+            return res.status(400).json({ success: false, message: "User email and job position are required." });
+        }
+
+        // Update retry count for the user with the specified email and job position
+        let updateQuery;
+        let updateValues;
+
+        // Check if retries are null, then set to 1, else increment by 1
+        const checkQuery = `
+            SELECT retries
+            FROM tblprofile
+            WHERE email = $1 AND job_selected = $2
+        `;
+        const checkValues = [userEmail, selectedJobTitle];
+
+        const checkResult = await pool.query(checkQuery, checkValues);
+
+        if (checkResult.rows.length > 0) {
+            const retries = checkResult.rows[0].retries;
+            if (retries === null) {
+                updateQuery = `
+                    UPDATE tblprofile 
+                    SET retries = 1 
+                    WHERE email = $1 AND job_selected = $2
+                    RETURNING *
+                `;
+                updateValues = [userEmail, selectedJobTitle];
+            } else {
+                updateQuery = `
+                    UPDATE tblprofile 
+                    SET retries = retries + 1 
+                    WHERE email = $1 AND job_selected = $2
+                    RETURNING *
+                `;
+                updateValues = [userEmail, selectedJobTitle];
+            }
+        } else {
+            return res.status(404).json({ success: false, message: "User not found or job position not matched." });
+        }
+
+        const result = await pool.query(updateQuery, updateValues);
+
+        // Check if the update was successful
+        if (result.rowCount > 0) {
+            return res.status(200).json({ success: true, message: "Retry count updated successfully." });
+        } else {
+            return res.status(404).json({ success: false, message: "User not found or job position not matched." });
+        }
+    } catch (error) {
+        console.error("Error updating retry count:", error);
+        return res.status(500).json({ success: false, message: "Internal server error." });
+    }
+};
+
 // Store Answer
 export const storeAnswer = async (req, res) => {
     try {
@@ -583,35 +646,62 @@ export const storeAnswer = async (req, res) => {
     }
 };
 
-{/*
-// Retrieve Answer (Disabled)
-export const retrieveAnswer = async (req, res) => {
+// Calculate and Delete Answers (If Did Not Pass)
+export const answerResult = async (req, res) => {
     try {
-        const userEmail = req.query.email; // Retrieve user's email from request query
-        const client = await pool.connect();
-        const query = `
-            SELECT question, answer
-            FROM tblroadmap
-            WHERE email = $1
-        `;
-        const values = [userEmail];
-        const result = await client.query(query, values);
-        client.release();
-        if (result.rows.length > 0) {
-            const answers = result.rows.map(row => ({
-                question: row.question,
-                answer: row.answer
-            }));
-            res.status(200).json({ answers });
-        } else {
-            res.status(404).json({ message: "No answers found for the user." });
+        // Retrieve user email and job position from query parameters
+        const userEmail = req.query.email;
+        const selectedJobTitle = req.query.job;
+
+        // Check if user email and job position are provided
+        if (!userEmail || !selectedJobTitle) {
+            return res.status(400).json({ success: false, message: "User email and job position are required." });
         }
+
+        // Fetch the total count of assessments answered by the user for the selected job position
+        const totalCountQuery = `
+            SELECT COUNT(*) AS total_count
+            FROM tblappraisal
+            WHERE email = $1 AND position = $2
+        `;
+        const totalCountValues = [userEmail, selectedJobTitle];
+        const totalCountResult = await pool.query(totalCountQuery, totalCountValues);
+        const totalCount = totalCountResult.rows[0].total_count;
+
+        // Fetch the count of correct answers for the user for the selected job position
+        const correctCountQuery = `
+            SELECT COUNT(*) AS correct_count
+            FROM tblappraisal
+            WHERE email = $1 AND position = $2 AND result = 'correct'
+        `;
+        const correctCountValues = [userEmail, selectedJobTitle];
+        const correctCountResult = await pool.query(correctCountQuery, correctCountValues);
+        const correctCount = correctCountResult.rows[0].correct_count;
+
+        // Fetch the count of incorrect answers for the user for the selected job position
+        const incorrectCount = totalCount - correctCount;
+
+        // Calculate the percentage of correct answers
+        const percentage = (correctCount / totalCount) * 100;
+
+        // Round off the percentage to the nearest hundredth
+        const roundedPercentage = Math.round(percentage * 100) / 100;
+
+        // Determine if the user passed or failed
+        const result = percentage >= 80 ? 'Passed' : 'Failed';
+
+        return res.status(200).json({
+            success: true,
+            totalQuestions: totalCount,
+            totalCorrectPercentage: roundedPercentage,
+            totalIncorrectPercentage: 100 - roundedPercentage,
+            result: result
+        });
     } catch (error) {
-        console.error("Error retrieving answers:", error);
-        res.status(500).json({ message: "Internal server error." });
+        console.error("Error fetching answer result:", error);
+        return res.status(500).json({ success: false, message: "Internal server error." });
     }
 };
-*/}
 
 // Save Phase Number
 export const savePhaseNumber = async (req, res) => {

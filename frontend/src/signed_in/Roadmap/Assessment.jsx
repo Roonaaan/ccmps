@@ -16,6 +16,7 @@ const Assessment = () => {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [showDropdown, setShowDropdown] = useState(false);
     const [selectedAnswer, setSelectedAnswer] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
 
     // User Page Connection
@@ -120,15 +121,24 @@ const Assessment = () => {
     };
 
     const handleNextQuestion = () => {
-        setCurrentQuestionIndex(prevIndex => Math.min(prevIndex + 1, questions.length - 1));
+        if (currentQuestionIndex < questions.length - 1) {
+            setCurrentQuestionIndex(prevIndex => prevIndex + 1);
+        } else {
+            // Reset currentQuestionIndex after showing the final message
+            setCurrentQuestionIndex(0);
+        }
     };
 
     const handleOptionChange = (e) => {
         setSelectedAnswer(e.target.value);
     };
 
+    // Store Answer to the Database for later Calculation
     const checkAnswer = async () => {
         try {
+            // Disable the button to prevent multiple submissions
+            setIsSubmitting(true);
+
             const currentQuestion = questions[currentQuestionIndex];
             const correctAnswer = currentQuestion.correct_choice;
 
@@ -163,26 +173,33 @@ const Assessment = () => {
 
             if (response.ok) {
                 console.log("Answer stored successfully");
+
+                // Proceed to the next question
+                handleNextQuestion();
+
+                // Check if this is the last question
+                if (currentQuestionIndex === questions.length - 1) {
+                    // Show SweetAlert message
+                    Swal.fire({
+                        title: "You have completed the assessment",
+                        text: "Click the button below to view your score",
+                        icon: "success",
+                        showCancelButton: false,
+                        confirmButtonText: "View Results",
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            navigate('/Roadmap/Assessment/Result');
+                        }
+                    });
+                }
+
             } else {
                 console.error("Failed to store answer:", response.statusText);
             }
-
-            // Show the result using SweetAlert2
-            Swal.fire({
-                title: isCorrect ? 'Correct!' : 'Incorrect!',
-                text: isCorrect ? 'Your answer is correct.' : 'Your answer is incorrect.',
-                icon: isCorrect ? 'success' : 'error',
-                confirmButtonText: 'Next Question',
-                showCancelButton: false,
-                allowOutsideClick: false,
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Proceed to the next question
-                    handleNextQuestion();
-                }
-            });
         } catch (error) {
             console.error("Error storing answer:", error);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -234,7 +251,7 @@ const Assessment = () => {
                                 )}
                             </div>
                             <div className="assessmentSubmitButton">
-                                <button onClick={() => checkAnswer(selectedAnswer)} disabled={currentQuestionIndex === questions.length - 1}>
+                                <button onClick={() => checkAnswer(selectedAnswer)} disabled={isSubmitting}>
                                     Submit
                                 </button>
                             </div>
