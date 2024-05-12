@@ -19,6 +19,7 @@ import EmpProfile from "./signed_in/Profile";
 import Recommend from "./signed_in/Recommend/Recommend";
 import SelectDept from "./signed_in/Recommend/Selected";
 import Roadmap from "./signed_in/Roadmap/Roadmap";
+import Assessment from "./signed_in/Roadmap/Assessment";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
           <Route path="/Recommend" element={<Recommend />} />
           <Route path="/Select-Department" element={<SelectDept />} />
           <Route path="/Roadmap" element={<Roadmap />} />
+          <Route path="/Roadmap/Assessment" element={<Assessment />} />
 
           {/* Admin Page */}
           <Route path="/Admin" element={<AdminLogin />} />

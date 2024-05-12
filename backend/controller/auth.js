@@ -10,7 +10,7 @@ const pool = new pg.Pool({ // Use 'pg.Pool' instead of 'Pool'
     }
 });
 
-// User Side
+// User Side .......................................................................................
 // Login
 export const login = async (req, res) => {
     let client;
@@ -242,6 +242,8 @@ export const sendEmail = async (req, res) => {
         res.status(500).json({ message: 'An error occurred while sending the email' });
     }
 };
+
+// Logged In User Side .......................................................................................
 // User Page
 export const getUserProfile = async (req, res) => {
     const userEmail = req.query.email; // Retrieve user email from query parameters
@@ -492,21 +494,20 @@ export const getAssessment = async (req, res) => {
 // Question
 export const getQuestions = async (req, res) => {
     try {
-        // Retrieve the job title and phase from the query parameters
+        // Retrieve the job title from the query parameters
         const selectedJobTitle = req.query.job;
-        const phase = parseInt(req.query.phase);
 
-        if (!selectedJobTitle || isNaN(phase)) {
-            return res.status(400).json({ error: 'No job title or phase provided' });
+        if (!selectedJobTitle) {
+            return res.status(400).json({ error: 'No job title provided' });
         }
 
-        // Query the database for the assessment questions based on the job title and phase
+        // Query the database for the assessment questions based on the job title
         const client = await pool.connect();
-        const result = await client.query('SELECT description, question_number, a, b, c, d, correct_choice FROM tblassessment WHERE position = $1 AND phase = $2', [selectedJobTitle, phase]);
+        const result = await client.query('SELECT description, question_number, a, b, c, d, correct_choice FROM tblassessment WHERE position = $1', [selectedJobTitle]);
         client.release();
 
         if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'Assessment questions not found for the selected job and phase' });
+            return res.status(404).json({ error: 'Assessment questions not found for the selected job' });
         }
 
         // Handle potential missing data in a database row
@@ -559,43 +560,31 @@ export const getCourse = async (req, res) => {
 };
 
 // Store Answer
-export const getAnswerStored = async (req, res) => {
+export const storeAnswer = async (req, res) => {
     try {
-        // Extract data from the request body
-        const { email, position, phase, answers } = req.body;
+        // Extract necessary data from the request
+        const { email, position, question, answer, result } = req.body;
 
-        // Check if answers for this user, position, and phase already exist
-        const existingAnswers = await pool.query(
-            `SELECT COUNT(*) AS count FROM tblroadmap WHERE email = $1 AND position = $2 AND phase = $3`,
-            [email, position, phase]
-        );
-
-        // If answers already exist, return a message or handle as needed
-        if (existingAnswers.rows[0].count > 0) {
-            return res.status(400).json({ error: 'Answers for this user, position, and phase already exist' });
-        }
-
-        // Construct the SQL query
+        // Prepare the SQL query
         const query = `
-            INSERT INTO tblroadmap (email, position, phase, description, question, answer, result)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            INSERT INTO tblappraisal (email, position, question, answer, result)
+            VALUES ($1, $2, $3, $4, $5)
         `;
+        const values = [email, position, question, answer, result];
 
-        // Iterate through each answer and execute the SQL query for each one
-        for (const answer of answers) { // Use a different variable name here
-            await pool.query(query, [email, position, phase, answer.description, answer.question, answer.answer, answer.result]);
-        }
+        // Execute the SQL query
+        await pool.query(query, values);
 
-        // Send a success response
-        res.status(200).json({ message: 'Answers stored successfully' });
+        // Send response
+        res.status(200).json({ success: true, message: "Answer stored successfully" });
     } catch (error) {
-        // Log the error message for debugging
-        console.error('Error storing answers:', error);
-        res.status(500).json({ error: 'An error occurred while storing the answers' });
+        console.error("Error storing answer:", error);
+        res.status(500).json({ success: false, message: "Error storing answer" });
     }
 };
 
-// Retrieve Answer 
+{/*
+// Retrieve Answer (Disabled)
 export const retrieveAnswer = async (req, res) => {
     try {
         const userEmail = req.query.email; // Retrieve user's email from request query
@@ -622,6 +611,7 @@ export const retrieveAnswer = async (req, res) => {
         res.status(500).json({ message: "Internal server error." });
     }
 };
+*/}
 
 // Save Phase Number
 export const savePhaseNumber = async (req, res) => {
@@ -670,7 +660,7 @@ export const getPhaseNumber = async (req, res) => {
 
 // Select Jobs
 
-// Admin Side
+// Admin Side .......................................................................................
 // Admin Login
 export const adminLogin = async (req, res) => {
     let client;

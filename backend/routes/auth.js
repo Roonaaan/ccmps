@@ -2,8 +2,7 @@ import express from "express";
 import {
         login, sendEmail, getUserProfile, getUserDetails,
         sendResetEmail, resendResetEmail, getAssessment, getUserJob, 
-        saveJob, maxPhaseNumber, getQuestions, getAnswerStored,
-        retrieveAnswer, savePhaseNumber, getPhaseNumber, adminLogin,
+        saveJob, maxPhaseNumber, getQuestions, storeAnswer, savePhaseNumber, getPhaseNumber, adminLogin,
         employeeID, addBasicInfo, readBasicInfo, deleteBasicInfo,
         editBasicInfo,getBasicInfoById, readPromotionInfo, getUserPromotionInfo, 
         promoteUser, getAdminProfile, getCourse, readEmployeeProfile, getProfileBasicInfoById, 
@@ -51,10 +50,12 @@ router.get("/courses", getCourse);
 router.get("/questions", getQuestions);
 
 // Route for storing answer
-router.post("/answers", getAnswerStored);
+router.post("/store-answer", storeAnswer);
 
+{/*
 // Route for retrieving answer
 router.get("/retrieve-answers", retrieveAnswer);
+*/}
 
 // Route for storing answer
 router.post("/save-phase", savePhaseNumber);

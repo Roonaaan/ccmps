@@ -136,17 +136,16 @@ const Home = () => {
               <div className="homeNavProfileButton">
                 <button onClick={handleProfileClick}> My Profile </button>
               </div>
-              <div className="homeNavProfileUser">
+              <div className="homeNavProfileUser" onClick={toggleDropdown}>
                 <img
                   src={userImage || defaultImg}
                   alt='profile'
                   className='profileImg'
                 />
-                <p onClick={toggleDropdown}>{userName}</p>
+                <p>{userName}</p>
               </div>
             </div>
           </div>
-
         </header>
 
         <section className='createRoadmap'>

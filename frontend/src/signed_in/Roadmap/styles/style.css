@@ -366,37 +366,6 @@
   overflow: hidden;
 }
 
-.assessmentWrapper {
-  /* display: flex; */
-  /* margin: 0 auto; */
-  /* align-items: flex-start; */
-  /* flex-direction: column; */
-  /* width: 500px; */
-  height: 319px;
-  overflow: scroll;
-}
-
-.assessmentWrapper section {
-  width: 500px;
-}
-
-.assessmentWrapper li {
-  margin-top: 10px;
-}
-
-.assessmentWrapper h2 {
-  margin-top: 20px;
-}
-
-.assessmentWrapper p {
-  font-weight: 600;
-}
-
-.assessmentWrapper form {
-  display: flex;
-  flex-direction: column;
-}
-
 .videoWrapper iframe {
   width: 100%;
   height: 100%;
@@ -451,4 +420,74 @@
   color: rgb(77, 114, 178);
   text-decoration: none;
   font-size: 10px;
+}
+
+ 
+/***************************** Assessment.JSX *****************************/
+.assessmentContainer {
+  display: flex;
+  justify-content: center;
+  width: auto;
+  height: 90.2vh;
+}
+
+.assessmentContainerInner {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 60px;
+}
+
+.assessmentInnerQuestions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: column;
+  margin-top: 100px;
+}
+
+.assessmentQuestionsList {
+  display: flex;
+  align-items: center;
+  border: 2px solid #27374D;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  height: 200px;
+}
+
+.assessmentQuestion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin: 10px;
+  width: 50rem;
+  height: 9rem;
+}
+
+.assessmentQuestion p {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.assessmentChoices {
+  display: flex;
+  flex-direction: column;
+  font-size: 18px;
+}
+
+.assessmentSubmitButton button {
+  display: inline-block;
+    font-size: 18px;
+    font-weight: 600;
+    background-color: #33658A;
+    color: white;
+    cursor: pointer;
+    padding-top: 13px;
+    padding-bottom: 13px;
+    padding-left: 20px;
+    padding-right: 20px;
+    border: 1px solid #27374D;
+    border-radius: 10px;
 }
