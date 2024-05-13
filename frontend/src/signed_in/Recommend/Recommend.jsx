@@ -3,10 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import './styles/recommend.css';
 
 // Images
-import logo from "../../assets/homepage/final-topright-logo.png";
+import logo from "../../assets/homepage/final-topright-logo-light.png";
 import defaultImg from "../../assets/signed-in/defaultImg.jpg";
 import { TailSpin } from 'react-loader-spinner'
-
 
 const Recommend = () => {
     const [userImage, setUserImage] = useState('');
@@ -73,8 +72,19 @@ const Recommend = () => {
 
     // Logout User
     const handleLogout = () => {
-        sessionStorage.removeItem('user');
-        navigate('/');
+        Swal.fire({
+            title: 'Are you sure you want to log out?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, log out',
+            cancelButtonText: 'Cancel',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                sessionStorage.removeItem('user');
+                navigate('/');
+                Swal.fire('Logged Out!', 'You have been logged out.', 'success');
+            }
+        });
     }
 
     // Return to Home Page
@@ -82,24 +92,7 @@ const Recommend = () => {
         navigate('/Welcome')
     }
 
-    const DropdownModal = ({ logoutHandler }) => {
-        return (
-            <div className="dropdown-modal">
-                <div className="profile-info">
-                    <img
-                        src={userImage || defaultImg}
-                        alt='profile'
-                        className='profileImg'
-                    />
-                    <p className='username'>{userName}</p>
-                </div>
-                <ul>
-                    <li><button onClick={handleProfileClick}> My Profile </button></li>
-                    <li><button onClick={logoutHandler}> Log Out </button></li>
-                </ul>
-            </div>
-        );
-    };
+
 
     const toggleDropdown = () => {
         setShowDropdown(!showDropdown);
@@ -121,6 +114,14 @@ const Recommend = () => {
         // Store the title of the selected job in session storage
         sessionStorage.setItem('selectedJobTitle', job.title);
     }
+
+    const DropdownModal = ({ logoutHandler }) => {
+        return (
+            <div className="dropdown-modal">
+                <li><button onClick={logoutHandler}> Log Out </button></li>
+            </div>
+        );
+    };
 
     // Retrieve the stored job object on component mount
     useEffect(() => {
@@ -165,22 +166,26 @@ const Recommend = () => {
     return (
         <>
             <div className="recommendContainer">
-                <header className="navBar">
-                    <div className="navBarInner">
-                        <div className="navLogoContainer">
+                <header className='navBar'>
+                    <div className='navBarInner'>
+                        <div className='navLogoContainer'>
                             <img src={logo} alt="logo" className="navLogo" onClick={handleHomeClick} />
                         </div>
-                        <div className="navProfile">
-                            <img
-                                src={userImage || defaultImg}
-                                alt="profile"
-                                className="profileImg"
-                                onClick={toggleDropdown}
-                            />
+                        <div className='homeNavProfile'>
+                            <div className="homeNavProfileButton">
+                                <button onClick={handleProfileClick}> My Profile </button>
+                            </div>
+                            <div className="homeNavProfileUser" onClick={toggleDropdown}>
+                                <img
+                                    src={userImage || defaultImg}
+                                    alt='profile'
+                                    className='profileImg'
+                                />
+                                <p>{userName}</p>
+                            </div>
                         </div>
                     </div>
                 </header>
-
                 <div className="recommendJobContainer">
                     <div className="recommendJobContainerInner">
                         <div className="recommendJobContainerHeader">
