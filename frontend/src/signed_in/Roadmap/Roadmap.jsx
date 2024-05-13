@@ -84,23 +84,6 @@ const Roadmap = () => {
     }
   };
 
-  // Previous Button
-  const handlePrevClick = async () => {
-    // Move to the previous phase
-    if (phase > 1) {
-      const prevPhase = phase - 1;
-      setPhase(prevPhase);
-      sessionStorage.setItem('phase', prevPhase.toString());
-      await savePhaseNumber(userEmail, prevPhase); // Save phase number to the database
-      // Filter out questions for the previous phase
-      const filteredQuestions = questions.filter(question => question.phase === prevPhase);
-      setQuestions(filteredQuestions);
-      // Enable the previous button
-      setPrevButtonDisabled(false);
-      sessionStorage.setItem('prevButtonDisabled', 'false'); // Store the state in sessionStorage
-    }
-  };
-
   useEffect(() => {
     return () => {
       sessionStorage.removeItem('prevButtonDisabled');
@@ -432,14 +415,6 @@ const Roadmap = () => {
 
       {/* Buttons */}
       <div className="button-section-footer">
-        <button
-          className="prev-button-footer"
-          onClick={handlePrevClick}
-          disabled={phase === 1 || prevButtonDisabled}
-          style={{ opacity: phase === 1 || prevButtonDisabled ? 0.5 : 1 }}
-        >
-          PREV PHASE
-        </button>
         <button
           className="next-button-footer"
           onClick={handleNextClick}

@@ -703,6 +703,42 @@ export const answerResult = async (req, res) => {
     }
 };
 
+// Retry Roadmap Assessment
+export const retryAssessment = async (req, res) => {
+    try {
+        // Retrieve user email and job position from query parameters
+        const userEmail = req.query.email;
+        const selectedJobTitle = req.query.job;
+
+        // Check if user email and job position are provided
+        if (!userEmail || !selectedJobTitle) {
+            return res.status(400).json({ success: false, message: "User email and job position are required." });
+        }
+
+        // Delete assessment data for the user for the selected job position
+        const deleteQuery = `
+            DELETE FROM tblappraisal
+            WHERE email = $1 AND position = $2
+        `;
+        const deleteValues = [userEmail, selectedJobTitle];
+        await pool.query(deleteQuery, deleteValues);
+
+        // Update current_phase column on tblprofile to 1 for the user
+        const updateQuery = `
+            UPDATE tblprofile
+            SET current_phase = 1
+            WHERE email = $1
+        `;
+        const updateValues = [userEmail];
+        await pool.query(updateQuery, updateValues);
+
+        return res.status(200).json({ success: true, message: "Assessment data deleted and current phase updated successfully." });
+    } catch (error) {
+        console.error("Error retrying assessment:", error);
+        return res.status(500).json({ success: false, message: "Internal server error." });
+    }
+};
+
 // Save Phase Number
 export const savePhaseNumber = async (req, res) => {
     try {
@@ -866,108 +902,6 @@ export const employeeID = async (req, res) => { // Auto Employee ID
         res.status(500).json({ error: 'Internal server error' });
     }
 };
-
-// Employee Promotion
-// Read
-export const readPromotionInfo = async (req, res) => {
-    try {
-        const client = await pool.connect();
-        const result = await client.query(`
-        SELECT 
-        p.employee_id, 
-        p.firstname, 
-        p.lastname, 
-        p.email, 
-        r.position,
-        (SELECT COUNT(result) FROM tblroadmap WHERE email = p.email AND position = r.position AND result = 'correct') AS score,
-        (SELECT COUNT(question) FROM tblroadmap WHERE email = p.email AND position = r.position) AS total_questions
-    FROM 
-        tblprofile p
-    JOIN 
-        tblroadmap r ON p.employee_id = p.employee_id
-    GROUP BY 
-        p.employee_id, p.firstname, p.lastname, p.email, r.position;
-        `);
-        const employees = result.rows;
-        client.release();
-        res.status(200).json(employees);
-    } catch (err) {
-        console.error('Error executing query', err);
-        res.status(500).send('Internal Server Error');
-    }
-};
-// Promotion
-export const getUserPromotionInfo = async (req, res) => {
-    const employeeId = req.params.editEmployeeId;
-
-    try {
-        // Fetch user profile data and calculate score
-        const query = `
-        SELECT 
-            p.employee_id,
-            p.firstname,
-            p.lastname,
-            p.job_position,
-            p.job_selected,
-            p.image,
-            p.current_phase, 
-            ROUND(CAST(SUM(CASE WHEN r.result = 'correct' THEN 1 ELSE 0 END) AS NUMERIC) / COUNT(r.question) * 100, 2) AS score
-        FROM 
-            tblprofile p
-        INNER JOIN 
-            tblroadmap r ON p.employee_id = p.employee_id
-        WHERE 
-            p.employee_id = $1
-        GROUP BY 
-            p.employee_id, p.firstname, p.lastname, p.job_position, p.job_selected, p.image, p.current_phase;
-        `;
-        const result = await pool.query(query, [employeeId]);
-
-        if (result.rows.length === 0) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        const userData = result.rows[0];
-        const score = parseFloat(userData.score);
-
-        // Determine promotion eligibility
-        const promotionStatus = score >= 80 ? "Eligible for Promotion" : "Not Eligible for Promotion";
-
-        res.status(200).json({ userData, promotionStatus });
-    } catch (error) {
-        console.error("Error fetching user promotion info:", error);
-        res.status(500).json({ message: "Internal server error" });
-    }
-};
-
-export const promoteUser = async (req, res) => {
-    try {
-        // Retrieve the employee_id from the request parameters
-        const employeeId = req.params.editEmployeeId;
-        console.log('Employee ID:', employeeId); // Log the employeeId to check its value
-
-        // Fetch the job_selected and current_phase from tblprofile based on employee_id
-        const profileQuery = `SELECT job_selected, current_phase FROM tblprofile WHERE employee_id = $1`;
-        const profileResult = await pool.query(profileQuery, [employeeId]);
-
-        if (profileResult.rows.length === 0) {
-            // Handle case where no rows are returned for the given employee_id
-            return res.status(404).json({ error: "Employee not found." });
-        }
-
-        const { job_selected, current_phase } = profileResult.rows[0];
-
-        // Update job_position with job_selected and delete job_selected and current_phase
-        const updateQuery = `UPDATE tblprofile SET job_position = $1, job_selected = NULL, current_phase = NULL WHERE employee_id = $2`;
-        await pool.query(updateQuery, [job_selected, employeeId]);
-
-        res.status(200).json({ message: "User promoted successfully." });
-    } catch (error) {
-        console.error("Error promoting user:", error);
-        res.status(500).json({ error: "An error occurred while promoting the user." });
-    }
-};
-
 
 // Employee Dashboard Info CRUD
 // Create
@@ -1422,6 +1356,7 @@ export const getProfilePersonalInfoById = async (req, res) => {
     }
 };
 
+{/* Disabled Since On Progress
 // Add Edu Info
 // Edit Edu Info
 export const editEduInfo = async (req, res) => {
@@ -1945,7 +1880,6 @@ export const getJobInfoById = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
-*/}
 // Delete
 export const deleteJobInfo = async (req, res) => {
     const employeeId = req.body.employeeId; // Retrieve employee ID from request body
@@ -2094,3 +2028,4 @@ export const deleteAccountInfo = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+*/}

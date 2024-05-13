@@ -17,7 +17,29 @@ const Assessment = () => {
     const [showDropdown, setShowDropdown] = useState(false);
     const [selectedAnswer, setSelectedAnswer] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [remainingTime, setRemainingTime] = useState(1200); // 20 minutes
     const navigate = useNavigate();
+
+    // Timer
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setRemainingTime(prevTime => prevTime - 1);
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, []);
+
+    useEffect(() => {
+        if (remainingTime === 0) {
+            navigate('/Roadmap');
+        }
+    }, [remainingTime, navigate]);
+
+    const formatTime = (time) => {
+        const minutes = Math.floor(time / 60);
+        const seconds = time % 60;
+        return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    };
 
     // User Page Connection
     useEffect(() => {
@@ -230,6 +252,9 @@ const Assessment = () => {
                     <div className="assessmentContainerInner">
                         <h1>{sessionStorage.getItem('selectedJobTitle')} Assessment</h1>
                         <div className="assessmentInnerQuestions">
+                            <div className="timer">
+                                Time Remaining: {formatTime(remainingTime)}
+                            </div>
                             <div className="assessmentQuestionsList">
                                 {questions.length > 0 && (
                                     <div className="assessmentQuestion" key={currentQuestionIndex}>

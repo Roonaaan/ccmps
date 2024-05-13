@@ -2,12 +2,11 @@ import express from "express";
 import {
         login, sendEmail, sendResetEmail, getUserProfile, getUserDetails,
          resendResetEmail, getAssessment, getUserJob, 
-        saveJob, maxPhaseNumber, getQuestions, retryCount, storeAnswer, answerResult, savePhaseNumber, getPhaseNumber, adminLogin,
+        saveJob, maxPhaseNumber, getQuestions, retryCount, storeAnswer, answerResult, retryAssessment, 
+        savePhaseNumber, getPhaseNumber, adminLogin,
         employeeID, addBasicInfo, readBasicInfo, deleteBasicInfo,
-        editBasicInfo,getBasicInfoById, readPromotionInfo, getUserPromotionInfo, 
-        promoteUser, getAdminProfile, getCourse, readEmployeeProfile, getProfileBasicInfoById, 
-        editProfileBasicInfo, getProfilePersonalInfoById, editProfilePersonalInfo, getEduInfoById,
-        editEduInfo, getJobInfoById
+        editBasicInfo,getBasicInfoById, getAdminProfile, getCourse, readEmployeeProfile, getProfileBasicInfoById, 
+        editProfileBasicInfo, getProfilePersonalInfoById, editProfilePersonalInfo
 } from "../controller/auth.js";
 
 const router = express.Router();
@@ -59,6 +58,9 @@ router.post("/store-answer", storeAnswer);
 router.get("/results", answerResult);
 
 // Route for storing answer
+router.post("/retry-assessment", retryAssessment);
+
+// Route for storing answer
 router.post("/save-phase", savePhaseNumber);
 
 // Route for retrieving answer
@@ -73,13 +75,6 @@ router.get("/admin-profile", getAdminProfile);
 
 // Route for Auto Employee ID
 router.get("/employeeid", employeeID);
-
-// Employee Promotion Routes
-// Read
-router.get("/read-promotioninfo", readPromotionInfo);
-// Promote
-router.get("/get-userpromotioninfo/:editEmployeeId", getUserPromotionInfo);
-router.post("/promoteuser/:editEmployeeId", promoteUser);
 
 // Employee Dashboard Info CRUD Routes
 // Create
@@ -105,6 +100,7 @@ router.post("/edit-profilepersonalinfo", editProfilePersonalInfo);
 // Edit Personal Info Autofill
 router.get("/get-profilepersonalinfo/:editEmployeeId", getProfilePersonalInfoById);
 
+{/* Disabled Since On Progress
 // Route for Add Edu Info
 // Route for Edit Edu Info
 router.post("/edit-profileeduinfo/:editEmployeeId", editEduInfo);
@@ -119,7 +115,7 @@ router.post("/edit-profilejobinfo/:editEmployeeId", editEduInfo);
 router.get("/get-profilejobinfo/:editEmployeeId", getJobInfoById);
 // Route for Delete Job Info
 
-{/*
+
 // Employee Education History Route
 // Create
 router.post("/add-educhistory", addEduHistory);

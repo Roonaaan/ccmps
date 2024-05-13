@@ -70,6 +70,26 @@ export const Result = () => {
     fetchResult();
   }, []);
 
+  // Retry Assessment if user failed
+  const handleRetryAssessment = async () => {
+    try {
+      const userEmail = sessionStorage.getItem('user');
+      const selectedJobTitle = sessionStorage.getItem('selectedJobTitle');
+      const response = await fetch(`http://localhost:8800/api/auth/retry-assessment?email=${userEmail}&job=${encodeURIComponent(selectedJobTitle)}`, {
+        method: 'POST',
+      });
+      const data = await response.json();
+      if (data.success) {
+        // Navigate back to '/Roadmap' if retry is successful
+        navigate('/Roadmap');
+      } else {
+        console.error('Failed to retry assessment');
+      }
+    } catch (error) {
+      console.error('An error occurred while retrying assessment:', error);
+    }
+  };
+
   const data = {
     labels: ['Correct', 'Incorrect'],
     datasets: [
@@ -86,7 +106,7 @@ export const Result = () => {
       }
     ]
   };
-  
+
 
   const handleHomeClick = () => {
     navigate('/Welcome')
@@ -182,7 +202,7 @@ export const Result = () => {
                   </ul>
                 </div>
                 <div className="resultButtons">
-                  <button> Try Again </button>
+                  <button onClick={handleRetryAssessment}> Try Again </button>
                   <button disabled={result === "Failed"} style={{ opacity: result === "Failed" ? 0.5 : 1 }}> Proceed</button>
                 </div>
               </div>
