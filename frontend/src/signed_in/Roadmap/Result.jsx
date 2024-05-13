@@ -75,6 +75,20 @@ export const Result = () => {
     try {
       const userEmail = sessionStorage.getItem('user');
       const selectedJobTitle = sessionStorage.getItem('selectedJobTitle');
+      if (result === "Passed") {
+        // Display SweetAlert message if the result is "Passed"
+        const confirmation = await Swal.fire({
+          title: 'Do you still want to try again?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, try again',
+          cancelButtonText: 'No, cancel'
+        });
+        if (!confirmation.isConfirmed) {
+          return; // Cancel retry if user clicks "Cancel"
+        }
+      }
+      // Retry assessment
       const response = await fetch(`http://localhost:8800/api/auth/retry-assessment?email=${userEmail}&job=${encodeURIComponent(selectedJobTitle)}`, {
         method: 'POST',
       });
@@ -87,6 +101,35 @@ export const Result = () => {
       }
     } catch (error) {
       console.error('An error occurred while retrying assessment:', error);
+    }
+  };
+
+  // Proceed if Failed
+  const handleProceedAssessment = async () => {
+    try {
+      const userEmail = sessionStorage.getItem('user');
+      const selectedJobTitle = sessionStorage.getItem('selectedJobTitle');
+      const response = await fetch(`http://localhost:8800/api/auth/proceed-assessment?email=${userEmail}&job=${encodeURIComponent(selectedJobTitle)}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ scorePercentage: totalCorrectPercentage })
+      });
+      const data = await response.json();
+      if (data.success) {
+        Swal.fire({
+          title: 'Your score is now being reviewed.',
+          text: 'Please wait for at least 2-3 business days.',
+          icon: 'success',
+        }).then(() => {
+          navigate('/Welcome');
+        });
+      } else {
+        // Handle failure message if needed
+      }
+    } catch (error) {
+      console.error('An error occurred while proceeding assessment:', error);
     }
   };
 
@@ -203,7 +246,7 @@ export const Result = () => {
                 </div>
                 <div className="resultButtons">
                   <button onClick={handleRetryAssessment}> Try Again </button>
-                  <button disabled={result === "Failed"} style={{ opacity: result === "Failed" ? 0.5 : 1 }}> Proceed</button>
+                  <button onClick={handleProceedAssessment} disabled={result === "Failed"} style={{ opacity: result === "Failed" ? 0.5 : 1 }}> Proceed</button>
                 </div>
               </div>
             </div>

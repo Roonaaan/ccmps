@@ -739,6 +739,34 @@ export const retryAssessment = async (req, res) => {
     }
 };
 
+// Proceed Assessment
+export const proceedAssessment = async (req, res) => {
+    try {
+        const userEmail = req.query.email;
+        const selectedJobTitle = req.query.job;
+
+        // Check if email and job title are provided
+        if (!userEmail || !selectedJobTitle) {
+            return res.status(400).json({ success: false, message: "User email and job position are required." });
+        }
+
+        // Update the score percentage of the total correct answer percentage in tblprofile
+        const updateScoreQuery = `
+        UPDATE tblprofile
+        SET score = $1
+        WHERE email = $2 AND job_selected = $3
+      `;
+        const scorePercentage = req.body.scorePercentage; // Assuming the score percentage is provided in the request body
+        const updateScoreValues = [scorePercentage, userEmail, selectedJobTitle];
+        await pool.query(updateScoreQuery, updateScoreValues);
+
+        return res.status(200).json({ success: true, message: "Score percentage updated successfully." });
+    } catch (error) {
+        console.error("Error updating score percentage:", error);
+        return res.status(500).json({ success: false, message: "Internal server error." });
+    }
+};
+
 // Save Phase Number
 export const savePhaseNumber = async (req, res) => {
     try {

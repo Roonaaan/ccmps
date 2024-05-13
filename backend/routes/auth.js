@@ -2,7 +2,7 @@ import express from "express";
 import {
         login, sendEmail, sendResetEmail, getUserProfile, getUserDetails,
          resendResetEmail, getAssessment, getUserJob, 
-        saveJob, maxPhaseNumber, getQuestions, retryCount, storeAnswer, answerResult, retryAssessment, 
+        saveJob, maxPhaseNumber, getQuestions, retryCount, storeAnswer, answerResult, retryAssessment, proceedAssessment,
         savePhaseNumber, getPhaseNumber, adminLogin,
         employeeID, addBasicInfo, readBasicInfo, deleteBasicInfo,
         editBasicInfo,getBasicInfoById, getAdminProfile, getCourse, readEmployeeProfile, getProfileBasicInfoById, 
@@ -57,8 +57,11 @@ router.post("/store-answer", storeAnswer);
 // Route for total score percentage
 router.get("/results", answerResult);
 
-// Route for storing answer
+// Route for retrying assessment
 router.post("/retry-assessment", retryAssessment);
+
+// Route for proceeding
+router.post("/proceed-assessment", proceedAssessment);
 
 // Route for storing answer
 router.post("/save-phase", savePhaseNumber);
