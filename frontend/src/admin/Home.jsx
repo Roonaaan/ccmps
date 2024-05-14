@@ -22,7 +22,7 @@ import Swal from 'sweetalert2';
 
 // Import your other dashboard components here
 import HomeDashboard from "./dashboard/HomeDashboard";
-import PromotionDashboard from "./dashboard/EmployeePromotionDashboard";
+import PromotionDashboard from "./dashboard/EmployeeAppraisal";
 import ApprovalDashboard from "./dashboard/EmployeeApproval";
 import EmployeeDashboard from "./dashboard/EmployeeDashboard";
 

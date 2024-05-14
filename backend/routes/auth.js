@@ -1,17 +1,16 @@
 import express from "express";
 import {
-        login, sendEmail, sendResetEmail, getUserProfile, getUserDetails,
-         resendResetEmail, getAssessment, getUserJob, 
-        saveJob, maxPhaseNumber, getQuestions, retryCount, storeAnswer, answerResult, retryAssessment, proceedAssessment, checkScore,
-        savePhaseNumber, getPhaseNumber, adminLogin,
-        employeeID, addBasicInfo, readBasicInfo, deleteBasicInfo,
-        editBasicInfo,getBasicInfoById, getAdminProfile, getCourse, readEmployeeProfile, getProfileBasicInfoById, 
-        editProfileBasicInfo, getProfilePersonalInfoById, editProfilePersonalInfo
+        login, sendEmail, sendResetEmail, resendResetEmail,
+        getUserProfile, getUserDetails, getUserJob, saveJob, maxPhaseNumber, getAssessment, getCourse, retryCount, getQuestions, storeAnswer, answerResult, retryAssessment, proceedAssessment, checkScore, savePhaseNumber, getPhaseNumber,
+        adminLogin, getAdminProfile, appraisalCalculate, employeeID,
+        addBasicInfo, readBasicInfo, editBasicInfo, getBasicInfoById, deleteBasicInfo,
+        readEmployeeProfile, editProfileBasicInfo, getProfileBasicInfoById, editProfilePersonalInfo, getProfilePersonalInfoById,
+        readAppraisalBasicInfo, readAppraisalBackgroundInfo
 } from "../controller/auth.js";
 
 const router = express.Router();
  
-// User Side Routes
+// User Side Routes.....................................................................................
 // Route for user login
 router.post("/login", login);
 
@@ -24,6 +23,7 @@ router.post("/reset-password", sendResetEmail);
 // Route for resending reset password email
 router.post("/resend-email", resendResetEmail);
 
+// User Logged In Routes.....................................................................................
 // Route for fetching user profile
 router.get("/user-profile", getUserProfile);
 
@@ -72,17 +72,20 @@ router.post("/save-phase", savePhaseNumber);
 // Route for retrieving answer
 router.get("/get-phase", getPhaseNumber);
 
-// Admin Side Routes
+// Admin Side Routes.....................................................................................
 // Route for admin login
 router.post("/admin-login", adminLogin);
  
 // Route for fetching admin profile
 router.get("/admin-profile", getAdminProfile);
 
+// Route for appraisal calculation
+router.get("/calculate-appraisal", appraisalCalculate);
+
 // Route for Auto Employee ID
 router.get("/employeeid", employeeID);
 
-// Employee Dashboard Info CRUD Routes
+// Employee Dashboard Info CRUD Routes.....................................................................................
 // Create
 router.post("/add-basicinfo", addBasicInfo);
 // Read
@@ -93,19 +96,25 @@ router.get("/get-basicinfo/:editEmployeeId", getBasicInfoById);
 // Delete
 router.delete("/delete-basicinfo/:editEmployeeId", deleteBasicInfo);
 
-// Employee Profile Route
+// Employee Profile Route.....................................................................................
 // Read
 router.get("/read-employeeprofile/:editEmployeeId", readEmployeeProfile);
 // Edit Basic Info
 router.post("/edit-profilebasicinfo", editProfileBasicInfo);
 // Edit Basic Info Autofill
 router.get("/get-profilebasicinfo/:editEmployeeId", getProfileBasicInfoById);
-
 // Edit Personal Info
 router.post("/edit-profilepersonalinfo", editProfilePersonalInfo);
 // Edit Personal Info Autofill
 router.get("/get-profilepersonalinfo/:editEmployeeId", getProfilePersonalInfoById);
 
+// Employee Appraisal Route.....................................................................................
+// Read Employee with Pending Appraisal
+router.get("/read-appraisalbasicinfo", readAppraisalBasicInfo);
+// Read Employee Details for Appraisal
+router.get("/read-appraisalbackgroundinfo", readAppraisalBackgroundInfo);
+
+// Employee Education Background Route.....................................................................................
 {/* Disabled Since On Progress
 // Route for Add Edu Info
 // Route for Edit Edu Info

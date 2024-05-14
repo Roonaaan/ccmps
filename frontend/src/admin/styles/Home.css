@@ -76,14 +76,6 @@
   justify-content: center;
 }
 
-.parent-main-frame li:hover {
-  background-color: #e8eaed;
-}
-
-.parent-main-frame li:active {
-  background-color: #dedfe0;
-}
-
 .clicked {
   background-color: #dedfe0;
   font-weight: 600

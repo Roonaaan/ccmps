@@ -770,28 +770,28 @@ export const proceedAssessment = async (req, res) => {
 // Check if the Score is Stored
 export const checkScore = async (req, res) => {
     try {
-      const userEmail = req.query.email;
-      const selectedJobTitle = req.query.job;
-  
-      const query = `
+        const userEmail = req.query.email;
+        const selectedJobTitle = req.query.job;
+
+        const query = `
         SELECT score
         FROM tblprofile
         WHERE email = $1 AND job_selected = $2
       `;
-      const values = [userEmail, selectedJobTitle];
-  
-      const result = await pool.query(query, values);
-  
-      if (result.rows.length > 0 && result.rows[0].score !== null) {
-        res.json({ success: true, message: "There is a Data inside" });
-      } else {
-        res.json({ success: true, message: "No data inputted" });
-      }
+        const values = [userEmail, selectedJobTitle];
+
+        const result = await pool.query(query, values);
+
+        if (result.rows.length > 0 && result.rows[0].score !== null) {
+            res.json({ success: true, message: "There is a Data inside" });
+        } else {
+            res.json({ success: true, message: "No data inputted" });
+        }
     } catch (error) {
-      console.error('Error checking score:', error);
-      res.status(500).json({ success: false, message: 'Error checking score' });
+        console.error('Error checking score:', error);
+        res.status(500).json({ success: false, message: 'Error checking score' });
     }
-  };
+};
 
 // Save Phase Number
 export const savePhaseNumber = async (req, res) => {
@@ -929,6 +929,53 @@ export const getAdminProfile = async (req, res) => {
     } catch (error) {
         console.error('An unexpected error occurred:', error);
         res.status(500).json({ success: false, message: 'An error occurred' });
+    }
+};
+
+// Appraisal Formula
+export const appraisalCalculate = async (req, res) => {
+    try {
+        const userEmail = req.query.email;
+        const selectedJobTitle = req.query.job;
+
+        // Fetch user profile data from tblprofile
+        const profileQuery = `
+            SELECT score, retries, job_selected
+            FROM tblprofile
+            WHERE email = $1 AND job_selected = $2
+        `;
+        const profileResult = await pool.query(profileQuery, [userEmail, selectedJobTitle]);
+
+        if (profileResult.rows.length === 0) {
+            return res.status(404).json({ success: false, message: "User profile not found" });
+        }
+
+        const { score, retries } = profileResult.rows[0];
+
+        // Calculate the appraisal score
+        let appraisalScore = score * 0.6 + (80 - retries * 5) * 0.4;
+        appraisalScore = Number(appraisalScore.toFixed(3)); // Round to three decimal places
+
+        // Determine the outcome
+        let outcome;
+        if (appraisalScore > 90) {
+            outcome = "Promotion";
+        } else if (appraisalScore >= 80 && appraisalScore <= 90) {
+            outcome = "30% Salary Increase"; // You can determine the exact percentage here based on your organization's policies
+        } else {
+            outcome = "No Change";
+        }
+
+        // Respond with the result
+        res.json({
+            success: true,
+            appraisalScore,
+            outcome
+        });
+
+    } catch (error) {
+        console.error('Error calculating appraisal:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 };
 
@@ -1407,6 +1454,73 @@ export const getProfilePersonalInfoById = async (req, res) => {
     } catch (error) {
         console.error('Error fetching employee data:', error);
         res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+// Employee Appraisal
+// Read Employee with Pending Appraisal
+export const readAppraisalBasicInfo = async (req, res) => {
+    try {
+        const client = await pool.connect();
+        const result = await client.query(`
+            SELECT 
+                employee_id, 
+                image, 
+                firstname, 
+                lastname, 
+                age, 
+                email, 
+                phone_number, 
+                home_address, 
+                district, 
+                city, 
+                province, 
+                postal_code, 
+                gender, 
+                birthday, 
+                nationality, 
+                civil_status,
+                job_position,
+                job_selected,
+                score
+            FROM tblprofile
+            WHERE score IS NOT NULL
+        `);
+        const employees = result.rows;
+        client.release();
+        res.status(200).json(employees);
+    } catch (err) {
+        console.error('Error executing query', err);
+        res.status(500).send('Internal Server Error');
+    }
+};
+// Read Employee Details for Appraisal
+export const readAppraisalBackgroundInfo = async (req, res) => {
+    const userEmail = req.query.email;
+    const selectedJobTitle = req.query.job;
+
+    try {
+        const client = await pool.connect();
+        const result = await client.query(`
+            SELECT 
+                image,
+                firstname, 
+                lastname, 
+                employee_id, 
+                job_position, 
+                job_level, 
+                job_selected, 
+                score, 
+                retries
+            FROM tblprofile
+            WHERE email = $1 AND job_selected = $2
+        `, [userEmail, selectedJobTitle]);
+        const employeeDetails = result.rows;
+        client.release();
+        res.status(200).json(employeeDetails);
+    } catch (err) {
+        console.error('Error executing query', err);
+        res.status(500).send('Internal Server Error');
     }
 };
 
