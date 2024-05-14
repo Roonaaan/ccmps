@@ -767,6 +767,32 @@ export const proceedAssessment = async (req, res) => {
     }
 };
 
+// Check if the Score is Stored
+export const checkScore = async (req, res) => {
+    try {
+      const userEmail = req.query.email;
+      const selectedJobTitle = req.query.job;
+  
+      const query = `
+        SELECT score
+        FROM tblprofile
+        WHERE email = $1 AND job_selected = $2
+      `;
+      const values = [userEmail, selectedJobTitle];
+  
+      const result = await pool.query(query, values);
+  
+      if (result.rows.length > 0 && result.rows[0].score !== null) {
+        res.json({ success: true, message: "There is a Data inside" });
+      } else {
+        res.json({ success: true, message: "No data inputted" });
+      }
+    } catch (error) {
+      console.error('Error checking score:', error);
+      res.status(500).json({ success: false, message: 'Error checking score' });
+    }
+  };
+
 // Save Phase Number
 export const savePhaseNumber = async (req, res) => {
     try {

@@ -2,7 +2,7 @@ import express from "express";
 import {
         login, sendEmail, sendResetEmail, getUserProfile, getUserDetails,
          resendResetEmail, getAssessment, getUserJob, 
-        saveJob, maxPhaseNumber, getQuestions, retryCount, storeAnswer, answerResult, retryAssessment, proceedAssessment,
+        saveJob, maxPhaseNumber, getQuestions, retryCount, storeAnswer, answerResult, retryAssessment, proceedAssessment, checkScore,
         savePhaseNumber, getPhaseNumber, adminLogin,
         employeeID, addBasicInfo, readBasicInfo, deleteBasicInfo,
         editBasicInfo,getBasicInfoById, getAdminProfile, getCourse, readEmployeeProfile, getProfileBasicInfoById, 
@@ -62,6 +62,9 @@ router.post("/retry-assessment", retryAssessment);
 
 // Route for proceeding
 router.post("/proceed-assessment", proceedAssessment);
+
+// Route for checking if the score is stored
+router.get("/check-score", checkScore);
 
 // Route for storing answer
 router.post("/save-phase", savePhaseNumber);

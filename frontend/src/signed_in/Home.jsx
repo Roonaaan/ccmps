@@ -114,13 +114,32 @@ const Home = () => {
     setShowDropdown(!showDropdown);
   }
 
-  const handleRoadmapClick = () => {
-    if (hasSelectedJob) {
-      // If user has selected a job, directly navigate to the roadmap
-      navigate('/Roadmap'); // Assuming the route to the roadmap is '/Roadmap'
-    } else {
-      // If user hasn't selected a job, navigate to the job selection page
-      navigate('/Recommend');
+  const handleRoadmapClick = async () => {
+    try {
+      const userEmail = sessionStorage.getItem('user');
+      const selectedJobTitle = sessionStorage.getItem('selectedJobTitle');
+
+      if (hasSelectedJob) {
+        // Check if there is a score
+        const response = await fetch(`http://localhost:8800/api/auth/check-score?email=${userEmail}&job=${encodeURIComponent(selectedJobTitle)}`);
+        const data = await response.json();
+
+        if (data.success && data.message === "There is a Data inside") {
+          Swal.fire({
+            title: 'Your Answers are being processed',
+            text: 'Please wait for at least 2-3 business days',
+            icon: 'info',
+            confirmButtonText: 'OK'
+          });
+        } else {
+          navigate('/Roadmap'); // Navigate to '/Roadmap' if no score data is present
+        }
+      } else {
+        // If user hasn't selected a job, navigate to the job selection page
+        navigate('/Recommend');
+      }
+    } catch (error) {
+      console.error('An error occurred while checking score:', error);
     }
   }
 
