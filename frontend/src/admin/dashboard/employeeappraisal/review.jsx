@@ -18,6 +18,9 @@ function review({ onClose }) {
     const [error, setError] = useState(null);
     const [appraisalScore, setAppraisalScore] = useState(null);
     const [appraisalOutcome, setAppraisalOutcome] = useState(null);
+    const [isCalculateDisabled, setIsCalculateDisabled] = useState(false);
+    const [isPrintDisabled, setIsPrintDisabled] = useState(true);
+    const [isBanDisabled, setIsBanDisabled] = useState(true);
 
     // Fetch Employee Details
     useEffect(() => {
@@ -109,11 +112,68 @@ function review({ onClose }) {
             if (data.success) {
                 setAppraisalScore(data.appraisalScore);
                 setAppraisalOutcome(data.outcome);
+                setIsPrintDisabled(data.outcome === "No Change");
+                setIsBanDisabled(data.outcome !== "No Change");
             } else {
                 console.error('Failed to calculate appraisal');
             }
         } catch (error) {
             console.error('An error occurred while calculating appraisal:', error);
+        }
+    };
+
+    // Download Appraisal Letter PDF
+    const handlePrintClick = async () => {
+        try {
+            const userEmail = sessionStorage.getItem('user');
+            const selectedJobTitle = sessionStorage.getItem('selectedJobTitle');
+            const hrEmail = sessionStorage.getItem('email'); // Fetch HR email from session storage
+
+            const response = await fetch(`http://localhost:8800/api/auth/print-appraisal?email=${userEmail}&job=${encodeURIComponent(selectedJobTitle)}&hrEmail=${encodeURIComponent(hrEmail)}`, {
+                method: 'GET',
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'appraisal_letter.pdf';
+                document.body.appendChild(a); // Append to the document body
+                a.click(); // Programmatically click the anchor to trigger the download
+                a.remove(); // Remove the anchor from the document body
+            } else {
+                console.error('Failed to download appraisal letter');
+            }
+        } catch (error) {
+            console.error('An error occurred while downloading appraisal letter:', error);
+        }
+    };
+
+    const handleRejectClick = async () => {
+        try {
+            const userEmail = sessionStorage.getItem('user');
+            const selectedJobTitle = sessionStorage.getItem('selectedJobTitle');
+            const hrEmail = sessionStorage.getItem('email'); // Fetch HR email from session storage
+
+            const response = await fetch(`http://localhost:8800/api/auth/reject-appraisal?email=${userEmail}&job=${encodeURIComponent(selectedJobTitle)}&hrEmail=${encodeURIComponent(hrEmail)}`, {
+                method: 'GET',
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'appraisal_letter.pdf';
+                document.body.appendChild(a); // Append to the document body
+                a.click(); // Programmatically click the anchor to trigger the download
+                a.remove(); // Remove the anchor from the document body
+            } else {
+                console.error('Failed to download appraisal letter');
+            }
+        } catch (error) {
+            console.error('An error occurred while downloading appraisal letter:', error);
         }
     };
 
@@ -158,6 +218,7 @@ function review({ onClose }) {
                                         <Doughnut data={data} />
                                     </div>
                                     <div className="employee-appraisal-contents">
+                                        <h1> Assessment Summary </h1>
                                         <div className="employee-appraisal-summary">
                                             <ul className='appraisal-summary'>
                                                 <li>
@@ -168,7 +229,7 @@ function review({ onClose }) {
                                                 <li>
                                                     <div className="appraisalTitle">Score</div>
                                                     :
-                                                    <div className="appraisalText">{employeeDetails.score}</div>
+                                                    <div className="appraisalText">{employeeDetails.score}%</div>
                                                 </li>
                                                 <li>
                                                     <div className="appraisalTitle">Retry Count</div>
@@ -186,7 +247,7 @@ function review({ onClose }) {
                                                 <li>
                                                     <div className="appraisalResultTitle">Calculation Result Score</div>
                                                     :
-                                                    <div className="appraisalResultText">{appraisalScore !== null ? appraisalScore : 'Calculation Result Score Here'}</div>
+                                                    <div className="appraisalResultText">{appraisalScore !== null ? `${appraisalScore}%` : 'Calculation Result Score Here'}</div>
                                                 </li>
                                                 <li>
                                                     <div className="appraisalResultTitle">Appraisal Result</div>
@@ -196,9 +257,9 @@ function review({ onClose }) {
                                             </ul>
                                         </div>
                                         <div className="appraisal-request-buttons">
-                                            <button onClick={handleCalculateClick}><FontAwesomeIcon icon={faCalculator} /></button>
-                                            <button><FontAwesomeIcon icon={faPrint} /></button>
-                                            <button><FontAwesomeIcon icon={faBan} /></button>
+                                            <button onClick={handleCalculateClick} disabled={isCalculateDisabled}><FontAwesomeIcon icon={faCalculator} /></button>
+                                            <button onClick={handlePrintClick} disabled={isPrintDisabled}><FontAwesomeIcon icon={faPrint} /></button>
+                                            <button onClick={handleRejectClick} disabled={isBanDisabled}><FontAwesomeIcon icon={faBan} /></button>
                                         </div>
                                     </div>
                                 </div>

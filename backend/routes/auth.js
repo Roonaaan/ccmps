@@ -2,10 +2,10 @@ import express from "express";
 import {
         login, sendEmail, sendResetEmail, resendResetEmail,
         getUserProfile, getUserDetails, getUserJob, saveJob, maxPhaseNumber, getAssessment, getCourse, retryCount, getQuestions, storeAnswer, answerResult, retryAssessment, proceedAssessment, checkScore, savePhaseNumber, getPhaseNumber,
-        adminLogin, getAdminProfile, appraisalCalculate, employeeID,
+        adminLogin, getAdminProfile, employeeID,
         addBasicInfo, readBasicInfo, editBasicInfo, getBasicInfoById, deleteBasicInfo,
         readEmployeeProfile, editProfileBasicInfo, getProfileBasicInfoById, editProfilePersonalInfo, getProfilePersonalInfoById,
-        readAppraisalBasicInfo, readAppraisalBackgroundInfo
+        readAppraisalBasicInfo, readAppraisalBackgroundInfo , appraisalCalculate, printAppraisal, printRejection
 } from "../controller/auth.js";
 
 const router = express.Router();
@@ -79,9 +79,6 @@ router.post("/admin-login", adminLogin);
 // Route for fetching admin profile
 router.get("/admin-profile", getAdminProfile);
 
-// Route for appraisal calculation
-router.get("/calculate-appraisal", appraisalCalculate);
-
 // Route for Auto Employee ID
 router.get("/employeeid", employeeID);
 
@@ -113,6 +110,12 @@ router.get("/get-profilepersonalinfo/:editEmployeeId", getProfilePersonalInfoByI
 router.get("/read-appraisalbasicinfo", readAppraisalBasicInfo);
 // Read Employee Details for Appraisal
 router.get("/read-appraisalbackgroundinfo", readAppraisalBackgroundInfo);
+// Route for appraisal calculation
+router.get("/calculate-appraisal", appraisalCalculate);
+// Route for print pdf appraisal
+router.get("/print-appraisal", printAppraisal);
+// Route for print pdf appraisal
+router.get("/reject-appraisal", printRejection);
 
 // Employee Education Background Route.....................................................................................
 {/* Disabled Since On Progress

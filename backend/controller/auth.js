@@ -1,4 +1,6 @@
 import pg from 'pg';
+import PDFDocument from 'pdfkit';
+import { format } from 'date-fns';
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import crypto from 'crypto';
@@ -932,53 +934,6 @@ export const getAdminProfile = async (req, res) => {
     }
 };
 
-// Appraisal Formula
-export const appraisalCalculate = async (req, res) => {
-    try {
-        const userEmail = req.query.email;
-        const selectedJobTitle = req.query.job;
-
-        // Fetch user profile data from tblprofile
-        const profileQuery = `
-            SELECT score, retries, job_selected
-            FROM tblprofile
-            WHERE email = $1 AND job_selected = $2
-        `;
-        const profileResult = await pool.query(profileQuery, [userEmail, selectedJobTitle]);
-
-        if (profileResult.rows.length === 0) {
-            return res.status(404).json({ success: false, message: "User profile not found" });
-        }
-
-        const { score, retries } = profileResult.rows[0];
-
-        // Calculate the appraisal score
-        let appraisalScore = score * 0.6 + (80 - retries * 5) * 0.4;
-        appraisalScore = Number(appraisalScore.toFixed(3)); // Round to three decimal places
-
-        // Determine the outcome
-        let outcome;
-        if (appraisalScore > 90) {
-            outcome = "Promotion";
-        } else if (appraisalScore >= 80 && appraisalScore <= 90) {
-            outcome = "30% Salary Increase"; // You can determine the exact percentage here based on your organization's policies
-        } else {
-            outcome = "No Change";
-        }
-
-        // Respond with the result
-        res.json({
-            success: true,
-            appraisalScore,
-            outcome
-        });
-
-    } catch (error) {
-        console.error('Error calculating appraisal:', error);
-        res.status(500).json({ success: false, message: 'Internal Server Error' });
-    }
-};
-
 // Auto Employee Number
 export const employeeID = async (req, res) => { // Auto Employee ID
     try {
@@ -1523,6 +1478,257 @@ export const readAppraisalBackgroundInfo = async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 };
+// Appraisal Formula
+export const appraisalCalculate = async (req, res) => {
+    try {
+        const userEmail = req.query.email;
+        const selectedJobTitle = req.query.job;
+
+        // Fetch user profile data from tblprofile
+        const profileQuery = `
+            SELECT email, score, retries, job_selected
+            FROM tblprofile
+            WHERE email = $1 AND job_selected = $2
+        `;
+        const profileResult = await pool.query(profileQuery, [userEmail, selectedJobTitle]);
+
+        if (profileResult.rows.length === 0) {
+            return res.status(404).json({ success: false, message: "User profile not found" });
+        }
+
+        const { email, score, retries } = profileResult.rows[0];
+
+        // Calculate the appraisal score
+        let appraisalScore = score * 0.6 + (80 - retries * 5) * 0.4;
+        appraisalScore = Number(appraisalScore.toFixed(3)); // Round to three decimal places
+
+        // Determine the outcome
+        let outcome;
+        if (appraisalScore > 90) {
+            outcome = "Promotion";
+        } else if (appraisalScore >= 80 && appraisalScore <= 90) {
+            outcome = "30% Salary Increase"; // You can determine the exact percentage here based on your organization's policies
+        } else {
+            outcome = "No Change";
+        }
+
+        // Update the user profile with the appraisal result
+        const updateQuery = `
+            UPDATE tblprofile
+            SET result = $1
+            WHERE email = $2 AND job_selected = $3
+        `;
+        await pool.query(updateQuery, [outcome, email, selectedJobTitle]);
+
+        // Respond with the result
+        res.json({
+            success: true,
+            appraisalScore,
+            outcome
+        });
+
+    } catch (error) {
+        console.error('Error calculating appraisal:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+};
+// Print Appraisal to PDF
+export const printAppraisal = async (req, res) => {
+    try {
+        const userEmail = req.query.email;
+        const selectedJobTitle = req.query.job;
+
+        // Fetch user profile data from tblprofile
+        const profileQuery = `
+            SELECT firstname, lastname, employee_id, job_selected, score, result
+            FROM tblprofile
+            WHERE email = $1 AND job_selected = $2
+        `;
+        const profileResult = await pool.query(profileQuery, [userEmail, selectedJobTitle]);
+
+        if (profileResult.rows.length === 0) {
+            return res.status(404).json({ success: false, message: "User profile not found" });
+        }
+
+        const { firstname, lastname, employee_id, job_selected, score, result } = profileResult.rows[0];
+        const companyAddress = "Congressional Rd Ext, Barangay 171, Caloocan, Metro Manila"; // Replace with your company address
+
+        // Fetch HR details from tblaccount based on email in session storage
+        const hrEmail = req.query.hrEmail; // Assuming session storage is set up
+        const hrQuery = `
+            SELECT firstname, lastname, role
+            FROM tblaccount
+            WHERE account_email = $1
+        `;
+        const hrResult = await pool.query(hrQuery, [hrEmail]);
+
+        if (hrResult.rows.length === 0) {
+            return res.status(404).json({ success: false, message: "HR details not found" });
+        }
+
+        const { firstname: hrFirstname, lastname: hrLastname, role: hrRole } = hrResult.rows[0];
+        const appraisalDate = format(new Date(), 'MMMM dd, yyyy');
+
+        // Create a PDF document with letter size dimensions (8.5x11 inches)
+        const doc = new PDFDocument({ size: 'letter' });
+
+        let buffers = [];
+        doc.on('data', buffers.push.bind(buffers));
+        doc.on('end', () => {
+            let pdfData = Buffer.concat(buffers);
+            res
+                .writeHead(200, {
+                    'Content-Length': Buffer.byteLength(pdfData),
+                    'Content-Type': 'application/pdf',
+                    'Content-Disposition': 'attachment; filename=appraisal_letter.pdf',
+                })
+                .end(pdfData);
+        });
+
+        // Header
+        doc.image('../frontend/src/assets/appraisal/logo.png', 50, 45, { width: 100 });
+        doc.moveDown();
+        doc.fontSize(12).text(companyAddress, 50, 65, { align: 'left' });
+        doc.text(appraisalDate, 50, 80, { align: 'left' });
+
+        doc.moveDown(2);
+
+        // Title
+        doc.fontSize(16).text('Appraisal Letter – CONFIDENTIAL', { align: 'center', underline: true });
+        doc.moveDown();
+
+        // Employee details
+        doc.fontSize(12).text(`Dear ${firstname} ${lastname},`);
+        doc.moveDown();
+        doc.text(`Employee ID: ${employee_id}`);
+        doc.moveDown();
+
+        // Appraisal message
+        doc.text(`Congratulations on successfully completing your career roadmap.`);
+        doc.moveDown();
+        doc.text(`Your dedication and commitment have been exemplary, and we are pleased to inform you that based on your performance, you have achieved an appraisal score of ${score}%.`);
+        doc.moveDown();
+        doc.text(`As a result of your outstanding performance, we are delighted to offer you the ${result}. This change will be effective by the end of the month.`);
+        doc.moveDown();
+        doc.text(`Your contributions to our team have been invaluable, and we look forward to your continued success.`);
+        doc.moveDown();
+
+        // Signature
+        doc.image('../frontend/src/assets/appraisal/signature.png', 50, doc.y, { width: 100 });
+
+        // Closing and HR details
+        doc.text('Best regards,');
+        doc.moveDown();
+        doc.text(`${hrFirstname} ${hrLastname}`);
+        doc.text(`${hrRole}`);
+
+        // Finalize the PDF and end the stream
+        doc.end();
+
+
+    } catch (error) {
+        console.error('Error generating appraisal letter PDF:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+};
+// Print Rejection Letter to PDF
+export const printRejection = async (req, res) => {
+    try {
+        const userEmail = req.query.email;
+        const selectedJobTitle = req.query.job;
+
+        // Fetch user profile data from tblprofile
+        const profileQuery = `
+            SELECT firstname, lastname, employee_id, job_selected, score
+            FROM tblprofile
+            WHERE email = $1 AND job_selected = $2
+        `;
+        const profileResult = await pool.query(profileQuery, [userEmail, selectedJobTitle]);
+
+        if (profileResult.rows.length === 0) {
+            return res.status(404).json({ success: false, message: "User profile not found" });
+        }
+
+        const { firstname, lastname, employee_id, job_selected, score } = profileResult.rows[0];
+        const companyAddress = "Congressional Rd Ext, Barangay 171, Caloocan, Metro Manila"; // Replace with your company address
+
+        // Fetch HR details from tblaccount based on hrEmail
+        const hrEmail = req.query.hrEmail; // Assuming session storage is set up
+        const hrQuery = `
+            SELECT firstname, lastname, role
+            FROM tblaccount
+            WHERE account_email = $1
+        `;
+        const hrResult = await pool.query(hrQuery, [hrEmail]);
+
+        if (hrResult.rows.length === 0) {
+            return res.status(404).json({ success: false, message: "HR details not found" });
+        }
+
+        const { firstname: hrFirstname, lastname: hrLastname, role: hrRole } = hrResult.rows[0];
+
+        const appraisalDate = format(new Date(), 'MMMM dd, yyyy');
+
+        // Create a PDF document with letter size dimensions (8.5x11 inches)
+        const doc = new PDFDocument({ size: 'letter' });
+
+        let buffers = [];
+        doc.on('data', buffers.push.bind(buffers));
+        doc.on('end', () => {
+            let pdfData = Buffer.concat(buffers);
+            res
+                .writeHead(200, {
+                    'Content-Length': Buffer.byteLength(pdfData),
+                    'Content-Type': 'application/pdf',
+                    'Content-Disposition': 'attachment; filename=rejection_letter.pdf',
+                })
+                .end(pdfData);
+        });
+
+        // Header
+        doc.image('../frontend/src/assets/appraisal/logo.png', 50, 45, { width: 100 });
+        doc.moveDown();
+        doc.fontSize(12).text(companyAddress, 50, 65, { align: 'left' });
+        doc.text(appraisalDate, 50, 80, { align: 'left' });
+
+        doc.moveDown(2);
+
+        // Title
+        doc.fontSize(16).text('Appraisal Letter – CONFIDENTIAL', { align: 'center', underline: true });
+        doc.moveDown();
+
+        // Employee details
+        doc.fontSize(12).text(`Dear ${firstname} ${lastname},`);
+        doc.moveDown();
+        doc.text(`Employee ID: ${employee_id}`);
+        doc.moveDown();
+
+        // Rejection message
+        doc.text(`We regret to inform you that based on your score on the assessment, we are unable to proceed with the ${job_selected} position at this time.`);
+        doc.moveDown();
+        doc.text(`Your recent assessment score was ${score}%, which does not meet our criteria for this role.`);
+        doc.moveDown();
+        doc.text(`We encourage you to continue your professional development and to retry for future opportunities.`);
+        doc.moveDown();
+
+        // Signature
+        doc.image('../frontend/src/assets/appraisal/signature.png', 50, doc.y, { width: 100 });
+
+        // Closing and HR details
+        doc.text('Best regards,');
+        doc.moveDown();
+        doc.text(`${hrFirstname} ${hrLastname}`);
+        doc.text(`${hrRole}`);
+
+        // Finalize the PDF and end the stream
+        doc.end();
+
+    } catch (error) {
+        console.error('Error generating rejection letter PDF:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+};
+
 
 {/* Disabled Since On Progress
 // Add Edu Info
