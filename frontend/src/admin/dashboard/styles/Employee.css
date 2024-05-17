@@ -219,7 +219,7 @@ th {
   flex-direction: column;
   padding: 8px 0px;
   margin-left: 40px;
-
+  width: 160px;
 }
 
 .employee-profile-basicinfo-basic h1,
@@ -253,7 +253,7 @@ h2 {
 }
 
 .employee-profile-basicinfo-edit-button {
-  margin: 15px 0 0 120px;
+  margin: 15px 0 0 80px;
 }
 
 .employee-profile-basicinfo-edit-button button {
@@ -283,7 +283,7 @@ h2 {
   width: auto;
   gap: 20px;
   flex-direction: row;
-  padding: 20px 10px;
+  padding: 2px 10px;
   flex-wrap: wrap;
   height: fit-content;
 }
@@ -370,6 +370,19 @@ h2 {
 .add-info-content {
   display: flex;
   gap: 1em;
+}
+
+.education-info-card-header {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.education-info-card-header button {
+  font-size: 15px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
 }
 
 /******************** Appraisal Part ***************************************/

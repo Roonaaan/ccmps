@@ -123,28 +123,26 @@ function EmployeeProfile({ onClose }) {
             </div>
             <div className="employee-profile-personalinfo-card">
               <div className="employee-profile-personals-edit-button">
-              <h1> Additional Information: </h1>
+                <h1> Additional Information: </h1>
                 <button onClick={() => toggleEditPersonalInfoModal(employeeData.profile.employee_id)}><FontAwesomeIcon icon={faPencil} /></button>
               </div>
-              
+
               <div className="employee-profile-personals-card-body">
                 <div className="employee-profile-personals-card-body-row">
                   <div className="employee-profile-personals-other">
                     <ul className='personal-info'>
                       <div className='additional-information-tab'>
                         <div className='add-info-content'>
-                        <p className="personal-info-title">Nationality: </p>
-                        <p className="personal-info-text"> {employeeData.profile.nationality} </p>
+                          <p className="personal-info-title">Nationality: </p>
+                          <p className="personal-info-text"> {employeeData.profile.nationality} </p>
                         </div>
-                      
                         <div className='add-info-content'>
-                        <p className="personal-info-title">Civil Status: </p>
-                        <p className="personal-info-text"> {employeeData.profile.civil_status} </p>
+                          <p className="personal-info-title">Civil Status: </p>
+                          <p className="personal-info-text"> {employeeData.profile.civil_status} </p>
                         </div>
-                      
                         <div className='add-info-content'>
-                        <p className="personal-info-title">Current Job Skills: </p>
-                        <p className="personal-info-text"> {employeeData.profile.skills} </p>
+                          <p className="personal-info-title">Current Job Skills: </p>
+                          <p className="personal-info-text"> {employeeData.profile.skills} </p>
                         </div>
                       </div>
                     </ul>

@@ -5,7 +5,9 @@ import {
         adminLogin, getAdminProfile, employeeID,
         addBasicInfo, readBasicInfo, editBasicInfo, getBasicInfoById, deleteBasicInfo,
         readEmployeeProfile, editProfileBasicInfo, getProfileBasicInfoById, editProfilePersonalInfo, getProfilePersonalInfoById,
-        readAppraisalBasicInfo, readAppraisalBackgroundInfo , appraisalCalculate, printAppraisal, printRejection
+        readAppraisalBasicInfo, readAppraisalBackgroundInfo , appraisalCalculate, printAppraisal, printRejection,
+        getNextJobId, addProfileJobInfo, getJobInfoById, editJobInfo, deleteProfileJobInfo,
+        getNextEduId, addProfileEduInfo, getEduInfoById, editEduInfo, deleteProfileEduInfo
 } from "../controller/auth.js";
 
 const router = express.Router();
@@ -117,58 +119,28 @@ router.get("/print-appraisal", printAppraisal);
 // Route for print pdf appraisal
 router.get("/reject-appraisal", printRejection);
 
-// Employee Education Background Route.....................................................................................
-{/* Disabled Since On Progress
-// Route for Add Edu Info
-// Route for Edit Edu Info
-router.post("/edit-profileeduinfo/:editEmployeeId", editEduInfo);
-// Route for Edit Edu Info Autofill
-router.get("/get-profileeduinfo/:editEmployeeId", getEduInfoById);
-// Route for Delete Edu Info
-
-// Route for Add Job Info
-// Route for Edit Job Info
-router.post("/edit-profilejobinfo/:editEmployeeId", editEduInfo);
-// Route for Edit Job Info Autofill
+// Employee Work History Route .....................................................................................
+// Automatic ID
+router.get("/get-next-job-id", getNextJobId);
+// Create/Add
+router.post('/add-profilejobinfo/:editEmployeeId', addProfileJobInfo);
+// Autofill
 router.get("/get-profilejobinfo/:editEmployeeId", getJobInfoById);
-// Route for Delete Job Info
-
-
-// Employee Education History Route
-// Create
-router.post("/add-educhistory", addEduHistory);
-// Read
-router.get("/read-educhistory", readEduHistory);
-// Update
-router.post("/edit-educhistory", editEduHistory);
-router.get("/get-educhistory/:editEmployeeId", getEduHistoryById);
+// Edit
+router.post("/edit-profilejobinfo/:editEmployeeId", editJobInfo);
 // Delete
-router.post("/delete-educhistory", deleteEduHistory);
+router.delete("/delete-profilejobinfo/:editEmployeeId/:jobId", deleteProfileJobInfo);
 
-// Employee Job History Route
-// Create
-router.post("/add-jobhistory", addJobHistory);
-// Read
-router.get("/read-jobhistory", readJobHistory);
-// Update
-router.post("/edit-jobhistory", editJobHistory);
-router.get("/get-jobhistory/:editEmployeeId", getJobHistoryById);
+// Employee Education Background Route.....................................................................................
+// Automatic ID
+router.get("/get-next-edu-id", getNextEduId);
+// Create/Add
+router.post('/add-profileeduinfo/:editEmployeeId', addProfileEduInfo);
+// Autofill
+router.get("/get-profileeduinfo/:editEmployeeId", getEduInfoById);
+// Edit
+router.post("/edit-profileeduinfo/:editEmployeeId", editEduInfo);
 // Delete
-router.post("/delete-jobhistory", deleteJobHistory);
+router.delete("/delete-profileeduinfo/:editEmployeeId/:eduId", deleteProfileEduInfo);
 
-// Employee Job Info CRUD Route
-// Read
-router.get("/read-jobinfo", readJobInfo);
-// Update
-// Delete
-router.post("/delete-jobinfo", deleteJobInfo);
-// Employee Account Info CRUD
-// Read
-router.get("/read-accountinfo", readAccountInfo);
-// Update
-router.post("/edit-accountinfo", editAccountInfo);
-router.get("/get-accountinfo/:editEmployeeId", getAccountInfoById);
-// Delete
-router.post("/delete-accountinfo", deleteAccountInfo);
-*/}
 export default router;
