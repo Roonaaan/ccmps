@@ -6,6 +6,8 @@ import './styles/recommend.css';
 import logo from "../../assets/homepage/final-topright-logo-light.png";
 import defaultImg from "../../assets/signed-in/defaultImg.jpg";
 import { TailSpin } from 'react-loader-spinner'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Recommend = () => {
     const [userImage, setUserImage] = useState('');
@@ -132,6 +134,8 @@ const Recommend = () => {
     }, []);
 
     const handleProceed = async () => {
+        const selectedJob = sessionStorage.getItem('selectedJob');
+
         if (selectedJob !== null) {
             const selectedJobTitle = recommendedJobs[selectedJob].title; // Get the title of the selected job
             const userEmail = sessionStorage.getItem('user');
@@ -152,19 +156,21 @@ const Recommend = () => {
                 } else {
                     // Handle error response
                     console.error('Failed to save job selection:', data.error);
-                    alert('Failed to save job selection. Please try again.');
+                    toast.error('Failed to save job selection. Please try again.');
                 }
             } catch (error) {
                 console.error('An error occurred while saving job selection:', error);
-                alert('An error occurred while saving job selection. Please try again later.');
+                toast.error('An error occurred while saving job selection. Please try again later.');
             }
         } else {
-            alert('Please select a job before proceeding');
+            // Display toast message for "Please select a job first"
+            toast.error('Please select a job before proceeding');
         }
     };
 
     return (
         <>
+            <ToastContainer />
             <div className="recommendContainer">
                 <header className='navBar'>
                     <div className='navBarInner'>
@@ -229,14 +235,6 @@ const Recommend = () => {
                                 ))
                             )}
                         </div>
-
-                        {/*
-                        <div className='recommendJobLabels'>
-                           <p>SUGGESTION 1</p> 
-                           <p className='mostRecommended'>MOST RECOMMENDED</p>
-                           <p>SUGGESTION 2</p>
-                        </div>
-                        */}
                         <div className="recommendJobContainerButton">
                             <button className='recommendJobContainerProceed' onClick={handleProceed}> PROCEED </button>
                         </div>

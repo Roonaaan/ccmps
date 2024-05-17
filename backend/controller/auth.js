@@ -4,13 +4,22 @@ import { format } from 'date-fns';
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import crypto from 'crypto';
+import jwt from 'jsonwebtoken'
 
+// Database Connection
 const pool = new pg.Pool({ // Use 'pg.Pool' instead of 'Pool'
     connectionString: "postgres://default:NpLQ8gFc1dsD@ep-aged-meadow-a1op3qk0-pooler.ap-southeast-1.aws.neon.tech:5432/verceldb?sslmode=require", // Get connection string from environment variable
     ssl: {
         rejectUnauthorized: false, // Use this option only if necessary
     }
 });
+
+// Roadmap Restriction Token
+const generateToken = (expiresIn) => {
+    const secretKey = 'sikretongmalupetpwedengpabulong'; // Replace 'your_secret_key' with your actual secret key
+    const token = jwt.sign({}, secretKey, { expiresIn });
+    return token;
+};
 
 // User Side .......................................................................................
 // Login
@@ -773,21 +782,37 @@ export const proceedAssessment = async (req, res) => {
 export const checkScore = async (req, res) => {
     try {
         const userEmail = req.query.email;
-        const selectedJobTitle = req.query.job;
 
         const query = `
-        SELECT score
-        FROM tblprofile
-        WHERE email = $1 AND job_selected = $2
-      `;
-        const values = [userEmail, selectedJobTitle];
+            SELECT score, restriction_token
+            FROM tblprofile
+            WHERE email = $1
+        `;
+        const values = [userEmail];
 
         const result = await pool.query(query, values);
 
-        if (result.rows.length > 0 && result.rows[0].score !== null) {
-            res.json({ success: true, message: "There is a Data inside" });
+        if (result.rows.length > 0) {
+            const { score, restriction_token } = result.rows[0];
+
+            if (restriction_token) {
+                const decodedToken = jwt.decode(restriction_token);
+
+                if (decodedToken && decodedToken.exp) {
+                    const expirationDate = new Date(decodedToken.exp * 1000);
+                    const currentDate = new Date();
+                    const remainingDays = Math.ceil((expirationDate - currentDate) / (1000 * 60 * 60 * 24));
+
+                    res.json({ success: true, message: "There is a Data inside", score, remainingDays });
+                    return;
+                }
+            }
+
+            // If restriction_token is missing/invalid
+            res.json({ success: true, message: "There is a Data inside", score, remainingDays: null });
         } else {
-            res.json({ success: true, message: "No data inputted" });
+            // No rows found for the given email and job title
+            res.json({ success: true, message: "No data inputted", score: null, remainingDays: null });
         }
     } catch (error) {
         console.error('Error checking score:', error);
@@ -1506,8 +1531,18 @@ export const appraisalCalculate = async (req, res) => {
         let outcome;
         if (appraisalScore > 90) {
             outcome = "Promotion";
-        } else if (appraisalScore >= 80 && appraisalScore <= 90) {
-            outcome = "30% Salary Increase"; // You can determine the exact percentage here based on your organization's policies
+        } else if (appraisalScore >= 89 && appraisalScore <= 90) {
+            outcome = "30% Salary Increase";
+        } else if (appraisalScore >= 88 && appraisalScore < 89) {
+            outcome = "25% Salary Increase";
+        } else if (appraisalScore >= 87 && appraisalScore < 88) {
+            outcome = "20% Salary Increase";
+        } else if (appraisalScore >= 85 && appraisalScore < 87) {
+            outcome = "15% Salary Increase";
+        } else if (appraisalScore >= 83 && appraisalScore < 85) {
+            outcome = "10% Salary Increase";
+        } else if (appraisalScore >= 81 && appraisalScore < 83) {
+            outcome = "5% Salary Increase";
         } else {
             outcome = "No Change";
         }
@@ -1551,10 +1586,10 @@ export const printAppraisal = async (req, res) => {
         }
 
         const { firstname, lastname, employee_id, job_selected, score, result } = profileResult.rows[0];
-        const companyAddress = "Congressional Rd Ext, Barangay 171, Caloocan, Metro Manila"; // Replace with your company address
+        const companyAddress = "Congressional Rd Ext, Barangay 171, Caloocan, Metro Manila";
 
         // Fetch HR details from tblaccount based on email in session storage
-        const hrEmail = req.query.hrEmail; // Assuming session storage is set up
+        const hrEmail = req.query.hrEmail;
         const hrQuery = `
             SELECT firstname, lastname, role
             FROM tblaccount
@@ -1569,7 +1604,31 @@ export const printAppraisal = async (req, res) => {
         const { firstname: hrFirstname, lastname: hrLastname, role: hrRole } = hrResult.rows[0];
         const appraisalDate = format(new Date(), 'MMMM dd, yyyy');
 
-        // Create a PDF document with letter size dimensions (8.5x11 inches)
+        // Generate token with 3-month expiration
+        const token = generateToken('90d');
+
+        // Update tblprofile with the generated token
+        const updateTokenQuery = `
+            UPDATE tblprofile
+            SET
+                job_selected = NULL,
+                current_phase = NULL,
+                retries = NULL,
+                score = NULL,
+                result = NULL,
+                restriction_token = $1
+            WHERE email = $2 AND job_selected = $3
+        `;
+        await pool.query(updateTokenQuery, [token, userEmail, selectedJobTitle]);
+
+        // Delete data from tblappraisal based on email and position
+        const deleteAppraisalQuery = `
+            DELETE FROM tblappraisal
+            WHERE email = $1 AND position = $2
+        `;
+        await pool.query(deleteAppraisalQuery, [userEmail, selectedJobTitle]);
+
+        // Create a PDF document
         const doc = new PDFDocument({ size: 'letter' });
 
         let buffers = [];
@@ -1650,10 +1709,10 @@ export const printRejection = async (req, res) => {
         }
 
         const { firstname, lastname, employee_id, job_selected, score } = profileResult.rows[0];
-        const companyAddress = "Congressional Rd Ext, Barangay 171, Caloocan, Metro Manila"; // Replace with your company address
+        const companyAddress = "Congressional Rd Ext, Barangay 171, Caloocan, Metro Manila";
 
         // Fetch HR details from tblaccount based on hrEmail
-        const hrEmail = req.query.hrEmail; // Assuming session storage is set up
+        const hrEmail = req.query.hrEmail;
         const hrQuery = `
             SELECT firstname, lastname, role
             FROM tblaccount
@@ -1669,7 +1728,31 @@ export const printRejection = async (req, res) => {
 
         const appraisalDate = format(new Date(), 'MMMM dd, yyyy');
 
-        // Create a PDF document with letter size dimensions (8.5x11 inches)
+        // Generate token with 1-week expiration
+        const token = generateToken('7d');
+
+        // Update tblprofile with the generated token
+        const updateTokenQuery = `
+            UPDATE tblprofile
+            SET
+                job_selected = NULL,
+                current_phase = NULL,
+                retries = NULL,
+                score = NULL,
+                result = NULL,
+                restriction_token = $1
+            WHERE email = $2 AND job_selected = $3
+        `;
+        await pool.query(updateTokenQuery, [token, userEmail, selectedJobTitle]);
+
+        // Delete data from tblappraisal based on email and position
+        const deleteAppraisalQuery = `
+            DELETE FROM tblappraisal
+            WHERE email = $1 AND position = $2
+        `;
+        await pool.query(deleteAppraisalQuery, [userEmail, selectedJobTitle]);
+
+        // Create a PDF document
         const doc = new PDFDocument({ size: 'letter' });
 
         let buffers = [];

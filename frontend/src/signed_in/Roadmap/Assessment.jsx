@@ -6,8 +6,8 @@ import "./styles/style.css";
 import logo from "../../assets/homepage/final-topright-logo-light.png";
 import defaultImg from "../../assets/signed-in/defaultImg.jpg";
 import Swal from "sweetalert2";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretLeft, faCaretRight } from '@fortawesome/free-solid-svg-icons';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Assessment = () => {
     const [userImage, setUserImage] = useState("");
@@ -161,6 +161,13 @@ const Assessment = () => {
             // Disable the button to prevent multiple submissions
             setIsSubmitting(true);
 
+            if (!selectedAnswer) {
+                // If no answer is selected, display a toast message
+                toast.error("Please select your answer");
+                setIsSubmitting(false);
+                return;
+            }
+
             const currentQuestion = questions[currentQuestionIndex];
             const correctAnswer = currentQuestion.correct_choice;
 
@@ -227,6 +234,7 @@ const Assessment = () => {
 
     return (
         <>
+            <ToastContainer />
             <div className="assessmentWrapper">
                 <header className='navBar'>
                     <div className='navBarInner'>

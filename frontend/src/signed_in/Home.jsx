@@ -71,15 +71,6 @@ const Home = () => {
     checkUserJob();
   }, []);
 
-  function arrayBufferToBase64(buffer) {
-    let binary = '';
-    const bytes = new Uint8Array(buffer);
-    const len = bytes.byteLength;
-    for (let i = 0; i < len; i++) {
-      binary += String.fromCharCode(bytes[i]);
-    }
-    return window.btoa(binary);
-  }
 
   const handleProfileClick = () => {
     navigate('/My-Profile');
@@ -114,34 +105,57 @@ const Home = () => {
     setShowDropdown(!showDropdown);
   }
 
+  // Open Roadmap/Select Career
   const handleRoadmapClick = async () => {
     try {
       const userEmail = sessionStorage.getItem('user');
       const selectedJobTitle = sessionStorage.getItem('selectedJobTitle');
 
-      if (hasSelectedJob) {
-        // Check if there is a score
-        const response = await fetch(`http://localhost:8800/api/auth/check-score?email=${userEmail}&job=${encodeURIComponent(selectedJobTitle)}`);
-        const data = await response.json();
+      // Check if there is a score
+      const response = await fetch(`http://localhost:8800/api/auth/check-score?email=${userEmail}`);
+      const data = await response.json();
 
+      if (selectedJobTitle) {
         if (data.success && data.message === "There is a Data inside") {
-          Swal.fire({
-            title: 'Your Answers are being processed',
-            text: 'Please wait for at least 2-3 business days',
-            icon: 'info',
-            confirmButtonText: 'OK'
-          });
-        } else {
-          navigate('/Roadmap'); // Navigate to '/Roadmap' if no score data is present
+          if (data.score !== null) {
+            Swal.fire({
+              title: 'Your Answers are being processed',
+              text: 'Please wait for at least 2-3 business days',
+              icon: 'info',
+              confirmButtonText: 'OK'
+            });
+          } else if (data.remainingDays !== null) {
+            Swal.fire({
+              title: `You cannot access the roadmap for ${data.remainingDays} days`,
+              text: 'Please wait until your restriction period ends',
+              icon: 'warning',
+              confirmButtonText: 'OK'
+            });
+          } else {
+            navigate('/Roadmap'); // Navigate to '/Roadmap' if job is selected but no score restriction and no remainingDays
+          }
         }
       } else {
-        // If user hasn't selected a job, navigate to the job selection page
-        navigate('/Recommend');
+        // If there's no selected job title
+        if (data.success && data.message === "There is a Data inside") {
+          if (data.remainingDays !== null) {
+            Swal.fire({
+              title: `You cannot access the roadmap for ${data.remainingDays} days`,
+              text: 'Please wait until your restriction period ends',
+              icon: 'warning',
+              confirmButtonText: 'OK'
+            });
+          } else {
+            navigate('/Recommend'); // Navigate to '/Recommend' if no job is selected and no remainingDays
+          }
+        } else {
+          navigate('/Recommend'); // Navigate to '/Recommend' if no job is selected and no data inside
+        }
       }
     } catch (error) {
       console.error('An error occurred while checking score:', error);
     }
-  }
+  };
 
   return (
     <>
