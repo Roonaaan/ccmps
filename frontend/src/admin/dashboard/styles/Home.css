@@ -16,115 +16,41 @@
 }
 
 .home-header {
-  margin: 0px, 15px, 15px, 15px;
+  margin: 20px 0 40px 10px;
+}
+
+.home-row {
+  margin: 0 0 40px 10px;
+}
+
+.home-row-card-banner {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.row-card-banner-contents {
+  display: flex;
+  justify-content: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 250px;
+  height: 100px;
+  border: 1px solid black;
+  border-radius: 10px;
   padding: 10px;
 }
 
-.home-table {
-  display: flex;
-  justify-content: flex-start;
-  gap: 1em;
-  margin: 5px;
-  padding: 5px;
-  
+.row-icon {
+  font-size: 40px;
+  margin-left: 20px;
 }
 
-.homes {
-  display: flex;
-  justify-content: flex-start;
-  position: relative;
-  width: 100%;
-  height: auto;
-  position: relative;
-
+.row-card-banner-data {
+  text-align: right;
 }
 
-.home-type {
-  width: 200px;
-  height: 200px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-}
-
-/* Dashboard Stats CSS */
-.stats-parent {
-  display: flex;
-  flex-direction: column;
-  gap: 1em;
-  overflow: auto;
-}
-
-.upper-row-stats {
-  display: flex;
-  position: relative;
-  border: solid 1px grey;
-  height: 130px;
-  justify-content: center;
-  align-items: center;
-  gap:2em;
-}
-
-.row-box {
-  display: flex;
-  position: relative;
-  width: 25%;
-  height: 100px;
-  border: solid 1px grey;
-}
-
-.middle-row-graphs {
-  display: flex;
-  position: relative;
-  border: solid 1px grey;
-  height: 400px;
-  justify-content: center;
-  align-items: center;
-  gap:2em;
-}
-
-.graph-box {
-  display: flex;
-  position: relative;
-  width: 50%;
-  border: solid 1px grey;
-  height:370px;
-
-
-}
-
-.lower-row-stats {
-  display: flex;
-  position: relative;
-  border: solid 1px grey;
-  height: 150px;
-  justify-content: center;
-  align-items: center;
-
-}
-
-.low-row-box{
-  display: flex;
-  position: relative;
-  width: 25%;
-  height: 120px;
-  border: solid 1px grey;
-}
-
-.statistic-group {
-  display: flex;
-  position: relative;
-  border: solid 1px grey;
-  height: 450px;
-  justify-content: center;
-  align-items: center;
-  gap:1em;
-}
-
-.statistic-chuchu {
-  display: flex;
-  position: relative;
-  width: 33%;
-  height: 400px;
-  border: solid 1px grey;
+.row-card-banner-data span {
+  font-size: 14px;
+  font-weight: 600;
 }

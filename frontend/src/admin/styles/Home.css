@@ -70,12 +70,6 @@
 
 }
 
-.parent-main-frame span {
-  align-items: center;
-  display: flex;
-  justify-content: center;
-}
-
 .clicked {
   background-color: #dedfe0;
   font-weight: 600

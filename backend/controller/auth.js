@@ -982,6 +982,89 @@ export const employeeID = async (req, res) => { // Auto Employee ID
     }
 };
 
+// Admin Dasboard ***********************************************
+// (Sub Data Below)
+// Get total number of users
+const getTotalUsers = async () => {
+    const query = "SELECT COUNT(*) FROM tblaccount";
+    const { rows } = await pool.query(query);
+    return rows[0].count;
+};
+
+// Get total number of departments
+const getTotalDepartments = async () => {
+    const query = "SELECT COUNT(*) FROM tbldepartment";
+    const { rows } = await pool.query(query);
+    return rows[0].count;
+};
+
+// Get total number of jobs
+const getTotalJobs = async () => {
+    const query = "SELECT COUNT(*) FROM tblroles";
+    const { rows } = await pool.query(query);
+    return rows[0].count;
+};
+
+// Get total number of roadmaps
+const getTotalRoadmaps = async () => {
+    const query = "SELECT COUNT(*) FROM tblprofile WHERE job_selected IS NOT NULL";
+    const { rows } = await pool.query(query);
+    return rows[0].count;
+};
+// # of Total Users, Departments, Jobs and Roadmap
+export const totalNumberBanner = async (req, res) => {
+    try {
+        const totalUsers = await getTotalUsers();
+        const totalDepartments = await getTotalDepartments();
+        const totalJobs = await getTotalJobs();
+        const totalRoadmaps = await getTotalRoadmaps();
+
+        res.json({
+            totalUsers,
+            totalDepartments,
+            totalJobs,
+            totalRoadmaps
+        });
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+// Chart (Jobs Per Department and Employee vs Admin)
+export const chartDashboard = async (req, res) => {
+    try {
+        // Fetch total number of jobs per department
+        const jobsPerDepartmentQuery = `
+            SELECT d.department, COUNT(r.position) AS total_jobs
+            FROM tblroles r
+            INNER JOIN tbldepartment d ON r.dept_id = d.dept_id
+            GROUP BY d.department;
+        `;
+        const jobsPerDepartmentResult = await pool.query(jobsPerDepartmentQuery);
+
+        // Fetch total number of employees vs admins
+        const employeesVsAdminsQuery = `
+            SELECT
+                CASE
+                    WHEN role IN ('Employee') THEN 'Employee'
+                    WHEN role IN ('HR Coordinator', 'HR Manager') THEN 'Admin'
+                END AS role_type,
+                COUNT(*) AS total_count
+            FROM tblaccount
+            GROUP BY role_type;
+        `;
+        const employeesVsAdminsResult = await pool.query(employeesVsAdminsQuery);
+
+        res.json({
+            jobsPerDepartment: jobsPerDepartmentResult.rows,
+            employeesVsAdmins: employeesVsAdminsResult.rows
+        });
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
 // Employee Dashboard Info CRUD ***********************************************
 // Create/Add
 export const addBasicInfo = async (req, res) => {

@@ -3,6 +3,7 @@ import {
         login, sendEmail, sendResetEmail, resendResetEmail,
         getUserProfile, getUserDetails, getUserJob, saveJob, maxPhaseNumber, getAssessment, getCourse, retryCount, getQuestions, storeAnswer, answerResult, retryAssessment, proceedAssessment, checkScore, savePhaseNumber, getPhaseNumber,
         adminLogin, getAdminProfile, employeeID,
+        totalNumberBanner, chartDashboard,
         addBasicInfo, readBasicInfo, editBasicInfo, getBasicInfoById, deleteBasicInfo,
         readEmployeeProfile, editProfileBasicInfo, getProfileBasicInfoById, editProfilePersonalInfo, getProfilePersonalInfoById,
         readAppraisalBasicInfo, readAppraisalBackgroundInfo , appraisalCalculate, printAppraisal, printRejection,
@@ -77,12 +78,16 @@ router.get("/get-phase", getPhaseNumber);
 // Admin Side Routes.....................................................................................
 // Route for admin login
 router.post("/admin-login", adminLogin);
- 
 // Route for fetching admin profile
 router.get("/admin-profile", getAdminProfile);
-
 // Route for Auto Employee ID
 router.get("/employeeid", employeeID);
+
+// Admin Dashboard.....................................................................................
+// Route for getting data for the Banner
+router.get("/total-number", totalNumberBanner);
+// Route for the Chart Data
+router.get("/chart-dashboard", chartDashboard);
 
 // Employee Dashboard Info CRUD Routes.....................................................................................
 // Create
