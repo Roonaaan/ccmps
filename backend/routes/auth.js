@@ -1,21 +1,19 @@
 import express from "express";
 import {
-        login, sendEmail, getUserProfile, getUserDetails,
-        sendResetEmail, resendResetEmail, getAssessment, getUserJob,
-        saveJob, maxPhaseNumber, getQuestions, getAnswerStored,
-        retrieveAnswer, savePhaseNumber, getPhaseNumber, adminLogin,
-        employeeID, addBasicInfo, readBasicInfo, deleteBasicInfo,
-        editBasicInfo, readJobInfo, readAccountInfo, getBasicInfoById,
-        editJobInfo, getJobInfoById, deleteJobInfo, deleteAccountInfo,
-        getAccountInfoById, editAccountInfo, readPromotionInfo, addEduHistory,
-        readEduHistory, editEduHistory, getEduHistoryById, deleteEduHistory,
-        readJobHistory, addJobHistory, editJobHistory, getJobHistoryById,
-        deleteJobHistory, getUserPromotionInfo, promoteUser, getAdminProfile, getCourse, readEmployeeProfile
+        login, sendEmail, sendResetEmail, resendResetEmail,
+        getUserProfile, getUserDetails, getUserJob, saveJob, maxPhaseNumber, getAssessment, getCourse, retryCount, getQuestions, storeAnswer, answerResult, retryAssessment, proceedAssessment, checkScore, savePhaseNumber, getPhaseNumber,
+        adminLogin, getAdminProfile, employeeID,
+        totalNumberBanner, chartDashboard,
+        addBasicInfo, readBasicInfo, editBasicInfo, getBasicInfoById, deleteBasicInfo,
+        readEmployeeProfile, editProfileBasicInfo, getProfileBasicInfoById, editProfilePersonalInfo, getProfilePersonalInfoById,
+        readAppraisalBasicInfo, readAppraisalBackgroundInfo, appraisalCalculate, printAppraisal, printRejection,
+        getNextJobId, addProfileJobInfo, getJobInfoById, editJobInfo, deleteProfileJobInfo,
+        getNextEduId, addProfileEduInfo, getEduInfoById, editEduInfo, deleteProfileEduInfo
 } from "../controller/auth.js";
 
 const router = express.Router();
 
-// User Side Routes
+// User Side Routes.....................................................................................
 // Route for user login
 router.post("/login", login);
 
@@ -28,6 +26,7 @@ router.post("/reset-password", sendResetEmail);
 // Route for resending reset password email
 router.post("/resend-email", resendResetEmail);
 
+// User Logged In Routes.....................................................................................
 // Route for fetching user profile
 router.get("/user-profile", getUserProfile);
 
@@ -49,14 +48,26 @@ router.get("/assessments", getAssessment);
 // Route for Courses
 router.get("/courses", getCourse);
 
+// Route for storing retry count
+router.post("/retry-count", retryCount);
+
 // Route for Q&A Assesment (question)
 router.get("/questions", getQuestions);
 
 // Route for storing answer
-router.post("/answers", getAnswerStored);
+router.post("/store-answer", storeAnswer);
 
-// Route for retrieving answer
-router.get("/retrieve-answers", retrieveAnswer);
+// Route for total score percentage
+router.get("/results", answerResult);
+
+// Route for retrying assessment
+router.post("/retry-assessment", retryAssessment);
+
+// Route for proceeding
+router.post("/proceed-assessment", proceedAssessment);
+
+// Route for checking if the score is stored
+router.get("/check-score", checkScore);
 
 // Route for storing answer
 router.post("/save-phase", savePhaseNumber);
@@ -64,24 +75,21 @@ router.post("/save-phase", savePhaseNumber);
 // Route for retrieving answer
 router.get("/get-phase", getPhaseNumber);
 
-// Admin Side Routes
+// Admin Side Routes.....................................................................................
 // Route for admin login
 router.post("/admin-login", adminLogin);
-
 // Route for fetching admin profile
 router.get("/admin-profile", getAdminProfile);
-
 // Route for Auto Employee ID
 router.get("/employeeid", employeeID);
 
-// Employee Promotion Routes
-// Read
-router.get("/read-promotioninfo", readPromotionInfo);
-// Promote
-router.get("/get-userpromotioninfo/:editEmployeeId", getUserPromotionInfo);
-router.post("/promoteuser/:editEmployeeId", promoteUser);
+// Admin Dashboard.....................................................................................
+// Route for getting data for the Banner
+router.get("/total-number", totalNumberBanner);
+// Route for the Chart Data
+router.get("/chart-dashboard", chartDashboard);
 
-// Employee Dashboard Info CRUD Routes
+// Employee Dashboard Info CRUD Routes.....................................................................................
 // Create
 router.post("/add-basicinfo", addBasicInfo);
 // Read
@@ -92,47 +100,52 @@ router.get("/get-basicinfo/:editEmployeeId", getBasicInfoById);
 // Delete
 router.delete("/delete-basicinfo/:editEmployeeId", deleteBasicInfo);
 
-// Employee Profile Route
+// Employee Profile Route.....................................................................................
 // Read
 router.get("/read-employeeprofile/:editEmployeeId", readEmployeeProfile);
+// Edit Basic Info
+router.post("/edit-profilebasicinfo", editProfileBasicInfo);
+// Edit Basic Info Autofill
+router.get("/get-profilebasicinfo/:editEmployeeId", getProfileBasicInfoById);
+// Edit Personal Info
+router.post("/edit-profilepersonalinfo", editProfilePersonalInfo);
+// Edit Personal Info Autofill
+router.get("/get-profilepersonalinfo/:editEmployeeId", getProfilePersonalInfoById);
 
-// Employee Education History Route
-// Create
-router.post("/add-educhistory", addEduHistory);
-// Read
-router.get("/read-educhistory", readEduHistory);
-// Update
-router.post("/edit-educhistory", editEduHistory);
-router.get("/get-educhistory/:editEmployeeId", getEduHistoryById);
-// Delete
-router.post("/delete-educhistory", deleteEduHistory);
+// Employee Appraisal Route.....................................................................................
+// Read Employee with Pending Appraisal
+router.get("/read-appraisalbasicinfo", readAppraisalBasicInfo);
+// Read Employee Details for Appraisal
+router.get("/read-appraisalbackgroundinfo", readAppraisalBackgroundInfo);
+// Route for appraisal calculation
+router.get("/calculate-appraisal", appraisalCalculate);
+// Route for print pdf appraisal
+router.get("/print-appraisal", printAppraisal);
+// Route for print pdf appraisal
+router.get("/reject-appraisal", printRejection);
 
-// Employee Job History Route
-// Create
-router.post("/add-jobhistory", addJobHistory);
-// Read
-router.get("/read-jobhistory", readJobHistory);
-// Update
-router.post("/edit-jobhistory", editJobHistory);
-router.get("/get-jobhistory/:editEmployeeId", getJobHistoryById);
+// Employee Work History Route .....................................................................................
+// Automatic ID
+router.get("/get-next-job-id", getNextJobId);
+// Create/Add
+router.post('/add-profilejobinfo/:editEmployeeId', addProfileJobInfo);
+// Autofill
+router.get("/get-profilejobinfo/:editEmployeeId", getJobInfoById);
+// Edit
+router.post("/edit-profilejobinfo/:editEmployeeId", editJobInfo);
 // Delete
-router.post("/delete-jobhistory", deleteJobHistory);
+router.delete("/delete-profilejobinfo/:editEmployeeId/:jobId", deleteProfileJobInfo);
 
-// Employee Job Info CRUD Route
-// Read
-router.get("/read-jobinfo", readJobInfo);
-// Update
-router.post("/edit-jobinfo", editJobInfo);
-router.get("/get-jobinfo/:editEmployeeId", getJobInfoById);
+// Employee Education Background Route.....................................................................................
+// Automatic ID
+router.get("/get-next-edu-id", getNextEduId);
+// Create/Add
+router.post('/add-profileeduinfo/:editEmployeeId', addProfileEduInfo);
+// Autofill
+router.get("/get-profileeduinfo/:editEmployeeId", getEduInfoById);
+// Edit
+router.post("/edit-profileeduinfo/:editEmployeeId", editEduInfo);
 // Delete
-router.post("/delete-jobinfo", deleteJobInfo);
+router.delete("/delete-profileeduinfo/:editEmployeeId/:eduId", deleteProfileEduInfo);
 
-// Employee Account Info CRUD
-// Read
-router.get("/read-accountinfo", readAccountInfo);
-// Update
-router.post("/edit-accountinfo", editAccountInfo);
-router.get("/get-accountinfo/:editEmployeeId", getAccountInfoById);
-// Delete
-router.post("/delete-accountinfo", deleteAccountInfo);
 export default router;

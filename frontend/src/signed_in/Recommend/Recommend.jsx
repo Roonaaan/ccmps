@@ -1,13 +1,13 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './styles/recommend.css';
 
 // Images
-import logo from "../../assets/homepage/final-topright-logo.png";
+import logo from "../../assets/homepage/final-topright-logo-light.png";
 import defaultImg from "../../assets/signed-in/defaultImg.jpg";
 import { TailSpin } from 'react-loader-spinner'
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Recommend = () => {
     const [userImage, setUserImage] = useState('');
@@ -74,8 +74,19 @@ const Recommend = () => {
 
     // Logout User
     const handleLogout = () => {
-        sessionStorage.removeItem('user');
-        navigate('/');
+        Swal.fire({
+            title: 'Are you sure you want to log out?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, log out',
+            cancelButtonText: 'Cancel',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                sessionStorage.removeItem('user');
+                navigate('/');
+                Swal.fire('Logged Out!', 'You have been logged out.', 'success');
+            }
+        });
     }
 
     // Return to Home Page
@@ -83,24 +94,7 @@ const Recommend = () => {
         navigate('/Welcome')
     }
 
-    const DropdownModal = ({ logoutHandler }) => {
-        return (
-            <div className="dropdown-modal">
-                <div className="profile-info">
-                    <img
-                        src={userImage || defaultImg}
-                        alt='profile'
-                        className='profileImg'
-                    />
-                    <p className='username'>{userName}</p>
-                </div>
-                <ul>
-                    <li><button onClick={handleProfileClick}> My Profile </button></li>
-                    <li><button onClick={logoutHandler}> Log Out </button></li>
-                </ul>
-            </div>
-        );
-    };
+
 
     const toggleDropdown = () => {
         setShowDropdown(!showDropdown);
@@ -123,6 +117,14 @@ const Recommend = () => {
         sessionStorage.setItem('selectedJobTitle', job.title);
     }
 
+    const DropdownModal = ({ logoutHandler }) => {
+        return (
+            <div className="dropdown-modal">
+                <li><button onClick={logoutHandler}> Log Out </button></li>
+            </div>
+        );
+    };
+
     // Retrieve the stored job object on component mount
     useEffect(() => {
         const storedJob = JSON.parse(sessionStorage.getItem('selectedJob'));
@@ -132,6 +134,8 @@ const Recommend = () => {
     }, []);
 
     const handleProceed = async () => {
+        const selectedJob = sessionStorage.getItem('selectedJob');
+
         if (selectedJob !== null) {
             const selectedJobTitle = recommendedJobs[selectedJob].title; // Get the title of the selected job
             const userEmail = sessionStorage.getItem('user');
@@ -152,36 +156,42 @@ const Recommend = () => {
                 } else {
                     // Handle error response
                     console.error('Failed to save job selection:', data.error);
-                    alert('Failed to save job selection. Please try again.');
+                    toast.error('Failed to save job selection. Please try again.');
                 }
             } catch (error) {
                 console.error('An error occurred while saving job selection:', error);
-                alert('An error occurred while saving job selection. Please try again later.');
+                toast.error('An error occurred while saving job selection. Please try again later.');
             }
         } else {
-            alert('Please select a job before proceeding');
+            // Display toast message for "Please select a job first"
+            toast.error('Please select a job before proceeding');
         }
     };
 
     return (
         <>
+            <ToastContainer />
             <div className="recommendContainer">
-                <header className="navBar">
-                    <div className="navBarInner">
-                        <div className="navLogoContainer">
+                <header className='navBar'>
+                    <div className='navBarInner'>
+                        <div className='navLogoContainer'>
                             <img src={logo} alt="logo" className="navLogo" onClick={handleHomeClick} />
                         </div>
-                        <div className="navProfile">
-                            <img
-                                src={userImage || defaultImg}
-                                alt="profile"
-                                className="profileImg"
-                                onClick={toggleDropdown}
-                            />
+                        <div className='homeNavProfile'>
+                            <div className="homeNavProfileButton">
+                                <button onClick={handleProfileClick}> My Profile </button>
+                            </div>
+                            <div className="homeNavProfileUser" onClick={toggleDropdown}>
+                                <img
+                                    src={userImage || defaultImg}
+                                    alt='profile'
+                                    className='profileImg'
+                                />
+                                <p>{userName}</p>
+                            </div>
                         </div>
                     </div>
                 </header>
-
                 <div className="recommendJobContainer">
                     <div className="recommendJobContainerInner">
                         <div className="recommendJobContainerHeader">
@@ -225,14 +235,6 @@ const Recommend = () => {
                                 ))
                             )}
                         </div>
-
-                        {/*
-                        <div className='recommendJobLabels'>
-                           <p>SUGGESTION 1</p> 
-                           <p className='mostRecommended'>MOST RECOMMENDED</p>
-                           <p>SUGGESTION 2</p>
-                        </div>
-                        */}
                         <div className="recommendJobContainerButton">
                             <button className='recommendJobContainerProceed' onClick={handleProceed}> PROCEED </button>
                         </div>

@@ -33,6 +33,14 @@
       "destination": "/"
     },
     {
+      "source": "/Roadmap/Assessment",
+      "destination": "/"
+    },
+    {
+      "source": "/Roadmap/Assessment/Result",
+      "destination": "/"
+    },
+    {
       "source": "/Admin/Welcome",
       "destination": "/"
     },

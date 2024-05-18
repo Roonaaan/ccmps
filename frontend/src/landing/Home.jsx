@@ -1,4 +1,3 @@
-
 import React, { Fragment, useState } from "react";
 import { features } from "./constants/features";
 import { useNavigate } from "react-router-dom";
@@ -9,8 +8,8 @@ import { faFacebookSquare, faYoutube, faGithub } from "@fortawesome/free-brands-
 import "./styles/Home.css";
 
 //link Images from Assets
-import logo from "../assets/homepage/final-topright-logo.png";
-import footerlogo from "../assets/homepage/footerlogo.png";
+import logo from "../assets/homepage/final-topright-logo-light.png";
+import footerlogo from "../assets/homepage/footerlogo-dark.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Home = () => {
@@ -21,6 +20,7 @@ const Home = () => {
   const handleLoginClick = () => {
     setShowModal(true);
   };
+
   const handleAboutClick = () => {
     navigate("/About");
   };
@@ -117,17 +117,17 @@ const Home = () => {
             <div className="footerConnect">
               <div className="footerConnectIcon" style={{ display: "flex", justifyContent: "center" }}>
                 <span style={{ margin: "0 10px" }}>
-                  <a href="https://www.facebook.com/people/CareerCompass/61558113852266/" style={{ color: "white" }}>
+                  <a href="https://www.facebook.com/people/CareerCompass/61558113852266/" style={{ color: "#27374D" }}>
                     <FontAwesomeIcon icon={faFacebookSquare} size="4x" />
                   </a>
                 </span>
                 <span style={{ margin: "0 10px" }}>
-                  <a href="http://www.youtube.com/@CareerCompass-td2oq" style={{ color: "white" }}>
+                  <a href="http://www.youtube.com/@CareerCompass-td2oq" style={{ color: "#27374D" }}>
                     <FontAwesomeIcon icon={faYoutube} size="4x" />
                   </a>
                 </span>
                 <span style={{ margin: "0 10px" }}>
-                  <a href="https://github.com/Roonaaan/ccmps" style={{ color: "white" }}>
+                  <a href="https://github.com/Roonaaan/ccmps" style={{ color: "#27374D" }}>
                     <FontAwesomeIcon icon={faGithub} size="4x" />
                   </a>
                 </span>
@@ -152,7 +152,7 @@ const Home = () => {
               </a>
             </div>
           </div>
-          <div className="underline" />
+          <div className="footerUnderline" />
           <div className="footerText">
             <p className="footerTextCopyright">
               Copyright &#169; 2024 CareerCompass. All Rights Reserved

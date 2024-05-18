@@ -4,6 +4,7 @@
     flex-direction: row;
     gap: 30px;
     justify-content: center;
+    background-color: #86BBD8;
 }
 
 .contactForm {
@@ -17,6 +18,7 @@
     display: flex;
     flex-direction: column;
     gap: 15px;
+    color: #27374D;
 }
 
 .contactInput {
@@ -36,6 +38,7 @@
 .contactInput label,
 .contactTextArea label {
     font-weight: 600;
+    color: #27374D;
 }
 
 .contactInput input,
@@ -73,9 +76,10 @@
 
 .contactInfoForm {
     width: 100%;
-    background-color: #fff;
+    background-color: transparent;
     border-radius: 5px;
     padding: 0 20px;
+    color: #27374D;
 }
 
 .contactInfoHeader {
@@ -118,6 +122,7 @@
         width: 50%;
         justify-content: center;
     }
+
     .contactInfoContainer {
         width: 40%;
         justify-content: center;
@@ -126,15 +131,16 @@
     .contactInput {
         width: 60%;
     }
+
     .contactTextArea {
         width: 90%;
     }
 
-    .contactInfoItem{
+    .contactInfoItem {
         display: flex;
         flex-direction: column;
     }
-    
+
     .contactInfoItem {
         width: auto;
     }
@@ -145,6 +151,7 @@
         width: 50%;
         justify-content: center;
     }
+
     .contactInfoContainer {
         width: 40%;
         justify-content: flex-start;
@@ -153,6 +160,7 @@
     .contactInput {
         width: 60%;
     }
+
     .contactTextArea {
         width: 90%;
     }
@@ -161,34 +169,34 @@
         width: auto;
     }
 
-    .contactInfoItem{
+    .contactInfoItem {
         display: flex;
         flex-direction: column;
     }
 
-    .contactInfoDetails{
+    .contactInfoDetails {
         font-size: 13px;
     }
 
     .contactInfoItem p,
-    .contactInfoItem p1{
+    .contactInfoItem p1 {
         font-size: 12.3px;
     }
 }
 
 @media only screen and (max-width: 900px) {
-    .contactInfoDetails{
+    .contactInfoDetails {
         font-size: 14px;
     }
 
     .contactInfoItem p,
-    .contactInfoItem p1{
+    .contactInfoItem p1 {
         font-size: 13.3px;
     }
 }
 
 @media only screen and (max-width: 768px) {
-    .contactUsWrapper{
+    .contactUsWrapper {
         display: flex;
         flex-direction: column;
         height: 100%;
@@ -198,18 +206,19 @@
         width: 100%;
         justify-content: center;
     }
+
     .contactInfoContainer {
         width: 100%;
         justify-content: flex-start;
     }
 
 
-    .contactInfoDetails{
+    .contactInfoDetails {
         font-size: 14px;
     }
 
     .contactInfoItem p,
-    .contactInfoItem p1{
+    .contactInfoItem p1 {
         font-size: 13.3px;
     }
 }

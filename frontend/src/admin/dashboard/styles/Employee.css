@@ -1,17 +1,19 @@
-.employee-dashboard-main-frame {
+.employee-dashboard-main-frame,
+.employee-appraisal-main-frame {
     display: flex;
     justify-content: flex-start;
     height: 92.5vh;
     width: 100%;
 }
 
-.employee-table {
+.employee-table,
+.appraisal-table {
     display: flex;
     flex-direction: column;
     position: relative;
     height: auto;
     margin: 0px 20px;
-    width: 100%;
+    width: fit-content;
 }
 
 .header-box {
@@ -81,14 +83,17 @@ th {
     background-color: transparent;
 }
 
-.employee-profile-card-parent {
+.employee-profile-card-parent,
+.employee-appraisal-profile-card-parent {
     display: flex;
     position: relative;
+    margin-top: 10px;
 }
 
-.employee-profile-card-container {
+.employee-profile-card-container,
+.employee-appraisal-profile-card-container {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     justify-content: flex-start;
     gap: 15px;
 }
@@ -190,6 +195,8 @@ th {
     display: flex;
     align-items: center;
     border: 1px solid gray;
+    justify-content: center;
+    padding: 20px 40px;
 }
 
 .employee-profile-basicinfo-card-body-row {
@@ -197,28 +204,30 @@ th {
     width: auto;
     gap: 20px;
     flex-direction: row;
-}
-
-.employee-profile-basicinfo-image {
-    margin: 15px 0 0 5px;
+    justify-content: center;
 }
 
 .employee-profile-basicinfo-image img {
-    height: 150;
-    width: 150px;
-    border: 1px solid black;
+    height: 100;
+    width: 120px;
     border-radius: 50%;
 }
 
 .employee-profile-basicinfo-basic {
-    margin: 15px 0 0 5px;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 8px 0px;
+    margin-left: 40px;
+    width: 160px;
 }
 
 .employee-profile-basicinfo-basic h1,
 h2 {
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 600;
-    margin-bottom: 5px;
+    text-align: left;
+
 }
 
 .employee-profile-basicinfo-basic p {
@@ -229,24 +238,22 @@ h2 {
 
 .employee-profile-basicinfo-other {
     width: 400px;
-    margin: 15px 0 0 5px;
+    margin-left: 30px;
 }
 
 .basic-info-title {
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 600;
-    margin-bottom: 5px;
     width: 30%;
 }
 
 .basic-info-text {
     font-size: 15px;
-    margin-bottom: 5px;
     width: 100%;
 }
 
 .employee-profile-basicinfo-edit-button {
-    margin: 15px 0 0 120px;
+    margin: 15px 0 0 80px;
 }
 
 .employee-profile-basicinfo-edit-button button {
@@ -257,11 +264,14 @@ h2 {
 
 .employee-profile-personalinfo-card {
     border: 1px solid gray;
+    display: flex;
+    flex-direction: column;
 }
 
 .employee-profile-personalinfo-card h1 {
-    font-size: 15px;
-    margin: 10px 0 0 10px;
+    display: flex;
+    font-size: 18px;
+    font-weight: 700;
 }
 
 .employee-profile-personals-card-body {
@@ -273,16 +283,21 @@ h2 {
     width: auto;
     gap: 20px;
     flex-direction: row;
+    padding: 2px 10px;
+    flex-wrap: wrap;
+    height: fit-content;
 }
 
 .employee-profile-personals-other {
-    width: auto;
+    width: 100%;
     margin: 15px 0 5px 0;
 }
 
 .employee-profile-personals-edit-button {
-    margin: 15px 15px 0 0;
-    float: right;
+    display: flex;
+    gap: 1em;
+    margin: 20px;
+    justify-content: space-between;
 }
 
 .employee-profile-personals-edit-button button {
@@ -291,17 +306,22 @@ h2 {
     cursor: pointer;
 }
 
+.personal-info {
+    display: flex;
+    width: 95%;
+}
+
 .personal-info-title {
     font-size: 15px;
     font-weight: 600;
     margin-bottom: 5px;
-    width: 20%;
+    width: 150px;
 }
 
 .personal-info-text {
     font-size: 15px;
     margin-bottom: 5px;
-    width: 100%;
+    width: 500px;
 }
 
 .employee-profile-history-card-body {
@@ -313,7 +333,7 @@ h2 {
 .employee-profile-eduhistory-card-body {
     border: 1px solid gray;
     width: 470px;
-    padding: 10px;
+    padding: 20px;
 }
 
 .employee-profile-eduhistory-edit-button,
@@ -326,5 +346,195 @@ h2 {
 .employee-profile-workhistory-edit-button button {
     border: none;
     background-color: transparent;
+    cursor: pointer;
+}
+
+.c {
+    display: flex;
+    text-align: left;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.additional-information-tab {
+    display: flex;
+    gap: 1em;
+    justify-content: center;
+    align-items: flex-start;
+    text-align: left;
+    flex-direction: column;
+    flex-wrap: wrap;
+
+}
+
+.add-info-content {
+    display: flex;
+    gap: 1em;
+}
+
+.education-info-card-header {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.education-info-card-header button {
+    font-size: 15px;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+/******************** Appraisal Part ***************************************/
+.employee-appraisal-profile-modal {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    margin: auto;
+    width: 1000px;
+    height: 700px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Appraisal Dashboard */
+.employee-appraisal-profile-card {
+    display: flex;
+    flex-direction: column;
+    width: 280px;
+    height: auto;
+    border: 1px solid gray;
+    border-radius: 10px;
+    justify-content: center;
+    position: relative;
+}
+
+.employee-appraisal-profile-card a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2px;
+}
+
+.appraisal-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0 10px 0;
+    cursor: pointer;
+}
+
+.appraisal-image img {
+    display: flex;
+    border-radius: 50%;
+}
+
+/* Appraisal Review Modal */
+.employee-appraisal-profile-container {
+    display: flex;
+    border: 1px solid #27374D;
+}
+
+.employee-appraisal-profile-inner {
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+}
+
+.employee-appraisal-profile-details {
+    display: flex;
+    background-color: #27374D;
+    border-radius: 8px;
+    align-items: center;
+    justify-content: center;
+    width: 939px;
+    gap: 20px;
+}
+
+.employee-appraisal-profile-details img {
+    border-radius: 14px;
+    margin: 10px;
+}
+
+.employee-profile-details ul {
+    color: #DDE6ED;
+    gap: 0px;
+}
+
+.appraisalTitle {
+    width: 150px;
+    margin-right: 10px;
+}
+
+.appraisalText {
+    margin-left: 40px;
+    text-align: right;
+}
+
+.employee-appraisal-contents h1 {
+    margin-bottom: 10px;
+}
+
+.employee-appraisal-details {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-direction: row;
+    border: 1px solid #27374D;
+    height: 40vh;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.employee-appraisal-graph {
+    width: 240px;
+}
+
+.employee-appraisal-summary ul {
+    gap: 0px;
+}
+
+.employee-appraisal-details-request {
+    display: flex;
+    border: 1px solid #27374D;
+    margin-top: 20px;
+    border-radius: 8px;
+}
+
+.employee-appraisal-request {
+    display: flex;
+    margin: 10px;
+    align-items: center;
+    justify-content: space-around;
+    width: 920px;
+}
+
+.appraisalResultTitle {
+    width: 180px;
+    margin-right: 10px;
+}
+
+.appraisalResultText {
+    margin-left: 40px;
+    text-align: right;
+}
+
+.employee-appraisal-request-summary {
+    display: flex;
+    justify-content: center;
+    width: 450px;
+}
+
+.appraisal-request-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.appraisal-request-buttons button {
+    padding: 5px;
+    width: 60px;
     cursor: pointer;
 }

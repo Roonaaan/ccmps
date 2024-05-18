@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
+
+// Assets
 import "./styles/Home.css"
 import { TailSpin } from 'react-loader-spinner'
-
-// Images
-import logo from "../assets/homepage/final-topright-logo.png";
+import Swal from 'sweetalert2';
+import logo from "../assets/homepage/final-topright-logo-light.png";
 import defaultImg from "../assets/signed-in/defaultImg.jpg"
 
 const Home = () => {
@@ -70,15 +71,6 @@ const Home = () => {
     checkUserJob();
   }, []);
 
-  function arrayBufferToBase64(buffer) {
-    let binary = '';
-    const bytes = new Uint8Array(buffer);
-    const len = bytes.byteLength;
-    for (let i = 0; i < len; i++) {
-      binary += String.fromCharCode(bytes[i]);
-    }
-    return window.btoa(binary);
-  }
 
   const handleProfileClick = () => {
     navigate('/My-Profile');
@@ -86,25 +78,25 @@ const Home = () => {
 
   // Logout User
   const handleLogout = () => {
-    sessionStorage.removeItem('user');
-    navigate('/');
+    Swal.fire({
+      title: 'Are you sure you want to log out?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, log out',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        sessionStorage.removeItem('user');
+        navigate('/');
+        Swal.fire('Logged Out!', 'You have been logged out.', 'success');
+      }
+    });
   }
 
   const DropdownModal = ({ logoutHandler }) => {
     return (
       <div className="dropdown-modal">
-        <div className="profile-info">
-          <img
-            src={userImage || defaultImg} // if the image is not captured, it will revert to the default image
-            alt='profile'
-            className='profileImg'
-          />
-          <p className='username'>{userName}</p>
-        </div>
-        <ul>
-          <li><button onClick={handleProfileClick}> My Profile </button></li>
-          <li><button onClick={logoutHandler}> Log Out </button></li>
-        </ul>
+        <li><button onClick={logoutHandler}> Log Out </button></li>
       </div>
     );
   };
@@ -113,15 +105,57 @@ const Home = () => {
     setShowDropdown(!showDropdown);
   }
 
-  const handleRoadmapClick = () => {
-    if (hasSelectedJob) {
-      // If user has selected a job, directly navigate to the roadmap
-      navigate('/Roadmap'); // Assuming the route to the roadmap is '/Roadmap'
-    } else {
-      // If user hasn't selected a job, navigate to the job selection page
-      navigate('/Recommend');
+  // Open Roadmap/Select Career
+  const handleRoadmapClick = async () => {
+    try {
+      const userEmail = sessionStorage.getItem('user');
+      const selectedJobTitle = sessionStorage.getItem('selectedJobTitle');
+
+      // Check if there is a score
+      const response = await fetch(`https://ccmps-server-node.vercel.app/api/auth/check-score?email=${userEmail}`);
+      const data = await response.json();
+
+      if (selectedJobTitle) {
+        if (data.success && data.message === "There is a Data inside") {
+          if (data.score !== null) {
+            Swal.fire({
+              title: 'Your Answers are being processed',
+              text: 'Please wait for at least 2-3 business days',
+              icon: 'info',
+              confirmButtonText: 'OK'
+            });
+          } else if (data.remainingDays !== null) {
+            Swal.fire({
+              title: `You cannot access the roadmap for ${data.remainingDays} days`,
+              text: 'Please wait until your restriction period ends',
+              icon: 'warning',
+              confirmButtonText: 'OK'
+            });
+          } else {
+            navigate('/Roadmap'); // Navigate to '/Roadmap' if job is selected but no score restriction and no remainingDays
+          }
+        }
+      } else {
+        // If there's no selected job title
+        if (data.success && data.message === "There is a Data inside") {
+          if (data.remainingDays !== null) {
+            Swal.fire({
+              title: `You cannot access the roadmap for ${data.remainingDays} days`,
+              text: 'Please wait until your restriction period ends',
+              icon: 'warning',
+              confirmButtonText: 'OK'
+            });
+          } else {
+            navigate('/Recommend'); // Navigate to '/Recommend' if no job is selected and no remainingDays
+          }
+        } else {
+          navigate('/Recommend'); // Navigate to '/Recommend' if no job is selected and no data inside
+        }
+      }
+    } catch (error) {
+      console.error('An error occurred while checking score:', error);
     }
-  }
+  };
 
   return (
     <>
@@ -131,17 +165,20 @@ const Home = () => {
             <div className='navLogoContainer'>
               <img src={logo} alt="logo" className="navLogo" />
             </div>
-
-            <div className='navProfile'>
-              <img
-                src={userImage || defaultImg}
-                alt='profile'
-                className='profileImg'
-                onClick={toggleDropdown}
-              />
+            <div className='homeNavProfile'>
+              <div className="homeNavProfileButton">
+                <button onClick={handleProfileClick}> My Profile </button>
+              </div>
+              <div className="homeNavProfileUser" onClick={toggleDropdown}>
+                <img
+                  src={userImage || defaultImg}
+                  alt='profile'
+                  className='profileImg'
+                />
+                <p>{userName}</p>
+              </div>
             </div>
           </div>
-
         </header>
 
         <section className='createRoadmap'>

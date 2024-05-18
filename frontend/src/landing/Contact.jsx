@@ -1,17 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-// CSS
+// Assets
 import './styles/Contact.css';
-
-// Images
-import logo from '../assets/homepage/final-topright-logo.png';
-import footerlogo from "../assets/homepage/footerlogo.png";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFacebookSquare, faYoutube, faGithub } from "@fortawesome/free-brands-svg-icons";
+import logo from "../assets/homepage/final-topright-logo-light.png";
+import footerlogo from "../assets/homepage/footerlogo-dark.png";
 
 const Contact = () => {
-
     const Logo = logo;
-
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
@@ -37,7 +35,7 @@ const Contact = () => {
         event.preventDefault();
 
         try {
-            const response = await fetch('https://ccmps-server-node.vercel.app/backend/contact-us/send-email.php', {
+            const response = await fetch('https://careercompass-818c6.web.app/backend/contact-us/send-email.php', {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -181,40 +179,32 @@ const Contact = () => {
                 </div>
             </div>
             {/* End of Contact Us Section*/}
-            <nav className="footerNavbarWrapper">
+            {/* Footer */}
+            <div className="footerNavbarWrapper">
                 <div className="footerNavbarColumn">
                     <div className="footerNavbarInner">
                         <div className="footerLogoWrapper">
-                            <div className="footerNavleft">
-                                <img
-                                    src={footerlogo}
-                                    alt="Logo"
-                                    className="footerLogo"
-                                    onClick={handleHomeClick}
-                                />
-                            </div>
-                            <div className="footerConnect">
-                                <h1 className="connectWithUsText"> Connect with us </h1>
-                                <div style={{ display: "flex", justifyContent: "center" }}>
-                                    <span style={{ margin: "0 10px" }}>
-                                        <a
-                                            href="#facebook"
-                                            className="fab fa-facebook-square fa-4x"
-                                            style={{ color: "white" }}
-                                        >
-                                            {""}
-                                        </a>
-                                    </span>
-                                    <span style={{ margin: "0 10px" }}>
-                                        <a
-                                            href="#google"
-                                            className="fab fa-google fa-4x"
-                                            style={{ color: "white" }}
-                                        >
-                                            {""}
-                                        </a>
-                                    </span>
-                                </div>
+                            <a href="#top">
+                                <img src={footerlogo} alt="Logo" className="footerLogo" />
+                            </a>
+                        </div>
+                        <div className="footerConnect">
+                            <div className="footerConnectIcon" style={{ display: "flex", justifyContent: "center" }}>
+                                <span style={{ margin: "0 10px" }}>
+                                    <a href="https://www.facebook.com/people/CareerCompass/61558113852266/" style={{ color: "#27374D" }}>
+                                        <FontAwesomeIcon icon={faFacebookSquare} size="4x" />
+                                    </a>
+                                </span>
+                                <span style={{ margin: "0 10px" }}>
+                                    <a href="http://www.youtube.com/@CareerCompass-td2oq" style={{ color: "#27374D" }}>
+                                        <FontAwesomeIcon icon={faYoutube} size="4x" />
+                                    </a>
+                                </span>
+                                <span style={{ margin: "0 10px" }}>
+                                    <a href="https://github.com/Roonaaan/ccmps" style={{ color: "#27374D" }}>
+                                        <FontAwesomeIcon icon={faGithub} size="4x" />
+                                    </a>
+                                </span>
                             </div>
                         </div>
                         <div className="footerAbout">
@@ -226,20 +216,24 @@ const Contact = () => {
                                 {" "}
                                 About Us{" "}
                             </a>
-                            <a href="/Contact-Us" className="footerAboutLink" onClick={handleContactClick}>
+                            <a
+                                href="/Contact-Us"
+                                className="footerAboutLink"
+                                onClick={handleContactClick}
+                            >
                                 {" "}
                                 Contact us{" "}
                             </a>
                         </div>
                     </div>
-                    <div className="underline" />
+                    <div className="footerUnderline" />
                     <div className="footerText">
                         <p className="footerTextCopyright">
-                            Copyright &#169; CareerCompass. All Rights Reserved
+                            Copyright &#169; 2024 CareerCompass. All Rights Reserved
                         </p>
                     </div>
                 </div>
-            </nav>
+            </div>
             {/* End of Footer */}
         </>
     )

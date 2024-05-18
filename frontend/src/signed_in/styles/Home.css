@@ -1,18 +1,17 @@
 .parent {
-  background: url(/src/assets/signed-in/bg-rdmp.jpg);
+  background: url(/src/assets/signed-in/bg-rdmp.png);
   background-repeat: no-repeat;
   background-size: cover;
 }
+
 /* Navigation Bar */
 .navBar {
   display: flex;
-  justify-content:center;
+  justify-content: center;
   align-items: center;
   width: auto;
   min-height: 70px;
   gap: 40em;
-
-
 }
 
 .navBarInner {
@@ -38,11 +37,11 @@
   margin-bottom: 12px;
 }
 
-.navProfile {
+.homeNavProfile {
   display: flex;
   align-items: center;
   height: 100%;
-  gap: 10px;
+  gap: 50px;
 }
 
 .profileImg {
@@ -52,9 +51,24 @@
   cursor: pointer;
 }
 
-.username {
-  color: #27374D;
+.homeNavProfile p {
+  color: #DDE6ED;
   font-size: 16px;
+  cursor: pointer;
+}
+
+.homeNavProfileUser {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.homeNavProfileButton button {
+  border: none;
+  background-color: transparent;
+  color: #DDE6ED;
+  font-size: 16px;
+  cursor: pointer;
 }
 
 /* ---------------------------------------- */
@@ -65,12 +79,9 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 721px;
+  height: 90.2vh;
   width: auto;
   gap: 1em;
-
-
-
 }
 
 .headerText {
@@ -84,13 +95,13 @@
 .welcomeText {
   font-size: 45px;
   font-weight: bold;
-  color: #27374D;
+  color: #DDE6ED;
 }
 
 .clickText {
   font-size: 21px;
   font-weight: 500;
-  color: #27374D;
+  color: #DDE6ED;
 }
 
 .buttonContainer {
@@ -107,8 +118,8 @@
   background-color: #33658A;
   color: white;
   cursor: pointer;
-  padding-top:13px;
-  padding-bottom:13px;
+  padding-top: 13px;
+  padding-bottom: 13px;
   padding-left: 20px;
   padding-right: 20px;
   border: none;
@@ -116,19 +127,21 @@
 }
 
 .createButton:hover {
-  transform: translateY(-10px); 
+  transform: translateY(-10px);
   border: solid 1px #27374D;
   background-color: white;
   color: #27374D;
 }
 
 
-/* Dropdown Modal */ 
+/* Dropdown Modal */
 
 .dropdown-modal {
   position: absolute;
-  top: 60px; /* Adjust mo nalang to par depende sa size */
-  right: 20px; /* Adjust mo nalang to par depende sa size */
+  top: 60px;
+  /* Adjust mo nalang to par depende sa size */
+  right: 20px;
+  /* Adjust mo nalang to par depende sa size */
   background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -142,6 +155,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -188,8 +202,3 @@
 .dropdown-modal li button:hover {
   color: #007bff;
 }
-
-
-
-
-

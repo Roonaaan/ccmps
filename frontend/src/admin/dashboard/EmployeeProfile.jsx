@@ -136,12 +136,10 @@ function EmployeeProfile({ onClose }) {
                                                     <p className="personal-info-title">Nationality: </p>
                                                     <p className="personal-info-text"> {employeeData.profile.nationality} </p>
                                                 </div>
-
                                                 <div className='add-info-content'>
                                                     <p className="personal-info-title">Civil Status: </p>
                                                     <p className="personal-info-text"> {employeeData.profile.civil_status} </p>
                                                 </div>
-
                                                 <div className='add-info-content'>
                                                     <p className="personal-info-title">Current Job Skills: </p>
                                                     <p className="personal-info-text"> {employeeData.profile.skills} </p>

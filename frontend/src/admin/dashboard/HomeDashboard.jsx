@@ -1,10 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
-import Chart from 'chart.js/auto';
+import React, { useState, useEffect } from 'react';
+
+// Assets
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUsers, faBuilding, faBriefcase, faRoad } from '@fortawesome/free-solid-svg-icons';
 
 const HomeDashboard = () => {
   const [userRole, setUserRole] = useState('');
-  const lineChartRef = useRef(null);
-  const columnChartRef = useRef(null);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [totalDepartments, setTotalDepartments] = useState(0);
+  const [totalJobs, setTotalJobs] = useState(0);
+  const [totalRoadmaps, setTotalRoadmaps] = useState(0);
 
   useEffect(() => {
     const role = sessionStorage.getItem('role');
@@ -30,99 +35,80 @@ const HomeDashboard = () => {
   }, []);
 
   useEffect(() => {
-    // Line Chart
-    const lineCtx = lineChartRef.current.getContext('2d');
-    const lineChart = new Chart(lineCtx, {
-      type: 'line',
-      data: {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-        datasets: [{
-          label: 'Line Graph',
-          data: [65, 59, 80, 81, 56, 55, 40],
-          fill: false,
-          borderColor: 'rgb(75, 192, 192)',
-          tension: 0.1
-        }]
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true
-          }
+    // Fetch total numbers from the backend
+    const fetchTotalNumbers = async () => {
+      try {
+        const response = await fetch('https://ccmps-server-node.vercel.app/api/auth/total-number');
+        const data = await response.json();
+        if (data) {
+          setTotalUsers(data.totalUsers);
+          setTotalDepartments(data.totalDepartments);
+          setTotalJobs(data.totalJobs);
+          setTotalRoadmaps(data.totalRoadmaps);
         }
+      } catch (error) {
+        console.error('Error fetching total numbers:', error);
       }
-    });
-
-    // Column Chart
-    const columnCtx = columnChartRef.current.getContext('2d');
-    const columnChart = new Chart(columnCtx, {
-      type: 'bar',
-      data: {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-        datasets: [{
-          label: 'Column Graph',
-          data: [35, 39, 60, 71, 46, 45, 30],
-          backgroundColor: 'rgb(255, 99, 132)',
-          borderColor: 'rgb(255, 99, 132)',
-          borderWidth: 1
-        }]
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
-
-    return () => {
-      lineChart.destroy();
-      columnChart.destroy();
     };
+
+    fetchTotalNumbers();
   }, []);
 
   return (
-    <div className='home-parent-frame'>
-      <div className='home'>
-        <div className='home-header'>
-          <h1>Welcome {userRole}</h1>
-          <p>Dashboard</p>
-        </div>
-
-        <div className='stats-parent'>
-          <div className='upper-row-stats'>
-            <div className='row-box'>1</div>
-            <div className='row-box'>2</div>
-            <div className='row-box'>3</div>
-            <div className='row-box'>4</div>
+    <>
+      <div className='home-parent-frame'>
+        <div className='home'>
+          <div className='home-header'>
+            <h1>Welcome {userRole}</h1>
+            <p>Dashboard</p>
           </div>
-
-          <div className='middle-row-graphs'>
-            <div className='graph-box'>
-              <canvas ref={lineChartRef}></canvas> {/* Line graph */}
+          <div className="home-row">
+            <div className="home-row-card">
+              <div className="home-row-card-banner">
+                <div className="row-card-banner-contents">
+                  <span className='row-icon'><FontAwesomeIcon icon={faUsers} /></span>
+                  <div className="row-card-banner-data">
+                    <h1>{totalUsers}</h1>
+                    <span>Users</span>
+                  </div>
+                </div>
+                <div className="row-card-banner-contents">
+                  <span className='row-icon'><FontAwesomeIcon icon={faBuilding} /></span>
+                  <div className="row-card-banner-data">
+                    <h1>{totalDepartments}</h1>
+                    <span>Departments</span>
+                  </div>
+                </div>
+                <div className="row-card-banner-contents">
+                  <span className='row-icon'><FontAwesomeIcon icon={faBriefcase} /></span>
+                  <div className="row-card-banner-data">
+                    <h1>{totalJobs}</h1>
+                    <span>Jobs</span>
+                  </div>
+                </div>
+                <div className="row-card-banner-contents">
+                  <span className='row-icon'><FontAwesomeIcon icon={faRoad} /></span>
+                  <div className="row-card-banner-data">
+                    <h1>{totalRoadmaps}</h1>
+                    <span>Roadmaps</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className='graph-box'>
-              <canvas ref={columnChartRef}></canvas> {/* Column graph */}
+          </div>
+          <div className="home-row-chart">
+            <div className="home-row-chart-card">
+              <div className="row-chart-contents">
+
+              </div>
+              <div className="row-chart-contents">
+
+              </div>
             </div>
           </div>
-
-          <div className='lower-row-stats'>
-            <div className='low-row-box'>1</div>
-            <div className='low-row-box'>2</div>
-            <div className='low-row-box'>3</div>
-            <div className='low-row-box'>4</div>
-          </div>
-
-          <div className='statistic-group'>
-            <div className='statistic-chuchu'>1</div>
-            <div className='statistic-chuchu'>2</div>
-            <div className='statistic-chuchu'>3</div>
-          </div>
-
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

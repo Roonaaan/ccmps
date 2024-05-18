@@ -1,8 +1,12 @@
 import pg from 'pg';
+import PDFDocument from 'pdfkit';
+import { format } from 'date-fns';
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import crypto from 'crypto';
+import jwt from 'jsonwebtoken'
 
+// Database Connection
 const pool = new pg.Pool({ // Use 'pg.Pool' instead of 'Pool'
     connectionString: "postgres://default:NpLQ8gFc1dsD@ep-aged-meadow-a1op3qk0-pooler.ap-southeast-1.aws.neon.tech:5432/verceldb?sslmode=require", // Get connection string from environment variable
     ssl: {
@@ -10,7 +14,14 @@ const pool = new pg.Pool({ // Use 'pg.Pool' instead of 'Pool'
     }
 });
 
-// User Side
+// Roadmap Restriction Token
+const generateToken = (expiresIn) => {
+    const secretKey = 'sikretongmalupetpwedengpabulong'; // Replace 'your_secret_key' with your actual secret key
+    const token = jwt.sign({}, secretKey, { expiresIn });
+    return token;
+};
+
+// User Side .......................................................................................
 // Login
 export const login = async (req, res) => {
     let client;
@@ -242,6 +253,8 @@ export const sendEmail = async (req, res) => {
         res.status(500).json({ message: 'An error occurred while sending the email' });
     }
 };
+
+// Logged In User Side .......................................................................................
 // User Page
 export const getUserProfile = async (req, res) => {
     const userEmail = req.query.email; // Retrieve user email from query parameters
@@ -307,6 +320,8 @@ export const getUserDetails = async (req, res) => {
                     p.CIVIL_STATUS,
                     p.JOB_POSITION,
                     p.JOB_LEVEL,
+                    p.SKILLS,
+                    p.STATUS,
                     w.COMPANY,
                     w.JOB_TITLE,
                     w.COMPANY_ADDRESS,
@@ -345,6 +360,8 @@ export const getUserDetails = async (req, res) => {
                 civilStatus: result.rows[0].civil_status,
                 jobPosition: result.rows[0].job_position,
                 jobLevel: result.rows[0].job_level,
+                skills: result.rows[0].skills,
+                status: result.rows[0].status,
                 employmentHistory: [],
                 educationalHistory: [],
             };
@@ -488,21 +505,20 @@ export const getAssessment = async (req, res) => {
 // Question
 export const getQuestions = async (req, res) => {
     try {
-        // Retrieve the job title and phase from the query parameters
+        // Retrieve the job title from the query parameters
         const selectedJobTitle = req.query.job;
-        const phase = parseInt(req.query.phase);
 
-        if (!selectedJobTitle || isNaN(phase)) {
-            return res.status(400).json({ error: 'No job title or phase provided' });
+        if (!selectedJobTitle) {
+            return res.status(400).json({ error: 'No job title provided' });
         }
 
-        // Query the database for the assessment questions based on the job title and phase
+        // Query the database for the assessment questions based on the job title
         const client = await pool.connect();
-        const result = await client.query('SELECT description, question_number, a, b, c, d, correct_choice FROM tblassessment WHERE position = $1 AND phase = $2', [selectedJobTitle, phase]);
+        const result = await client.query('SELECT description, question_number, a, b, c, d, correct_choice FROM tblassessment WHERE position = $1', [selectedJobTitle]);
         client.release();
 
         if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'Assessment questions not found for the selected job and phase' });
+            return res.status(404).json({ error: 'Assessment questions not found for the selected job' });
         }
 
         // Handle potential missing data in a database row
@@ -554,68 +570,253 @@ export const getCourse = async (req, res) => {
     }
 };
 
-// Store Answer
-export const getAnswerStored = async (req, res) => {
+// Retry Count Update
+export const retryCount = async (req, res) => {
     try {
-        // Extract data from the request body
-        const { email, position, phase, answers } = req.body;
+        // Retrieve user email and job position from query parameters
+        const userEmail = req.query.email;
+        const selectedJobTitle = req.query.job;
 
-        // Check if answers for this user, position, and phase already exist
-        const existingAnswers = await pool.query(
-            `SELECT COUNT(*) AS count FROM tblroadmap WHERE email = $1 AND position = $2 AND phase = $3`,
-            [email, position, phase]
-        );
-
-        // If answers already exist, return a message or handle as needed
-        if (existingAnswers.rows[0].count > 0) {
-            return res.status(400).json({ error: 'Answers for this user, position, and phase already exist' });
+        // Check if user email and job position are provided
+        if (!userEmail || !selectedJobTitle) {
+            return res.status(400).json({ success: false, message: "User email and job position are required." });
         }
 
-        // Construct the SQL query
-        const query = `
-            INSERT INTO tblroadmap (email, position, phase, description, question, answer, result)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
+        // Update retry count for the user with the specified email and job position
+        let updateQuery;
+        let updateValues;
+
+        // Check if retries are null, then set to 1, else increment by 1
+        const checkQuery = `
+            SELECT retries
+            FROM tblprofile
+            WHERE email = $1 AND job_selected = $2
         `;
+        const checkValues = [userEmail, selectedJobTitle];
 
-        // Iterate through each answer and execute the SQL query for each one
-        for (const answer of answers) { // Use a different variable name here
-            await pool.query(query, [email, position, phase, answer.description, answer.question, answer.answer, answer.result]);
+        const checkResult = await pool.query(checkQuery, checkValues);
+
+        if (checkResult.rows.length > 0) {
+            const retries = checkResult.rows[0].retries;
+            if (retries === null) {
+                updateQuery = `
+                    UPDATE tblprofile 
+                    SET retries = 1 
+                    WHERE email = $1 AND job_selected = $2
+                    RETURNING *
+                `;
+                updateValues = [userEmail, selectedJobTitle];
+            } else {
+                updateQuery = `
+                    UPDATE tblprofile 
+                    SET retries = retries + 1 
+                    WHERE email = $1 AND job_selected = $2
+                    RETURNING *
+                `;
+                updateValues = [userEmail, selectedJobTitle];
+            }
+        } else {
+            return res.status(404).json({ success: false, message: "User not found or job position not matched." });
         }
 
-        // Send a success response
-        res.status(200).json({ message: 'Answers stored successfully' });
+        const result = await pool.query(updateQuery, updateValues);
+
+        // Check if the update was successful
+        if (result.rowCount > 0) {
+            return res.status(200).json({ success: true, message: "Retry count updated successfully." });
+        } else {
+            return res.status(404).json({ success: false, message: "User not found or job position not matched." });
+        }
     } catch (error) {
-        // Log the error message for debugging
-        console.error('Error storing answers:', error);
-        res.status(500).json({ error: 'An error occurred while storing the answers' });
+        console.error("Error updating retry count:", error);
+        return res.status(500).json({ success: false, message: "Internal server error." });
     }
 };
 
-// Retrieve Answer 
-export const retrieveAnswer = async (req, res) => {
+// Store Answer
+export const storeAnswer = async (req, res) => {
     try {
-        const userEmail = req.query.email; // Retrieve user's email from request query
-        const client = await pool.connect();
+        // Extract necessary data from the request
+        const { email, position, question, answer, result } = req.body;
+
+        // Prepare the SQL query
         const query = `
-            SELECT question, answer
-            FROM tblroadmap
+            INSERT INTO tblappraisal (email, position, question, answer, result)
+            VALUES ($1, $2, $3, $4, $5)
+        `;
+        const values = [email, position, question, answer, result];
+
+        // Execute the SQL query
+        await pool.query(query, values);
+
+        // Send response
+        res.status(200).json({ success: true, message: "Answer stored successfully" });
+    } catch (error) {
+        console.error("Error storing answer:", error);
+        res.status(500).json({ success: false, message: "Error storing answer" });
+    }
+};
+
+// Calculate and Delete Answers (If Did Not Pass)
+export const answerResult = async (req, res) => {
+    try {
+        // Retrieve user email and job position from query parameters
+        const userEmail = req.query.email;
+        const selectedJobTitle = req.query.job;
+
+        // Check if user email and job position are provided
+        if (!userEmail || !selectedJobTitle) {
+            return res.status(400).json({ success: false, message: "User email and job position are required." });
+        }
+
+        // Fetch the total count of assessments answered by the user for the selected job position
+        const totalCountQuery = `
+            SELECT COUNT(*) AS total_count
+            FROM tblappraisal
+            WHERE email = $1 AND position = $2
+        `;
+        const totalCountValues = [userEmail, selectedJobTitle];
+        const totalCountResult = await pool.query(totalCountQuery, totalCountValues);
+        const totalCount = totalCountResult.rows[0].total_count;
+
+        // Fetch the count of correct answers for the user for the selected job position
+        const correctCountQuery = `
+            SELECT COUNT(*) AS correct_count
+            FROM tblappraisal
+            WHERE email = $1 AND position = $2 AND result = 'correct'
+        `;
+        const correctCountValues = [userEmail, selectedJobTitle];
+        const correctCountResult = await pool.query(correctCountQuery, correctCountValues);
+        const correctCount = correctCountResult.rows[0].correct_count;
+
+        // Fetch the count of incorrect answers for the user for the selected job position
+        const incorrectCount = totalCount - correctCount;
+
+        // Calculate the percentage of correct answers
+        const percentage = (correctCount / totalCount) * 100;
+
+        // Round off the percentage to the nearest hundredth
+        const roundedPercentage = Math.round(percentage * 100) / 100;
+
+        // Determine if the user passed or failed
+        const result = percentage >= 80 ? 'Passed' : 'Failed';
+
+        return res.status(200).json({
+            success: true,
+            totalQuestions: totalCount,
+            totalCorrectPercentage: roundedPercentage,
+            totalIncorrectPercentage: 100 - roundedPercentage,
+            result: result
+        });
+    } catch (error) {
+        console.error("Error fetching answer result:", error);
+        return res.status(500).json({ success: false, message: "Internal server error." });
+    }
+};
+
+// Retry Roadmap Assessment
+export const retryAssessment = async (req, res) => {
+    try {
+        // Retrieve user email and job position from query parameters
+        const userEmail = req.query.email;
+        const selectedJobTitle = req.query.job;
+
+        // Check if user email and job position are provided
+        if (!userEmail || !selectedJobTitle) {
+            return res.status(400).json({ success: false, message: "User email and job position are required." });
+        }
+
+        // Delete assessment data for the user for the selected job position
+        const deleteQuery = `
+            DELETE FROM tblappraisal
+            WHERE email = $1 AND position = $2
+        `;
+        const deleteValues = [userEmail, selectedJobTitle];
+        await pool.query(deleteQuery, deleteValues);
+
+        // Update current_phase column on tblprofile to 1 for the user
+        const updateQuery = `
+            UPDATE tblprofile
+            SET current_phase = 1
+            WHERE email = $1
+        `;
+        const updateValues = [userEmail];
+        await pool.query(updateQuery, updateValues);
+
+        return res.status(200).json({ success: true, message: "Assessment data deleted and current phase updated successfully." });
+    } catch (error) {
+        console.error("Error retrying assessment:", error);
+        return res.status(500).json({ success: false, message: "Internal server error." });
+    }
+};
+
+// Proceed Assessment
+export const proceedAssessment = async (req, res) => {
+    try {
+        const userEmail = req.query.email;
+        const selectedJobTitle = req.query.job;
+
+        // Check if email and job title are provided
+        if (!userEmail || !selectedJobTitle) {
+            return res.status(400).json({ success: false, message: "User email and job position are required." });
+        }
+
+        // Update the score percentage of the total correct answer percentage in tblprofile
+        const updateScoreQuery = `
+        UPDATE tblprofile
+        SET score = $1
+        WHERE email = $2 AND job_selected = $3
+      `;
+        const scorePercentage = req.body.scorePercentage; // Assuming the score percentage is provided in the request body
+        const updateScoreValues = [scorePercentage, userEmail, selectedJobTitle];
+        await pool.query(updateScoreQuery, updateScoreValues);
+
+        return res.status(200).json({ success: true, message: "Score percentage updated successfully." });
+    } catch (error) {
+        console.error("Error updating score percentage:", error);
+        return res.status(500).json({ success: false, message: "Internal server error." });
+    }
+};
+
+// Check if the Score is Stored
+export const checkScore = async (req, res) => {
+    try {
+        const userEmail = req.query.email;
+
+        const query = `
+            SELECT score, restriction_token
+            FROM tblprofile
             WHERE email = $1
         `;
         const values = [userEmail];
-        const result = await client.query(query, values);
-        client.release();
+
+        const result = await pool.query(query, values);
+
         if (result.rows.length > 0) {
-            const answers = result.rows.map(row => ({
-                question: row.question,
-                answer: row.answer
-            }));
-            res.status(200).json({ answers });
+            const { score, restriction_token } = result.rows[0];
+
+            if (restriction_token) {
+                const decodedToken = jwt.decode(restriction_token);
+
+                if (decodedToken && decodedToken.exp) {
+                    const expirationDate = new Date(decodedToken.exp * 1000);
+                    const currentDate = new Date();
+                    const remainingDays = Math.ceil((expirationDate - currentDate) / (1000 * 60 * 60 * 24));
+
+                    res.json({ success: true, message: "There is a Data inside", score, remainingDays });
+                    return;
+                }
+            }
+
+            // If restriction_token is missing/invalid
+            res.json({ success: true, message: "There is a Data inside", score, remainingDays: null });
         } else {
-            res.status(404).json({ message: "No answers found for the user." });
+            // No rows found for the given email and job title
+            res.json({ success: true, message: "No data inputted", score: null, remainingDays: null });
         }
     } catch (error) {
-        console.error("Error retrieving answers:", error);
-        res.status(500).json({ message: "Internal server error." });
+        console.error('Error checking score:', error);
+        res.status(500).json({ success: false, message: 'Error checking score' });
     }
 };
 
@@ -666,7 +867,7 @@ export const getPhaseNumber = async (req, res) => {
 
 // Select Jobs
 
-// Admin Side
+// Admin Side .......................................................................................
 // Admin Login
 export const adminLogin = async (req, res) => {
     let client;
@@ -709,7 +910,6 @@ export const adminLogin = async (req, res) => {
         }
     }
 };
-
 // Fetch Admin Profile
 export const getAdminProfile = async (req, res) => {
     const userEmail = req.query.email; // Retrieve user email from query parameters
@@ -757,7 +957,6 @@ export const getAdminProfile = async (req, res) => {
         res.status(500).json({ success: false, message: 'An error occurred' });
     }
 };
-
 // Auto Employee Number
 export const employeeID = async (req, res) => { // Auto Employee ID
     try {
@@ -783,110 +982,91 @@ export const employeeID = async (req, res) => { // Auto Employee ID
     }
 };
 
-// Employee Promotion
-// Read
-export const readPromotionInfo = async (req, res) => {
+// Admin Dasboard ***********************************************
+// (Sub Data Below)
+// Get total number of users
+const getTotalUsers = async () => {
+    const query = "SELECT COUNT(*) FROM tblaccount";
+    const { rows } = await pool.query(query);
+    return rows[0].count;
+};
+
+// Get total number of departments
+const getTotalDepartments = async () => {
+    const query = "SELECT COUNT(*) FROM tbldepartment";
+    const { rows } = await pool.query(query);
+    return rows[0].count;
+};
+
+// Get total number of jobs
+const getTotalJobs = async () => {
+    const query = "SELECT COUNT(*) FROM tblroles";
+    const { rows } = await pool.query(query);
+    return rows[0].count;
+};
+
+// Get total number of roadmaps
+const getTotalRoadmaps = async () => {
+    const query = "SELECT COUNT(*) FROM tblprofile WHERE job_selected IS NOT NULL";
+    const { rows } = await pool.query(query);
+    return rows[0].count;
+};
+// # of Total Users, Departments, Jobs and Roadmap
+export const totalNumberBanner = async (req, res) => {
     try {
-        const client = await pool.connect();
-        const result = await client.query(`
-        SELECT 
-        p.employee_id, 
-        p.firstname, 
-        p.lastname, 
-        p.email, 
-        r.position,
-        (SELECT COUNT(result) FROM tblroadmap WHERE email = p.email AND position = r.position AND result = 'correct') AS score,
-        (SELECT COUNT(question) FROM tblroadmap WHERE email = p.email AND position = r.position) AS total_questions
-    FROM 
-        tblprofile p
-    JOIN 
-        tblroadmap r ON p.employee_id = p.employee_id
-    GROUP BY 
-        p.employee_id, p.firstname, p.lastname, p.email, r.position;
-        `);
-        const employees = result.rows;
-        client.release();
-        res.status(200).json(employees);
-    } catch (err) {
-        console.error('Error executing query', err);
-        res.status(500).send('Internal Server Error');
+        const totalUsers = await getTotalUsers();
+        const totalDepartments = await getTotalDepartments();
+        const totalJobs = await getTotalJobs();
+        const totalRoadmaps = await getTotalRoadmaps();
+
+        res.json({
+            totalUsers,
+            totalDepartments,
+            totalJobs,
+            totalRoadmaps
+        });
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ error: "Internal Server Error" });
     }
 };
-// Promotion
-export const getUserPromotionInfo = async (req, res) => {
-    const employeeId = req.params.editEmployeeId;
-
+// Chart (Jobs Per Department and Employee vs Admin)
+export const chartDashboard = async (req, res) => {
     try {
-        // Fetch user profile data and calculate score
-        const query = `
-        SELECT 
-            p.employee_id,
-            p.firstname,
-            p.lastname,
-            p.job_position,
-            p.job_selected,
-            p.image,
-            p.current_phase, 
-            ROUND(CAST(SUM(CASE WHEN r.result = 'correct' THEN 1 ELSE 0 END) AS NUMERIC) / COUNT(r.question) * 100, 2) AS score
-        FROM 
-            tblprofile p
-        INNER JOIN 
-            tblroadmap r ON p.employee_id = p.employee_id
-        WHERE 
-            p.employee_id = $1
-        GROUP BY 
-            p.employee_id, p.firstname, p.lastname, p.job_position, p.job_selected, p.image, p.current_phase;
+        // Fetch total number of jobs per department
+        const jobsPerDepartmentQuery = `
+            SELECT d.department, COUNT(r.position) AS total_jobs
+            FROM tblroles r
+            INNER JOIN tbldepartment d ON r.dept_id = d.dept_id
+            GROUP BY d.department;
         `;
-        const result = await pool.query(query, [employeeId]);
+        const jobsPerDepartmentResult = await pool.query(jobsPerDepartmentQuery);
 
-        if (result.rows.length === 0) {
-            return res.status(404).json({ message: "User not found" });
-        }
+        // Fetch total number of employees vs admins
+        const employeesVsAdminsQuery = `
+            SELECT
+                CASE
+                    WHEN role IN ('Employee') THEN 'Employee'
+                    WHEN role IN ('HR Coordinator', 'HR Manager') THEN 'Admin'
+                END AS role_type,
+                COUNT(*) AS total_count
+            FROM tblaccount
+            GROUP BY role_type;
+        `;
+        const employeesVsAdminsResult = await pool.query(employeesVsAdminsQuery);
 
-        const userData = result.rows[0];
-        const score = parseFloat(userData.score);
-
-        // Determine promotion eligibility
-        const promotionStatus = score >= 80 ? "Eligible for Promotion" : "Not Eligible for Promotion";
-
-        res.status(200).json({ userData, promotionStatus });
+        res.json({
+            jobsPerDepartment: jobsPerDepartmentResult.rows,
+            employeesVsAdmins: employeesVsAdminsResult.rows
+        });
     } catch (error) {
-        console.error("Error fetching user promotion info:", error);
-        res.status(500).json({ message: "Internal server error" });
+        console.error("Error:", error);
+        res.status(500).json({ error: "Internal Server Error" });
     }
 };
 
-export const promoteUser = async (req, res) => {
-    try {
-        // Retrieve the employee_id from the request parameters
-        const employeeId = req.params.editEmployeeId;
-        console.log('Employee ID:', employeeId); // Log the employeeId to check its value
-
-        // Fetch the job_selected and current_phase from tblprofile based on employee_id
-        const profileQuery = `SELECT job_selected, current_phase FROM tblprofile WHERE employee_id = $1`;
-        const profileResult = await pool.query(profileQuery, [employeeId]);
-
-        if (profileResult.rows.length === 0) {
-            // Handle case where no rows are returned for the given employee_id
-            return res.status(404).json({ error: "Employee not found." });
-        }
-
-        const { job_selected, current_phase } = profileResult.rows[0];
-
-        // Update job_position with job_selected and delete job_selected and current_phase
-        const updateQuery = `UPDATE tblprofile SET job_position = $1, job_selected = NULL, current_phase = NULL WHERE employee_id = $2`;
-        await pool.query(updateQuery, [job_selected, employeeId]);
-
-        res.status(200).json({ message: "User promoted successfully." });
-    } catch (error) {
-        console.error("Error promoting user:", error);
-        res.status(500).json({ error: "An error occurred while promoting the user." });
-    }
-};
-
-
-// Employee Dashboard Info CRUD
-// Create
+// Employee Dashboard Info CRUD ***********************************************
+// Create/Add
 export const addBasicInfo = async (req, res) => {
     try {
         const {
@@ -1157,7 +1337,7 @@ export const deleteBasicInfo = async (req, res) => {
     }
 };
 
-// Employee Profile
+// Employee Profile ***********************************************
 // Read
 export const readEmployeeProfile = async (req, res) => {
     try {
@@ -1282,7 +1462,6 @@ export const getProfileBasicInfoById = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
-
 // Edit Personal Info
 export const editProfilePersonalInfo = async (req, res) => {
     try {
@@ -1338,92 +1517,433 @@ export const getProfilePersonalInfoById = async (req, res) => {
     }
 };
 
-// Add Edu Info
-// Edit Edu Info
-export const editEduInfo = async (req, res) => {
+// Employee Appraisal ***********************************************
+// Read Employee with Pending Appraisal
+export const readAppraisalBasicInfo = async (req, res) => {
     try {
-        const { employee_id, school, yearGraduated, gradeLevel, degree } = req.body;
-
-        // Update the employee information in the tblprofile table
-        const profileQuery = `
-            UPDATE tbleducbackground
-            SET 
-                school = $1,
-                year_graduated = $2,
-                grade_level = $3,
-                degree_course = $4
-            WHERE employee_id = $5
-        `;
-        const profileValues = [school, yearGraduated, gradeLevel, degree, employee_id];
-        await pool.query(profileQuery, profileValues);
-
-        res.status(200).json({ message: "Employee information updated successfully." });
-    } catch (error) {
-        console.error("Error updating employee information:", error);
-        res.status(500).json({ error: "Internal server error" });
+        const client = await pool.connect();
+        const result = await client.query(`
+            SELECT 
+                employee_id, 
+                image, 
+                firstname, 
+                lastname, 
+                age, 
+                email, 
+                phone_number, 
+                home_address, 
+                district, 
+                city, 
+                province, 
+                postal_code, 
+                gender, 
+                birthday, 
+                nationality, 
+                civil_status,
+                job_position,
+                job_selected,
+                score
+            FROM tblprofile
+            WHERE score IS NOT NULL
+        `);
+        const employees = result.rows;
+        client.release();
+        res.status(200).json(employees);
+    } catch (err) {
+        console.error('Error executing query', err);
+        res.status(500).send('Internal Server Error');
     }
-}
-// Edit Edu Info Autofill
-export const getEduInfoById = async (req, res) => {
+};
+// Read Employee Details for Appraisal
+export const readAppraisalBackgroundInfo = async (req, res) => {
+    const userEmail = req.query.email;
+    const selectedJobTitle = req.query.job;
+
     try {
-        const employeeId = req.params.editEmployeeId; // Assuming the employee ID is sent as a route parameter
-        // Construct the SQL query to select all education history records for the employee
-        const query = {
-            text: `SELECT 
-             id,
-             school,
-             year_graduated,
-             grade_level,
-             degree_course
-        FROM tbleducbackground WHERE employee_id = $1`,
-            values: [employeeId],
-        };
-        // Execute the SQL query
-        const result = await pool.query(query);
-        // Check if any rows were found
-        if (result.rows.length > 0) {
-            const educationHistory = result.rows;
-            // Send the education history data as JSON response
-            res.status(200).json(educationHistory);
-        } else {
-            // If no education history records with the specified employee ID are found, send a 404 error
-            res.status(404).json({ error: 'Education history not found for the employee' });
+        const client = await pool.connect();
+        const result = await client.query(`
+            SELECT 
+                image,
+                firstname, 
+                lastname, 
+                employee_id, 
+                job_position, 
+                job_level, 
+                job_selected, 
+                score, 
+                retries
+            FROM tblprofile
+            WHERE email = $1 AND job_selected = $2
+        `, [userEmail, selectedJobTitle]);
+        const employeeDetails = result.rows;
+        client.release();
+        res.status(200).json(employeeDetails);
+    } catch (err) {
+        console.error('Error executing query', err);
+        res.status(500).send('Internal Server Error');
+    }
+};
+// Appraisal Formula
+export const appraisalCalculate = async (req, res) => {
+    try {
+        const userEmail = req.query.email;
+        const selectedJobTitle = req.query.job;
+
+        // Fetch user profile data from tblprofile
+        const profileQuery = `
+            SELECT email, score, retries, job_selected
+            FROM tblprofile
+            WHERE email = $1 AND job_selected = $2
+        `;
+        const profileResult = await pool.query(profileQuery, [userEmail, selectedJobTitle]);
+
+        if (profileResult.rows.length === 0) {
+            return res.status(404).json({ success: false, message: "User profile not found" });
         }
+
+        const { email, score, retries } = profileResult.rows[0];
+
+        // Calculate the appraisal score
+        let appraisalScore = score * 0.6 + (80 - retries * 5) * 0.4;
+        appraisalScore = Number(appraisalScore.toFixed(3)); // Round to three decimal places
+
+        // Determine the outcome
+        let outcome;
+        if (appraisalScore > 90) {
+            outcome = "Promotion";
+        } else if (appraisalScore >= 89 && appraisalScore <= 90) {
+            outcome = "30% Salary Increase";
+        } else if (appraisalScore >= 88 && appraisalScore < 89) {
+            outcome = "25% Salary Increase";
+        } else if (appraisalScore >= 87 && appraisalScore < 88) {
+            outcome = "20% Salary Increase";
+        } else if (appraisalScore >= 85 && appraisalScore < 87) {
+            outcome = "15% Salary Increase";
+        } else if (appraisalScore >= 83 && appraisalScore < 85) {
+            outcome = "10% Salary Increase";
+        } else if (appraisalScore >= 81 && appraisalScore < 83) {
+            outcome = "5% Salary Increase";
+        } else {
+            outcome = "No Change";
+        }
+
+        // Update the user profile with the appraisal result
+        const updateQuery = `
+            UPDATE tblprofile
+            SET result = $1
+            WHERE email = $2 AND job_selected = $3
+        `;
+        await pool.query(updateQuery, [outcome, email, selectedJobTitle]);
+
+        // Respond with the result
+        res.json({
+            success: true,
+            appraisalScore,
+            outcome
+        });
+
     } catch (error) {
-        console.error('Error fetching education history data:', error);
+        console.error('Error calculating appraisal:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+};
+// Print Appraisal to PDF
+export const printAppraisal = async (req, res) => {
+    try {
+        const userEmail = req.query.email;
+        const selectedJobTitle = req.query.job;
+
+        // Fetch user profile data from tblprofile
+        const profileQuery = `
+            SELECT firstname, lastname, employee_id, job_selected, score, result
+            FROM tblprofile
+            WHERE email = $1 AND job_selected = $2
+        `;
+        const profileResult = await pool.query(profileQuery, [userEmail, selectedJobTitle]);
+
+        if (profileResult.rows.length === 0) {
+            return res.status(404).json({ success: false, message: "User profile not found" });
+        }
+
+        const { firstname, lastname, employee_id, job_selected, score, result } = profileResult.rows[0];
+        const companyAddress = "Congressional Rd Ext, Barangay 171, Caloocan, Metro Manila";
+
+        // Fetch HR details from tblaccount based on email in session storage
+        const hrEmail = req.query.hrEmail;
+        const hrQuery = `
+            SELECT firstname, lastname, role
+            FROM tblaccount
+            WHERE account_email = $1
+        `;
+        const hrResult = await pool.query(hrQuery, [hrEmail]);
+
+        if (hrResult.rows.length === 0) {
+            return res.status(404).json({ success: false, message: "HR details not found" });
+        }
+
+        const { firstname: hrFirstname, lastname: hrLastname, role: hrRole } = hrResult.rows[0];
+        const appraisalDate = format(new Date(), 'MMMM dd, yyyy');
+
+        // Generate token with 3-month expiration
+        const token = generateToken('90d');
+
+        // Update tblprofile with the generated token
+        const updateTokenQuery = `
+            UPDATE tblprofile
+            SET
+                job_selected = NULL,
+                current_phase = NULL,
+                retries = NULL,
+                score = NULL,
+                result = NULL,
+                restriction_token = $1
+            WHERE email = $2 AND job_selected = $3
+        `;
+        await pool.query(updateTokenQuery, [token, userEmail, selectedJobTitle]);
+
+        // Delete data from tblappraisal based on email and position
+        const deleteAppraisalQuery = `
+            DELETE FROM tblappraisal
+            WHERE email = $1 AND position = $2
+        `;
+        await pool.query(deleteAppraisalQuery, [userEmail, selectedJobTitle]);
+
+        // Create a PDF document
+        const doc = new PDFDocument({ size: 'letter' });
+
+        let buffers = [];
+        doc.on('data', buffers.push.bind(buffers));
+        doc.on('end', () => {
+            let pdfData = Buffer.concat(buffers);
+            res
+                .writeHead(200, {
+                    'Content-Length': Buffer.byteLength(pdfData),
+                    'Content-Type': 'application/pdf',
+                    'Content-Disposition': 'attachment; filename=appraisal_letter.pdf',
+                })
+                .end(pdfData);
+        });
+
+        // Header
+        doc.image('../frontend/src/assets/appraisal/logo.png', 50, 45, { width: 100 });
+        doc.moveDown();
+        doc.fontSize(12).text(companyAddress, 50, 65, { align: 'left' });
+        doc.text(appraisalDate, 50, 80, { align: 'left' });
+
+        doc.moveDown(2);
+
+        // Title
+        doc.fontSize(16).text('Appraisal Letter – CONFIDENTIAL', { align: 'center', underline: true });
+        doc.moveDown();
+
+        // Employee details
+        doc.fontSize(12).text(`Dear ${firstname} ${lastname},`);
+        doc.moveDown();
+        doc.text(`Employee ID: ${employee_id}`);
+        doc.moveDown();
+
+        // Appraisal message
+        doc.text(`Congratulations on successfully completing your career roadmap.`);
+        doc.moveDown();
+        doc.text(`Your dedication and commitment have been exemplary, and we are pleased to inform you that based on your performance, you have achieved an appraisal score of ${score}%.`);
+        doc.moveDown();
+        doc.text(`As a result of your outstanding performance, we are delighted to offer you the ${result}. This change will be effective by the end of the month.`);
+        doc.moveDown();
+        doc.text(`Your contributions to our team have been invaluable, and we look forward to your continued success.`);
+        doc.moveDown();
+
+        // Signature
+        doc.image('../frontend/src/assets/appraisal/signature.png', 50, doc.y, { width: 100 });
+
+        // Closing and HR details
+        doc.text('Best regards,');
+        doc.moveDown();
+        doc.text(`${hrFirstname} ${hrLastname}`);
+        doc.text(`${hrRole}`);
+
+        // Finalize the PDF and end the stream
+        doc.end();
+
+
+    } catch (error) {
+        console.error('Error generating appraisal letter PDF:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+};
+// Print Rejection Letter to PDF
+export const printRejection = async (req, res) => {
+    try {
+        const userEmail = req.query.email;
+        const selectedJobTitle = req.query.job;
+
+        // Fetch user profile data from tblprofile
+        const profileQuery = `
+            SELECT firstname, lastname, employee_id, job_selected, score
+            FROM tblprofile
+            WHERE email = $1 AND job_selected = $2
+        `;
+        const profileResult = await pool.query(profileQuery, [userEmail, selectedJobTitle]);
+
+        if (profileResult.rows.length === 0) {
+            return res.status(404).json({ success: false, message: "User profile not found" });
+        }
+
+        const { firstname, lastname, employee_id, job_selected, score } = profileResult.rows[0];
+        const companyAddress = "Congressional Rd Ext, Barangay 171, Caloocan, Metro Manila";
+
+        // Fetch HR details from tblaccount based on hrEmail
+        const hrEmail = req.query.hrEmail;
+        const hrQuery = `
+            SELECT firstname, lastname, role
+            FROM tblaccount
+            WHERE account_email = $1
+        `;
+        const hrResult = await pool.query(hrQuery, [hrEmail]);
+
+        if (hrResult.rows.length === 0) {
+            return res.status(404).json({ success: false, message: "HR details not found" });
+        }
+
+        const { firstname: hrFirstname, lastname: hrLastname, role: hrRole } = hrResult.rows[0];
+
+        const appraisalDate = format(new Date(), 'MMMM dd, yyyy');
+
+        // Generate token with 1-week expiration
+        const token = generateToken('7d');
+
+        // Update tblprofile with the generated token
+        const updateTokenQuery = `
+            UPDATE tblprofile
+            SET
+                job_selected = NULL,
+                current_phase = NULL,
+                retries = NULL,
+                score = NULL,
+                result = NULL,
+                restriction_token = $1
+            WHERE email = $2 AND job_selected = $3
+        `;
+        await pool.query(updateTokenQuery, [token, userEmail, selectedJobTitle]);
+
+        // Delete data from tblappraisal based on email and position
+        const deleteAppraisalQuery = `
+            DELETE FROM tblappraisal
+            WHERE email = $1 AND position = $2
+        `;
+        await pool.query(deleteAppraisalQuery, [userEmail, selectedJobTitle]);
+
+        // Create a PDF document
+        const doc = new PDFDocument({ size: 'letter' });
+
+        let buffers = [];
+        doc.on('data', buffers.push.bind(buffers));
+        doc.on('end', () => {
+            let pdfData = Buffer.concat(buffers);
+            res
+                .writeHead(200, {
+                    'Content-Length': Buffer.byteLength(pdfData),
+                    'Content-Type': 'application/pdf',
+                    'Content-Disposition': 'attachment; filename=rejection_letter.pdf',
+                })
+                .end(pdfData);
+        });
+
+        // Header
+        doc.image('../frontend/src/assets/appraisal/logo.png', 50, 45, { width: 100 });
+        doc.moveDown();
+        doc.fontSize(12).text(companyAddress, 50, 65, { align: 'left' });
+        doc.text(appraisalDate, 50, 80, { align: 'left' });
+
+        doc.moveDown(2);
+
+        // Title
+        doc.fontSize(16).text('Appraisal Letter – CONFIDENTIAL', { align: 'center', underline: true });
+        doc.moveDown();
+
+        // Employee details
+        doc.fontSize(12).text(`Dear ${firstname} ${lastname},`);
+        doc.moveDown();
+        doc.text(`Employee ID: ${employee_id}`);
+        doc.moveDown();
+
+        // Rejection message
+        doc.text(`We regret to inform you that based on your score on the assessment, we are unable to proceed with the ${job_selected} position at this time.`);
+        doc.moveDown();
+        doc.text(`Your recent assessment score was ${score}%, which does not meet our criteria for this role.`);
+        doc.moveDown();
+        doc.text(`We encourage you to continue your professional development and to retry for future opportunities.`);
+        doc.moveDown();
+
+        // Signature
+        doc.image('../frontend/src/assets/appraisal/signature.png', 50, doc.y, { width: 100 });
+
+        // Closing and HR details
+        doc.text('Best regards,');
+        doc.moveDown();
+        doc.text(`${hrFirstname} ${hrLastname}`);
+        doc.text(`${hrRole}`);
+
+        // Finalize the PDF and end the stream
+        doc.end();
+
+    } catch (error) {
+        console.error('Error generating rejection letter PDF:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+};
+
+// Employee Work History ***********************************************
+// Automatic ID
+export const getNextJobId = async (req, res) => {
+    try {
+        // Query to select the maximum ID from tblworkhistory and increment it by 1
+        const query = `
+            SELECT COALESCE(MAX(id), 0) + 1 AS nextid FROM tblworkhistory
+        `;
+
+        // Execute the query
+        const result = await pool.query(query);
+
+        console.log("Query result:", result.rows[0]); // Log the query result
+
+        // Extract the next ID from the result
+        const nextId = parseInt(result.rows[0].nextid) || 1;
+
+        console.log("Next job ID:", nextId); // Log the next job ID
+
+        // Send the next ID as the response
+        res.status(200).json({ nextId });
+    } catch (error) {
+        console.error('Error fetching next job ID:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
-// Delete Edu Info
-
-// Add Job Info
-// Edit Job Info
-export const editJobInfo = async (req, res) => {
+// Create/Add
+export const addProfileJobInfo = async (req, res) => {
     try {
-        const { employee_id, company, jobTitle, skills, companyAddress, startDate, endDate } = req.body;
+        // Extract employee ID from the request parameters
+        const employeeId = req.params.editEmployeeId;
 
-        // Update the employee information in the tblprofile table
-        const profileQuery = `
-            UPDATE tblworkhistory
-            SET 
-            company = $1,
-            job_title = $2,
-            skills = $3,
-            company_address = $4,
-            start_date = $5,
-            end_date = $6
-            WHERE employee_id = $7
+        // Extract job information from the request body
+        const { company, jobTitle, skills, companyAddress, startDate, endDate } = req.body;
+
+        // Query to insert new job information into the database
+        const query = `
+            INSERT INTO tblworkhistory (employee_id, company, job_title, skills, company_address, start_date, end_date)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
         `;
-        const profileValues = [company, jobTitle, skills, companyAddress, startDate, endDate, employee_id];
-        await pool.query(profileQuery, profileValues);
 
-        res.status(200).json({ message: "Employee information updated successfully." });
+        // Execute the query with the provided parameters
+        await pool.query(query, [employeeId, company, jobTitle, skills, companyAddress, startDate, endDate]);
+
+        // Send success response
+        res.status(201).json({ message: 'New job information added successfully' });
     } catch (error) {
-        console.error("Error updating employee information:", error);
-        res.status(500).json({ error: "Internal server error" });
+        console.error('Error adding new job information:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
-}
-// Edit Job Info Autofill
+};
+// Autofill
 export const getJobInfoById = async (req, res) => {
     try {
         const employeeId = req.params.editEmployeeId; // Assuming the employee ID is sent as a route parameter
@@ -1456,107 +1976,119 @@ export const getJobInfoById = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
-// Delete Job Info
-
-// Employee Education History CRUD
-// Create
-export const addEduHistory = async (req, res) => {
+// Edit
+export const editJobInfo = async (req, res) => {
     try {
-        const {
-            employeeId,
-            school,
-            yearGraduated,
-            gradeLevel,
-            degree
-        } = req.body;
+        const employeeId = req.params.editEmployeeId
+        const { company, jobTitle, skills, companyAddress, startDate, endDate } = req.body;
 
-        // Connect to the database
-        const client = await pool.connect();
-        await client.query(`
-            INSERT INTO tbleducbackground (
-                employee_id,
-                school,
-                year_graduated,
-                grade_level,
-                degree_course
-            ) VALUES (
-                $1, $2, $3, $4, $5
-            )
-        `, [
-            employeeId,
-            school,
-            yearGraduated,
-            gradeLevel,
-            degree
-        ]);
+        // Fetch the editJobInfoId from query parameters
+        const editJobInfoId = req.query.editJobInfoId;
 
-        client.release();
-
-        // Send success response
-        res.status(201).json({ message: 'Education history added successfully' });
-    } catch (error) {
-        console.error('Error adding education history:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-};
-// Read
-export const readEduHistory = async (req, res) => {
-    try {
-        const client = await pool.connect();
-        const result = await client.query(`
-        SELECT 
-        p.employee_id, 
-        p.firstname, 
-        p.lastname,
-        e.school,
-        e.year_graduated,
-        e.grade_level,
-        e.degree_course
-    FROM 
-        tblprofile p
-    JOIN 
-        tbleducbackground e ON p.employee_id = e.employee_id;
-        `);
-        const employees = result.rows;
-        client.release();
-        res.status(200).json(employees);
-    } catch (err) {
-        console.error('Error executing query', err);
-        res.status(500).send('Internal Server Error');
-    }
-};
-// Update
-export const editEduHistory = async (req, res) => {
-    try {
-        const { employee_id, school, yearGraduated, gradeLevel, degree } = req.body;
-
-        // Update the employee information in the database
-        const query = `
-            UPDATE tbleducbackground
+        // Update the job information in the tblworkhistory table
+        const jobInfoQuery = `
+            UPDATE tblworkhistory
             SET 
-                school = $1,
-                year_graduated = $2,
-                grade_level = $3,
-                degree_course = $4
-            WHERE employee_id = $5
+            company = $1,
+            job_title = $2,
+            skills = $3,
+            company_address = $4,
+            start_date = $5,
+            end_date = $6
+            WHERE employee_id = $7
+            AND id = $8
         `;
+        const jobInfoValues = [company, jobTitle, skills, companyAddress, startDate, endDate, employeeId, editJobInfoId];
 
-        const values = [school, yearGraduated, gradeLevel, degree, employee_id]; // Include employee_id
-        await pool.query(query, values);
+        await pool.query(jobInfoQuery, jobInfoValues);
 
-        res.status(200).json({ message: "Employee information updated successfully." });
+        res.status(200).json({ message: "Job information updated successfully." });
     } catch (error) {
-        console.error("Error updating employee information:", error);
+        console.error("Error updating job information:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 }
-// Autofill Edit Panel
-export const getEduHistoryById = async (req, res) => {
+// Delete
+export const deleteProfileJobInfo = async (req, res) => {
+    try {
+        const { editEmployeeId, jobId } = req.params;
+
+        // Query to delete the job history entry from the database
+        const query = `
+        DELETE FROM tblworkhistory
+        WHERE employee_id = $1 AND id = $2
+      `;
+
+        // Execute the query with the provided parameters
+        await pool.query(query, [editEmployeeId, jobId]);
+
+        // Send success response
+        res.status(200).json({ message: 'Job history deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting job history:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+// Employee Education History ***********************************************
+// Automatic ID
+export const getNextEduId = async (req, res) => {
+    try {
+        // Query to select the maximum ID from tblworkhistory and increment it by 1
+        const query = `
+            SELECT COALESCE(MAX(id), 0) + 1 AS nextid FROM tbleducbackground
+        `;
+
+        // Execute the query
+        const result = await pool.query(query);
+
+        console.log("Query result:", result.rows[0]); // Log the query result
+
+        // Extract the next ID from the result
+        const nextId = parseInt(result.rows[0].nextid) || 1;
+
+        console.log("Next edu ID:", nextId); // Log the next edu ID
+
+        // Send the next ID as the response
+        res.status(200).json({ nextId });
+    } catch (error) {
+        console.error('Error fetching next edu ID:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+// Create/Add
+export const addProfileEduInfo = async (req, res) => {
+    try {
+        // Extract employee ID from the request parameters
+        const employeeId = req.params.editEmployeeId;
+
+        // Extract job information from the request body
+        const { school, yearGraduated, gradeLevel, degreeCourse } = req.body;
+
+        // Query to insert new job information into the database
+        const query = `
+            INSERT INTO tbleducbackground (employee_id, school, year_graduated, grade_level, degree_course)
+            VALUES ($1, $2, $3, $4, $5)
+        `;
+
+        // Execute the query with the provided parameters
+        await pool.query(query, [employeeId, school, yearGraduated, gradeLevel, degreeCourse]);
+
+        // Send success response
+        res.status(201).json({ message: 'New edu information added successfully' });
+    } catch (error) {
+        console.error('Error adding new edu information:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+// Autofill
+export const getEduInfoById = async (req, res) => {
     try {
         const employeeId = req.params.editEmployeeId; // Assuming the employee ID is sent as a route parameter
-        // Construct the SQL query to select employee data based on employee ID
+        // Construct the SQL query to select all education history records for the employee
         const query = {
             text: `SELECT 
+             id,
              school,
              year_graduated,
              grade_level,
@@ -1566,447 +2098,68 @@ export const getEduHistoryById = async (req, res) => {
         };
         // Execute the SQL query
         const result = await pool.query(query);
-        // Check if any row was found
+        // Check if any rows were found
         if (result.rows.length > 0) {
-            const employeeData = result.rows[0];
-            // Send the employee data as JSON response
-            res.status(200).json(employeeData);
+            const eduHistory = result.rows;
+            // Send the job history data as JSON response
+            res.status(200).json(eduHistory);
         } else {
-            // If no employee with the specified ID is found, send a 404 error
-            res.status(404).json({ error: 'Employee not found' });
+            // If no education history records with the specified employee ID are found, send a 404 error
+            res.status(404).json({ error: 'Education history not found for the employee' });
         }
     } catch (error) {
-        console.error('Error fetching employee data:', error);
+        console.error('Error fetching education history data:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
-// Delete
-export const deleteEduHistory = async (req, res) => {
-    const employeeId = req.body.employeeId; // Retrieve employee ID from request body
-
-    if (!employeeId) {
-        return res.status(400).json({ error: 'Employee ID not provided in the request body' });
-    }
-
+// Edit
+export const editEduInfo = async (req, res) => {
     try {
-        // Construct the SQL query to delete the row with the specified employee ID
-        const query = {
-            text: `
-                UPDATE tbleducbackground
-                SET school = NULL, year_graduated = NULL, grade_level = NULL, degree_course = NULL
-                WHERE employee_id = $1
-            `,
-            values: [employeeId],
-        };
+        const employeeId = req.params.editEmployeeId
+        const { school, yearGraduated, gradeLevel, degreeCourse } = req.body;
 
-        // Execute the SQL query
-        const result = await pool.query(query);
+        // Fetch the editJobInfoId from query parameters
+        const editEduInfoId = req.query.editEduInfoId;
 
-        // Check if any row was affected
-        if (result.rowCount > 0) {
-            res.status(200).json({ message: 'Employee deleted successfully' });
-        } else {
-            res.status(404).json({ error: 'Employee not found' });
-        }
-    } catch (error) {
-        console.error('Error deleting employee:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-};
-
-// Employee Job History CRUD
-// Create
-export const addJobHistory = async (req, res) => {
-    try {
-        const {
-            employeeId,
-            jobTitle,
-            company,
-            companyAddress,
-            skills,
-            startDate,
-            endDate
-        } = req.body;
-
-        // Connect to the database
-        const client = await pool.connect();
-        await client.query(`
-            INSERT INTO tblworkhistory (
-                employee_id,
-                company,
-                job_title,
-                skills,
-                company_address,
-                start_date,
-                end_date
-            ) VALUES (
-                $1, $2, $3, $4, $5, $6, $7
-            )
-        `, [
-            employeeId,
-            jobTitle,
-            company,
-            companyAddress,
-            skills,
-            startDate,
-            endDate
-        ]);
-
-        client.release();
-
-        // Send success response
-        res.status(201).json({ message: 'Job history added successfully' });
-    } catch (error) {
-        console.error('Error adding Job history:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-};
-// Read
-export const readJobHistory = async (req, res) => {
-    try {
-        const client = await pool.connect();
-        const result = await client.query(`
-        SELECT 
-        p.employee_id, 
-        p.firstname, 
-        p.lastname,
-        w.company,
-        w.job_title,
-        w.skills,
-        w.company_address,
-        w.start_date,
-        w.end_date
-    FROM 
-        tblprofile p
-    JOIN 
-        tblworkhistory w ON p.employee_id = w.employee_id;
-
-        `);
-        const employees = result.rows;
-        client.release();
-        res.status(200).json(employees);
-    } catch (err) {
-        console.error('Error executing query', err);
-        res.status(500).send('Internal Server Error');
-    }
-};
-// Update
-export const editJobHistory = async (req, res) => {
-    try {
-        const { employee_id, company, jobTitle, skills, companyAddress, startDate, endDate } = req.body;
-
-        // Update the employee information in the database
-        const query = `
-            UPDATE tblworkhistory
+        // Update the job information in the tblworkhistory table
+        const eduInfoQuery = `
+            UPDATE tbleducbackground
             SET 
-                company = $1,
-                job_title = $2,
-                skills = $3,
-                company_address = $4,
-                start_date = $5,
-                end_date = $6
-            WHERE employee_id = $7
+            school = $1,
+            year_graduated = $2,
+            grade_level = $3,
+            degree_course = $4
+            WHERE employee_id = $5
+            AND id = $6
         `;
+        const eduInfoValues = [school, yearGraduated, gradeLevel, degreeCourse, employeeId, editEduInfoId];
 
-        const values = [company, jobTitle, skills, companyAddress, startDate, endDate, employee_id]; // Include employee_id
-        await pool.query(query, values);
+        await pool.query(eduInfoQuery, eduInfoValues);
 
-        res.status(200).json({ message: "Employee information updated successfully." });
+        res.status(200).json({ message: "Edu information updated successfully." });
     } catch (error) {
-        console.error("Error updating employee information:", error);
+        console.error("Error updating edu information:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 }
-// Autofill Edit Panel
-export const getJobHistoryById = async (req, res) => {
-    try {
-        const employeeId = req.params.editEmployeeId; // Assuming the employee ID is sent as a route parameter
-        // Construct the SQL query to select employee data based on employee ID
-        const query = {
-            text: `SELECT 
-             company,
-             job_title,
-             skills,
-             company_address,
-             start_date,
-             end_date
-        FROM tblworkhistory WHERE employee_id = $1`,
-            values: [employeeId],
-        };
-        // Execute the SQL query
-        const result = await pool.query(query);
-        // Check if any row was found
-        if (result.rows.length > 0) {
-            const employeeData = result.rows[0];
-            // Send the employee data as JSON response
-            res.status(200).json(employeeData);
-        } else {
-            // If no employee with the specified ID is found, send a 404 error
-            res.status(404).json({ error: 'Employee not found' });
-        }
-    } catch (error) {
-        console.error('Error fetching employee data:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-};
 // Delete
-export const deleteJobHistory = async (req, res) => {
-    const employeeId = req.body.employeeId; // Retrieve employee ID from request body
-
-    if (!employeeId) {
-        return res.status(400).json({ error: 'Employee ID not provided in the request body' });
-    }
-
+export const deleteProfileEduInfo = async (req, res) => {
     try {
-        // Construct the SQL query to delete the row with the specified employee ID
-        const query = {
-            text: `
-                UPDATE tblworkhistory 
-                SET company = NULL, job_title = NULL, skills = NULL, company_address = NULL, start_date = NULL, end_date = NULL
-                WHERE employee_id = $1
-            `,
-            values: [employeeId],
-        };
+        const { editEmployeeId, eduId } = req.params;
 
-        // Execute the SQL query
-        const result = await pool.query(query);
-
-        // Check if any row was affected
-        if (result.rowCount > 0) {
-            res.status(200).json({ message: 'Employee deleted successfully' });
-        } else {
-            res.status(404).json({ error: 'Employee not found' });
-        }
-    } catch (error) {
-        console.error('Error deleting employee:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-};
-
-// Employee Job Info CRUD
-// Read
-export const readJobInfo = async (req, res) => {
-    try {
-        const client = await pool.connect();
-        const result = await client.query(`
-            SELECT 
-                employee_id, 
-                firstname, 
-                lastname, 
-                job_position, 
-                job_level,
-                skills
-            FROM tblprofile;
-        `);
-        const employees = result.rows;
-        client.release();
-        res.status(200).json(employees);
-    } catch (err) {
-        console.error('Error executing query', err);
-        res.status(500).send('Internal Server Error');
-    }
-};
-// Update
-{/*
-export const editJobInfo = async (req, res) => {
-    try {
-        const { employee_id, jobPosition, jobLevel, skills } = req.body;
-
-        // Update the employee information in the database
+        // Query to delete the job history entry from the database
         const query = `
-            UPDATE tblprofile 
-            SET 
-                job_position = $1,
-                job_level = $2,
-                skills = $3
-            WHERE employee_id = $4
-        `;
-
-        const values = [jobPosition, jobLevel, skills, employee_id]; // Include employee_id
-        await pool.query(query, values);
-
-        res.status(200).json({ message: "Employee information updated successfully." });
-    } catch (error) {
-        console.error("Error updating employee information:", error);
-        res.status(500).json({ error: "Internal server error" });
-    }
-}
-// Autofill Edit Panel
-
-export const getJobInfoById = async (req, res) => {
-    try {
-        const employeeId = req.params.editEmployeeId; // Assuming the employee ID is sent as a route parameter
-        // Construct the SQL query to select employee data based on employee ID
-        const query = {
-            text: `SELECT 
-             job_position,
-             job_level,
-             skills
-        FROM tblprofile WHERE employee_id = $1`,
-            values: [employeeId],
-        };
-        // Execute the SQL query
-        const result = await pool.query(query);
-        // Check if any row was found
-        if (result.rows.length > 0) {
-            const employeeData = result.rows[0];
-            // Send the employee data as JSON response
-            res.status(200).json(employeeData);
-        } else {
-            // If no employee with the specified ID is found, send a 404 error
-            res.status(404).json({ error: 'Employee not found' });
-        }
-    } catch (error) {
-        console.error('Error fetching employee data:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-};
-*/}
-// Delete
-export const deleteJobInfo = async (req, res) => {
-    const employeeId = req.body.employeeId; // Retrieve employee ID from request body
-
-    if (!employeeId) {
-        return res.status(400).json({ error: 'Employee ID not provided in the request body' });
-    }
-
-    try {
-        // Construct the SQL query to delete the row with the specified employee ID
-        const query = {
-            text: `
-                UPDATE tblprofile 
-                SET job_position = NULL, job_level = NULL, skills = NULL
-                WHERE employee_id = $1
-            `,
-            values: [employeeId],
-        };
-
-        // Execute the SQL query
-        const result = await pool.query(query);
-
-        // Check if any row was affected
-        if (result.rowCount > 0) {
-            res.status(200).json({ message: 'Employee deleted successfully' });
-        } else {
-            res.status(404).json({ error: 'Employee not found' });
-        }
-    } catch (error) {
-        console.error('Error deleting employee:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-};
-// Employee Account Info CRUD
-// Read
-export const readAccountInfo = async (req, res) => {
-    try {
-        const client = await pool.connect();
-        const result = await client.query(`
-            SELECT 
-                employee_id, 
-                firstname, 
-                lastname, 
-                account_email, 
-                account_password,
-                account_password_plain,
-                role
-            FROM tblaccount;
-        `);
-        const employees = result.rows;
-        client.release();
-        res.status(200).json(employees);
-    } catch (err) {
-        console.error('Error executing query', err);
-        res.status(500).send('Internal Server Error');
-    }
-};
-// Update
-export const editAccountInfo = async (req, res) => {
-    try {
-        const { employee_id, passwordPlain } = req.body;
-
-        // Generate a salt for password hashing
-        const saltRounds = 10; // Adjust this value as needed (higher = slower but more secure)
-        const salt = await bcrypt.genSalt(saltRounds);
-
-        // Hash the password with the salt
-        const hashedPassword = await bcrypt.hash(passwordPlain, salt);
-
-        // Update the employee information with hashed password
-        const query = `
-        UPDATE tblaccount 
-        SET 
-          account_password_plain = $1,
-          account_password =$2
-        WHERE employee_id = $3
+        DELETE FROM tbleducbackground
+        WHERE employee_id = $1 AND id = $2
       `;
 
-        const values = [passwordPlain, hashedPassword, employee_id]; // Use hashedPassword instead of passwordPlain
+        // Execute the query with the provided parameters
+        await pool.query(query, [editEmployeeId, eduId]);
 
-        await pool.query(query, values);
-
-        res.status(200).json({ message: "Employee information updated successfully." });
+        // Send success response
+        res.status(200).json({ message: 'Edu history deleted successfully' });
     } catch (error) {
-        console.error("Error updating employee information:", error);
-        res.status(500).json({ error: "Internal server error" });
-    }
-}
-// Autofill Edit Panel
-export const getAccountInfoById = async (req, res) => {
-    try {
-        const employeeId = req.params.editEmployeeId; // Assuming the employee ID is sent as a route parameter
-        // Construct the SQL query to select employee data based on employee ID
-        const query = {
-            text: `SELECT
-             account_password_plain
-        FROM tblaccount WHERE employee_id = $1`,
-            values: [employeeId],
-        };
-        // Execute the SQL query
-        const result = await pool.query(query);
-        // Check if any row was found
-        if (result.rows.length > 0) {
-            const employeeData = result.rows[0];
-            // Send the employee data as JSON response
-            res.status(200).json(employeeData);
-        } else {
-            // If no employee with the specified ID is found, send a 404 error
-            res.status(404).json({ error: 'Employee not found' });
-        }
-    } catch (error) {
-        console.error('Error fetching employee data:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-};
-// Delete
-export const deleteAccountInfo = async (req, res) => {
-    const employeeId = req.body.employeeId; // Retrieve employee ID from request body
-
-    if (!employeeId) {
-        return res.status(400).json({ error: 'Employee ID not provided in the request body' });
-    }
-
-    try {
-        // Construct the SQL query to delete the row with the specified employee ID
-        const query = {
-            text: `
-                UPDATE tblaccount 
-                SET account_password = NULL, account_password_plain = NULL
-                WHERE employee_id = $1
-            `,
-            values: [employeeId],
-        };
-
-        // Execute the SQL query
-        const result = await pool.query(query);
-
-        // Check if any row was affected
-        if (result.rowCount > 0) {
-            res.status(200).json({ message: 'Employee deleted successfully' });
-        } else {
-            res.status(404).json({ error: 'Employee not found' });
-        }
-    } catch (error) {
-        console.error('Error deleting employee:', error);
+        console.error('Error deleting edu history:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
