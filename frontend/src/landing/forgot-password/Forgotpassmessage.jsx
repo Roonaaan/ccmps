@@ -8,21 +8,18 @@ import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
 import './styles/Forgotpassword.css' 
 
 // Logo
-import Logo from '../../assets/login/logo-dark.png'
+import Logo from '../../assets/login/logo-light.png'
 
 const Forgotpassmessage = ({ onClose, email }) => {
   
-
-
   const resendEmail = async () => {
     try {
-      const response = await fetch ('http://localhost/CareerCompass/backend/login-page/resend-email.php', {
+      const response = await fetch('http://localhost:8800/api/auth/resend-email', {
         method: 'POST',
         headers: {
-          'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email: `${email}` }),
+        body: JSON.stringify({ email }),
       });
 
       const data = await response.json();
@@ -33,7 +30,7 @@ const Forgotpassmessage = ({ onClose, email }) => {
         console.error('Failed to resend email');
       }
     } catch (error) {
-      console.error('An error occured', error);
+      console.error('An error occurred', error);
     }
   };
 

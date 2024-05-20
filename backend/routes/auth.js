@@ -1,6 +1,6 @@
 import express from "express";
 import {
-        login, sendEmail, sendResetEmail, resendResetEmail,
+        login, sendEmail, sendResetEmail, resendResetEmail, resetPassword,
         getUserProfile, getUserDetails, getUserJob, saveJob, maxPhaseNumber, getAssessment, getCourse, retryCount, getQuestions, storeAnswer, answerResult, retryAssessment, proceedAssessment, checkScore, savePhaseNumber, getPhaseNumber,
         adminLogin, getAdminProfile, employeeID,
         totalNumberBanner, chartDashboard,
@@ -16,15 +16,15 @@ const router = express.Router();
 // User Side Routes.....................................................................................
 // Route for user login
 router.post("/login", login);
-
 // Route for sending email
 router.post("/send-email", sendEmail);
-
 // Route for sending reset password email
 router.post("/reset-password", sendResetEmail);
-
 // Route for resending reset password email
 router.post("/resend-email", resendResetEmail);
+// Route for resetting password
+router.post ("/reset-userpassword", resetPassword);
+
 
 // User Logged In Routes.....................................................................................
 // Route for fetching user profile

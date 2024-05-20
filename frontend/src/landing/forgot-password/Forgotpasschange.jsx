@@ -1,18 +1,16 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-// CSS
+// Assets
 import './styles/Forgotpassword.css'
-
-// Logo
-import Logo from '../../assets/login/logo-dark.png'
+import Logo from '../../assets/login/logo-light.png'
+import Swal from 'sweetalert2';
 
 export const Forgotpasschange = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const token = queryParams.get("token");
-
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [passwordError, setPasswordError] = useState('');
@@ -29,25 +27,6 @@ export const Forgotpasschange = () => {
 
     const handleSubmit = async () => {
         try {
-            const response = await fetch('http://localhost/CareerCompass/backend/login-page/reset-password.php', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    token: token,
-                    newPassword: newPassword
-                })
-            });
-
-            const data = await response.json();
-
-            if (!data.success) {
-                setPasswordError('Incorrect Current Password');
-                return;
-            }
-
             if (newPassword.length < 8) {
                 setPasswordError('Password must be at least 8 characters long');
             } else if (!/[A-Z]/.test(newPassword)) {
@@ -63,13 +42,30 @@ export const Forgotpasschange = () => {
                 return;
             }
 
-            if (data.success) {
-                setPasswordError(<span style={{ color: 'green' }}> Password Successfully Changed </span>);
-                setTimeout(() => {
+            const response = await fetch('http://localhost:8800/api/auth/reset-userpassword', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: token,
+                    newPassword: newPassword
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Password Changed Successfully',
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
                     navigate('/');
-                }, 1000);
+                });
             } else {
-                console.error(data.message);
+                setPasswordError(data.message);
             }
         } catch (error) {
             console.error('An error occurred', error);
@@ -78,50 +74,54 @@ export const Forgotpasschange = () => {
 
     // Enter Event Key (Press enter)
     const handleKeydown = (event) => {
-        if(event.key === 'Enter'){
+        if (event.key === 'Enter') {
             handleSubmit();
         }
     };
 
     return (
         <>
-            <div className="imageHeader">
-                <img src={Logo} alt='Logo' className='imageHeaderLogo' />
-            </div>
-            <div className="headerContainer">
-                <div className="forgotPassHeader">
-                    <div className="forgotPassHeaderTitle"> Change your Password </div>
-                </div>
-                <div className="forgotPassHeaderText"> Enter your new password below </div>
-                <div className="inputs">
-                    <div className="input">
-                        <input
-                            type='password'
-                            placeholder=''
-                            value={newPassword}
-                            onChange={handleChangePassword}
-                            onKeyDown={handleKeydown}
-                        />
-                        <label htmlFor='password'> New Password </label>
+            <div className="forgotPassContainer">
+                <div className="forgotPassInner">
+                    <div className="imageHeader">
+                        <img src={Logo} alt='Logo' className='imageHeaderLogo' />
                     </div>
-                    <div className="input">
-                        <input
-                            type='password'
-                            placeholder=''
-                            value={confirmPassword}
-                            onChange={handleChangeConfirmPassword}
-                            onKeyDown={handleKeydown}
-                        />
-                        <label htmlFor='password'> Confirm New Password </label>
+                    <div className="forgotPassHeaderContainer">
+                        <div className="forgotPassHeader">
+                            <div className="forgotPassHeaderTitle"> Change your Password </div>
+                        </div>
+                        <div className="forgotPassHeaderText"> Enter your new password below </div>
+                        <div className="inputs">
+                            <div className="input">
+                                <input
+                                    type='password'
+                                    placeholder=''
+                                    value={newPassword}
+                                    onChange={handleChangePassword}
+                                    onKeyDown={handleKeydown}
+                                />
+                                <label htmlFor='password'> New Password </label>
+                            </div>
+                            <div className="input">
+                                <input
+                                    type='password'
+                                    placeholder=''
+                                    value={confirmPassword}
+                                    onChange={handleChangeConfirmPassword}
+                                    onKeyDown={handleKeydown}
+                                />
+                                <label htmlFor='password'> Confirm New Password </label>
+                            </div>
+                        </div>
+                        {passwordError && <div className="changePassErrorMsg">{passwordError}</div>}
+                        <div className='changePassSubmit'>
+                            <button
+                                className='submit'
+                                onClick={handleSubmit}
+                            > Change Password
+                            </button>
+                        </div>
                     </div>
-                </div>
-                {passwordError && <div className="changePassErrorMsg">{passwordError}</div>}             
-                <div className='changePassSubmit'>
-                    <button
-                        className='submit'
-                        onClick={handleSubmit}
-                    > Change Password
-                    </button>
                 </div>
             </div>
         </>

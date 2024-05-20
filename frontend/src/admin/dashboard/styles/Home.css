@@ -16,11 +16,11 @@
 }
 
 .home-header {
-  margin: 20px 0 40px 10px;
+  margin: 20px 0 30px 10px;
 }
 
 .home-row {
-  margin: 0 0 40px 10px;
+  margin: 0 0 20px 10px;
 }
 
 .home-row-card-banner {
@@ -53,4 +53,28 @@
 .row-card-banner-data span {
   font-size: 14px;
   font-weight: 600;
+}
+
+.home-row-chart-card {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 0 0px 10px
+}
+
+.home-row-chart-card-frame {
+  border: 1px solid black;
+  border-radius: 10px;
+  width: 620px;
+  height: 450px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+.row-chart-contents {
+  width: 400px;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
 }
