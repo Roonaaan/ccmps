@@ -134,8 +134,6 @@ const Recommend = () => {
     }, []);
 
     const handleProceed = async () => {
-        const selectedJob = sessionStorage.getItem('selectedJob');
-
         if (selectedJob !== null) {
             const selectedJobTitle = recommendedJobs[selectedJob].title; // Get the title of the selected job
             const userEmail = sessionStorage.getItem('user');
