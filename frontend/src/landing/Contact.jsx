@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 // Assets
 import './styles/Contact.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebookSquare, faYoutube, faGithub } from "@fortawesome/free-brands-svg-icons";
 import logo from "../assets/homepage/final-topright-logo-light.png";
@@ -29,34 +31,25 @@ const Contact = () => {
         navigate("/Contact-Us");
     };
 
-    //PHP API Connection
-
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         try {
-            const response = await fetch('https://careercompass-818c6.web.app/backend/contact-us/send-email.php', {
+            const response = await fetch('https://ccmps-server-node.vercel.app/api/auth/send-email', {
                 method: 'POST',
                 headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json', // Fixed typo here
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ name, email, message }),
             });
-
             const data = await response.json();
-
-            if (data.success) {
-                setSuccessMessage('Message sent successfully');
-                setName('');
-                setEmail('');
-                setMessage('');
+            if (response.ok) {
+                toast.success('Email Sent Successfully');
             } else {
                 setErrorMessage(data.message);
             }
         } catch (error) {
-            console.error('An error occurred while sending the message:', error); // Log error to console
-            setErrorMessage('An error occurred while sending the message');
+            console.error('Error sending email:', error);
+            setErrorMessage('An error occurred while sending the email');
         }
     };
 
@@ -73,6 +66,7 @@ const Contact = () => {
 
     return (
         <>
+            <ToastContainer />
             {/* Navigation Bar */}
             <nav className="navigationbarWrapper">
                 <div className="navbarInner">
@@ -84,16 +78,6 @@ const Contact = () => {
                             onClick={handleHomeClick}
                         />
                     </div>
-                    {/* Login and About Header
-                    <div className="navRight">
-                        <button className="about" onClick={handleAboutClick}>
-                            About Us
-                        </button>
-                        <button className="login" onClick={handleLoginClick}>
-                            Log In
-                        </button>
-                    </div>
-                    */}
                 </div>
             </nav>
             {/* End of Navigation Bar */}

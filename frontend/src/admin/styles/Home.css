@@ -7,8 +7,8 @@
 
 .admin-navbar {
     display: flex;
-    align-items: row;
-    background-color: #f7f8f9;
+    flex-direction: row;
+    background-color: #27374D;
     justify-content: space-between;
     width: auto;
 }
@@ -30,17 +30,22 @@
     cursor: pointer;
 }
 
+.admin-username {
+    color: #DDE6ED;
+}
+
 .dashboard {
     height: auto;
     width: 255px;
     display: flex;
     justify-content: flex-start;
-    background-color: #f7f8f9;
+    background-color: #27374D;
 }
 
 .dashboard-content {
     display: flex;
     flex-direction: column;
+    color: #DDE6ED;
 }
 
 
@@ -70,22 +75,8 @@
 
 }
 
-.parent-main-frame span {
-    align-items: center;
-    display: flex;
-    justify-content: center;
-}
-
-.parent-main-frame li:hover {
-    background-color: #e8eaed;
-}
-
-.parent-main-frame li:active {
-    background-color: #dedfe0;
-}
-
 .clicked {
-    background-color: #dedfe0;
+    background-color: transparent;
     font-weight: 600
 }
 
@@ -119,7 +110,7 @@
     width: 100%;
     display: flex;
     overflow-x: auto;
-    /* Horizontal scrollbar will appear if content overflows horizontally */
+
 }
 
 .icons {

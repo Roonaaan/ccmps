@@ -3,6 +3,10 @@ import React, { useState, useEffect } from 'react';
 // Assets
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUsers, faBuilding, faBriefcase, faRoad } from '@fortawesome/free-solid-svg-icons';
+import { Chart, ArcElement, Tooltip, Legend } from 'chart.js'
+import { Doughnut } from 'react-chartjs-2';
+
+Chart.register(ArcElement, Tooltip, Legend);
 
 const HomeDashboard = () => {
   const [userRole, setUserRole] = useState('');
@@ -10,6 +14,8 @@ const HomeDashboard = () => {
   const [totalDepartments, setTotalDepartments] = useState(0);
   const [totalJobs, setTotalJobs] = useState(0);
   const [totalRoadmaps, setTotalRoadmaps] = useState(0);
+  const [jobsPerDepartment, setJobsPerDepartment] = useState([]);
+  const [employeesVsAdmins, setEmployeesVsAdmins] = useState([]);
 
   useEffect(() => {
     const role = sessionStorage.getItem('role');
@@ -53,6 +59,43 @@ const HomeDashboard = () => {
 
     fetchTotalNumbers();
   }, []);
+
+  useEffect(() => {
+    // Fetch chart data from the backend
+    const fetchChartData = async () => {
+      try {
+        const response = await fetch('https://ccmps-server-node.vercel.app/api/auth/chart-dashboard');
+        const data = await response.json();
+        if (data) {
+          console.log('Chart Data:', data);
+          setJobsPerDepartment(data.jobsPerDepartment);
+          setEmployeesVsAdmins(data.employeesVsAdmins);
+        }
+      } catch (error) {
+        console.error('Error fetching chart data:', error);
+      }
+    };
+
+    fetchChartData();
+  }, []);
+
+  const jobsPerDepartmentData = {
+    labels: jobsPerDepartment.map(dept => dept.department),
+    datasets: [{
+      data: jobsPerDepartment.map(dept => dept.total_jobs),
+      backgroundColor: ['#003366', '#FFA500', '#000080', '#CCCCCC', '#008000', '#008080'],
+      hoverOffset: 8
+    }]
+  };
+
+  const employeesVsAdminsData = {
+    labels: employeesVsAdmins.map(role => role.role_type),
+    datasets: [{
+      data: employeesVsAdmins.map(role => role.total_count),
+      backgroundColor: ['#33658A', '#27374D'],
+      hoverBackgroundColor: ['#33658A', '#27374D']
+    }]
+  };
 
   return (
     <>
@@ -98,11 +141,17 @@ const HomeDashboard = () => {
           </div>
           <div className="home-row-chart">
             <div className="home-row-chart-card">
-              <div className="row-chart-contents">
-
+              <div className="home-row-chart-card-frame">
+                <div className="row-chart-contents">
+                  <h2>Jobs Per Department</h2>
+                  <Doughnut data={jobsPerDepartmentData} />
+                </div>
               </div>
-              <div className="row-chart-contents">
-
+              <div className="home-row-chart-card-frame">
+                <div className="row-chart-contents">
+                  <h2>Employees vs Admins</h2>
+                  <Doughnut data={employeesVsAdminsData} />
+                </div>
               </div>
             </div>
           </div>

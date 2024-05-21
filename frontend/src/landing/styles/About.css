@@ -14,11 +14,10 @@ body {
   width: 100%;
   min-height: 60px;
   position: relative;
-  background: white;
+  background-color: #33658A;
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
   z-index: 1;
 
 }

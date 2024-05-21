@@ -14,10 +14,17 @@ const pool = new pg.Pool({ // Use 'pg.Pool' instead of 'Pool'
     }
 });
 
+// Tokens .......................................................................................
 // Roadmap Restriction Token
 const generateToken = (expiresIn) => {
     const secretKey = 'sikretongmalupetpwedengpabulong'; // Replace 'your_secret_key' with your actual secret key
     const token = jwt.sign({}, secretKey, { expiresIn });
+    return token;
+};
+// Generate Password Reset Token
+const generateResetToken = () => {
+    // Generate a random token using crypto module
+    const token = crypto.randomBytes(20).toString('hex');
     return token;
 };
 
@@ -62,38 +69,29 @@ export const login = async (req, res) => {
     }
 };
 
-// Generate Token
-const generateResetToken = () => {
-    // Generate a random token using crypto module
-    const token = crypto.randomBytes(20).toString('hex');
-    return token;
-};
-
 // Reset Password Request (Send Email)
 export const sendResetEmail = async (req, res) => {
     const { email } = req.body;
     const resetToken = generateResetToken();
-    const resetTokenExpiry = new Date(Date.now() + 10 * 60 * 1000);
+    const resetTokenExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes expiry
 
     try {
-        // Acquire a client from the pool
         const client = await pool.connect();
+        await client.query('BEGIN'); // Begin a transaction
 
         try {
-            // Prepare and execute the query using a prepared statement
             const insertQuery = `
-          INSERT INTO tblforgotpass (email, reset_token, reset_token_expiry)
-          VALUES ($1, $2, $3)
-        `;
+                INSERT INTO tblforgotpass (email, reset_token, reset_token_expiry)
+                VALUES ($1, $2, $3)
+            `;
             const result = await client.query(insertQuery, [email, resetToken, resetTokenExpiry]);
 
-            // Check query execution result
             if (result.rowCount > 0) {
                 console.log('Reset token inserted successfully');
 
-                // Send reset password email (logic remains unchanged)
+                // Send reset password email
                 const transporter = nodemailer.createTransport({
-                    service: 'Gmail', // Assuming you are using Gmail, change it if you're using a different provider
+                    service: 'Gmail',
                     auth: {
                         user: 'careercompassbscs@gmail.com', // Your email address
                         pass: 'qved wnte vpyt xiwy' // Your email password or app password if you have 2FA enabled
@@ -101,37 +99,31 @@ export const sendResetEmail = async (req, res) => {
                 });
 
                 const mailOptions = {
-                    from: 'careercompasbscs@gmail.com', // Sender address
-                    to: email, // Receiver address
-                    subject: 'Password Reset', // Subject line
-                    text: `To reset your password, click on the following link: https://ccmps.vercel.app/Login/Forgot-Password/Change-Password?token=${resetToken}` // Email body with the reset token link
+                    from: 'careercompassbscs@gmail.com',
+                    to: email,
+                    subject: 'Password Reset',
+                    html: `
+                        <p>Hello,</p>
+                        <p>To reset your password, click on the following link:</p>
+                        <a href="https://ccmps.vercel.app/Login/Forgot-Password/Change-Password?token=${resetToken}">Reset Password</a>
+                        <p>This link will expire in 10 minutes.</p>
+                        <p>If you did not request a password reset, please ignore this email.</p>
+                    `
                 };
 
-                transporter.sendMail(mailOptions, (error, info) => {
-                    if (error) {
-                        console.error('Error sending reset password email:', error);
-                        res.status(500).json({ success: false, message: 'An error occurred while sending reset password email' });
-                    } else {
-                        console.log('Reset password email sent:', info.response);
-                        res.status(200).json({ success: true, message: 'Reset password email sent successfully' });
-                    }
-                });
+                await transporter.sendMail(mailOptions);
+                await client.query('COMMIT'); // Commit the transaction
+                res.status(200).json({ success: true, message: 'Reset password email sent successfully' });
             } else {
                 console.warn('No rows affected by the query');
                 throw new Error('Failed to insert reset token');
             }
         } catch (error) {
-            // Handle database-specific errors
-            if (error.code) { // Check for Postgres error codes (optional)
-                console.error('Database error:', error.code, error.message);
-                // Handle specific error codes here (e.g., unique constraint violations)
-                res.status(500).json({ success: false, message: 'An error occurred while processing the request (Database error)' });
-            } else {
-                console.error('Error occurred during database operation:', error);
-                res.status(500).json({ success: false, message: 'An error occurred while processing the request (Database operation error)' });
-            }
+            await client.query('ROLLBACK'); // Rollback the transaction
+            console.error('Error sending reset password email:', error);
+            res.status(500).json({ success: false, message: 'An error occurred while sending reset password email' });
         } finally {
-            await client.release(); // Release the client back to the pool
+            client.release();
         }
     } catch (error) {
         console.error('An unexpected error occurred:', error);
@@ -141,28 +133,25 @@ export const sendResetEmail = async (req, res) => {
 // Reset Password Resend Email
 export const resendResetEmail = async (req, res) => {
     const { email } = req.body;
-    const resetToken = generateResetToken(); // Generate a new reset token
-    const resetTokenExpiry = new Date(Date.now() + 10 * 60 * 1000); // Set reset token expiry to 10 minutes from now
+    const resetToken = generateResetToken();
+    const resetTokenExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
     try {
-        const client = await pool.connect(); // Acquire a client from the pool
+        const client = await pool.connect();
 
         try {
-            // Prepare and execute the update query using placeholders
             const updateQuery = `
-          UPDATE tblforgotpass
-          SET reset_token = $1, reset_token_expiry = $2
-          WHERE email = $3
-        `;
+                UPDATE tblforgotpass
+                SET reset_token = $1, reset_token_expiry = $2
+                WHERE email = $3
+            `;
             const result = await client.query(updateQuery, [resetToken, resetTokenExpiry, email]);
 
-            // Check if any rows were affected
             if (result.rowCount > 0) {
                 console.log('Reset token updated successfully');
 
-                // Send reset password email (logic remains unchanged)
                 const transporter = nodemailer.createTransport({
-                    service: 'Gmail', // Assuming you are using Gmail, change it if you're using a different provider
+                    service: 'Gmail',
                     auth: {
                         user: 'careercompassbscs@gmail.com', // Your email address
                         pass: 'qved wnte vpyt xiwy' // Your email password or app password if you have 2FA enabled
@@ -170,10 +159,16 @@ export const resendResetEmail = async (req, res) => {
                 });
 
                 const mailOptions = {
-                    from: 'careercompasbscs@gmail.com', // Sender address
-                    to: email, // Receiver address
-                    subject: 'Password Reset', // Subject line
-                    text: `To reset your password, click on the following link: http://localhost:5173/Login/Forgot-Password/Change-Password?token=${resetToken}` // Email body with the reset token link
+                    from: 'careercompassbscs@gmail.com',
+                    to: email,
+                    subject: 'Password Reset',
+                    html: `
+                        <p>Hello,</p>
+                        <p>To reset your password, click on the following link:</p>
+                        <a href="https://ccmps.vercel.app/Login/Forgot-Password/Change-Password?token=${resetToken}">Reset Password</a>
+                        <p>This link will expire in 10 minutes.</p>
+                        <p>If you did not request a password reset, please ignore this email.</p>
+                    `
                 };
 
                 transporter.sendMail(mailOptions, (error, info) => {
@@ -185,25 +180,46 @@ export const resendResetEmail = async (req, res) => {
                         res.status(200).json({ success: true, message: 'Reset password email sent successfully' });
                     }
                 });
-
-                res.status(200).json({ success: true, message: 'Reset password email resent successfully' });
             } else {
                 console.warn('No rows were updated in the database');
                 throw new Error('Failed to update reset token');
             }
         } catch (error) {
             console.error('Error occurred during database operation:', error);
-            res.status(500).json({ success: false, message: 'An error occurred while resending reset password email' });
+            res.status(500).json({ success: false, message: 'An error occurred while updating reset password token' });
         } finally {
-            await client.release(); // Release the client back to the pool
+            await client.release();
         }
     } catch (error) {
         console.error('An unexpected error occurred:', error);
-        res.status(500).json({ success: false, message: 'An error occurred while processing the request' });
+        res.status(500).json({ success: false, message: 'An unexpected error occurred' });
     }
 };
 // Reset Password
+export const resetPassword = async (req, res) => {
+    const { email, newPassword } = req.body; // Extract email and new password from request body
 
+    try {
+        // Check if the email exists in the database
+        const user = await pool.query('SELECT * FROM tblaccount WHERE account_email = $1', [email]);
+
+        if (user.rows.length === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Hash the new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update the password in the database
+        await pool.query('UPDATE tblaccount SET account_password = $1 WHERE account_email = $2', [hashedPassword, email]);
+
+        // Respond with success message
+        res.status(200).json({ message: 'Password reset successful' });
+    } catch (error) {
+        console.error('Error resetting password:', error);
+        res.status(500).json({ message: 'An error occurred while resetting password' });
+    }
+};
 // Contact Us
 export const sendEmail = async (req, res) => {
     // Extract email data from request body
@@ -230,21 +246,16 @@ export const sendEmail = async (req, res) => {
         // Log success message
         console.log('Email sent: ' + info.response);
 
-        // Store user input in the database (using prepared statement)
+        // Store user input in the database
         const insertQuery = `
-        INSERT INTO tblcontactus (name, email, message)
-        VALUES ($1, $2, $3)
-      `;
-        db.query(insertQuery, [name, email, message], (err, result) => {
-            if (err) {
-                console.error('Error storing data in database:', err);
-                return res.status(500).json({ message: 'An error occurred while storing data in the database' });
-            }
-            console.log('Data stored in database:', result);
-        });
+            INSERT INTO tblcontactus (name, email, message)
+            VALUES ($1, $2, $3)
+        `;
+        await pool.query(insertQuery, [name, email, message]);
 
-        // Send response to client
+        // Send response to client after data is stored
         res.status(200).json({ message: 'Email sent and data stored successfully' });
+
     } catch (error) {
         // Log error message
         console.error('Error sending email:', error);
@@ -292,7 +303,6 @@ export const getUserProfile = async (req, res) => {
         res.status(500).json({ success: false, message: 'An error occurred' });
     }
 };
-
 // User Profile Page
 export const getUserDetails = async (req, res) => {
     const userEmail = req.query.email;
@@ -399,7 +409,6 @@ export const getUserDetails = async (req, res) => {
         res.status(500).json({ success: false, message: "An error occurred" });
     }
 };
-
 // Fetch user job
 export const getUserJob = async (req, res) => {
     try {
@@ -429,7 +438,6 @@ export const getUserJob = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
-
 // Save Selected Job to the Database
 export const saveJob = async (req, res) => {
     try {
@@ -454,7 +462,6 @@ export const saveJob = async (req, res) => {
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
-
 // Max Phase Number
 export const maxPhaseNumber = async (req, res) => {
     try {
@@ -501,7 +508,6 @@ export const getAssessment = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
-
 // Question
 export const getQuestions = async (req, res) => {
     try {
@@ -542,7 +548,6 @@ export const getQuestions = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
-
 // Related Courses
 export const getCourse = async (req, res) => {
     try {
@@ -569,7 +574,6 @@ export const getCourse = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
-
 // Retry Count Update
 export const retryCount = async (req, res) => {
     try {
@@ -632,7 +636,6 @@ export const retryCount = async (req, res) => {
         return res.status(500).json({ success: false, message: "Internal server error." });
     }
 };
-
 // Store Answer
 export const storeAnswer = async (req, res) => {
     try {
@@ -656,7 +659,6 @@ export const storeAnswer = async (req, res) => {
         res.status(500).json({ success: false, message: "Error storing answer" });
     }
 };
-
 // Calculate and Delete Answers (If Did Not Pass)
 export const answerResult = async (req, res) => {
     try {
@@ -713,7 +715,6 @@ export const answerResult = async (req, res) => {
         return res.status(500).json({ success: false, message: "Internal server error." });
     }
 };
-
 // Retry Roadmap Assessment
 export const retryAssessment = async (req, res) => {
     try {
@@ -749,7 +750,6 @@ export const retryAssessment = async (req, res) => {
         return res.status(500).json({ success: false, message: "Internal server error." });
     }
 };
-
 // Proceed Assessment
 export const proceedAssessment = async (req, res) => {
     try {
@@ -777,7 +777,6 @@ export const proceedAssessment = async (req, res) => {
         return res.status(500).json({ success: false, message: "Internal server error." });
     }
 };
-
 // Check if the Score is Stored
 export const checkScore = async (req, res) => {
     try {
@@ -819,7 +818,6 @@ export const checkScore = async (req, res) => {
         res.status(500).json({ success: false, message: 'Error checking score' });
     }
 };
-
 // Save Phase Number
 export const savePhaseNumber = async (req, res) => {
     try {
@@ -839,7 +837,6 @@ export const savePhaseNumber = async (req, res) => {
         res.status(500).json({ message: "Internal server error." });
     }
 };
-
 // Retrieve Phase Number
 export const getPhaseNumber = async (req, res) => {
     try {
@@ -864,7 +861,6 @@ export const getPhaseNumber = async (req, res) => {
         res.status(500).json({ message: "Internal server error." });
     }
 };
-
 // Select Jobs
 
 // Admin Side .......................................................................................
@@ -990,21 +986,18 @@ const getTotalUsers = async () => {
     const { rows } = await pool.query(query);
     return rows[0].count;
 };
-
 // Get total number of departments
 const getTotalDepartments = async () => {
     const query = "SELECT COUNT(*) FROM tbldepartment";
     const { rows } = await pool.query(query);
     return rows[0].count;
 };
-
 // Get total number of jobs
 const getTotalJobs = async () => {
     const query = "SELECT COUNT(*) FROM tblroles";
     const { rows } = await pool.query(query);
     return rows[0].count;
 };
-
 // Get total number of roadmaps
 const getTotalRoadmaps = async () => {
     const query = "SELECT COUNT(*) FROM tblprofile WHERE job_selected IS NOT NULL";
